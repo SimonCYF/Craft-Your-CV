@@ -1,6 +1,6 @@
-# Resume Builder
+# Craft Your CV
 
-A resume builder that runs entirely in the browser. People pick a template, fill in a form,
+Craft Your CV (craftyourcv.org) is a CV and resume builder that runs entirely in the browser. People pick a template, fill in a form,
 and download one self-contained HTML file. There is no backend, no sign-up and no tracking.
 
 ## What it does
@@ -86,3 +86,7 @@ uploads `dist/`, and refreshes the cache.
 2. Run the workflow. Without Route 53, it pauses on the certificate: open AWS Certificate Manager (region us-east-1),
    copy the validation CNAME to your registrar's DNS, and the run continues once validated.
 3. Add a CNAME from your domain to the CloudFront address shown in the run summary.
+
+## Help
+
+Need help? Email simon@craftyourcv.org.

@@ -111,6 +111,7 @@ export default function Home({ list, onCreate, onOpen, onRemove }: Props) {
         <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 px-5 py-8 text-[15px] sm:px-10">
           <span>{COPY.appName}</span>
           <span>No sign-up. No tracking. Your data stays on your device.</span>
+          <span>Need help? <a className="underline" href={`mailto:${COPY.contactEmail}`}>{COPY.contactEmail}</a></span>
         </div>
       </footer>
     </div>

@@ -131,7 +131,7 @@ ${common}
 <body${parts.bodyClass ? ` class="${parts.bodyClass}"` : ''}>
 ${parts.body}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<!-- The resume's content. Upload this file to the resume builder to edit it again. -->
+<!-- The resume's content. Upload this file to Craft Your CV to edit it again. -->
 <script type="application/json" id="resume-data">
 ${data}
 </script>
