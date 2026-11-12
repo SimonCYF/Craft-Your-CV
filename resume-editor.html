@@ -1,0 +1,1434 @@
+<!doctype html>
+<html lang="en" style="--block: #262626; --on-block: #ffffff; --block-hover: #404040; --on-deep-muted: #d4d4d4; --accent: #f2d11a; --accent-hover: #f5da48; --on-accent: #262626; --sand: #f5f5dc; --on-sand: #262626;"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cheah Yee Fei – Full-stack Java Consultant</title>
+  <meta name="description" content="I started as a Technology Analyst at Deloitte Consulting SEA and now build full-stack Java systems for clients.">
+  <meta property="og:title" content="Cheah Yee Fei – Full-stack Java Consultant">
+  <meta property="og:description" content="I started as a Technology Analyst at Deloitte Consulting SEA and now build full-stack Java systems for clients.">
+  <meta name="theme-color" content="#262626">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%3E%3Crect%20width%3D'32'%20height%3D'32'%20rx%3D'4'%20fill%3D'%23262626'%2F%3E%3Ctext%20x%3D'16'%20y%3D'22'%20font-size%3D'16'%20font-family%3D'sans-serif'%20font-weight%3D'700'%20text-anchor%3D'middle'%20fill%3D'%23f2d11a'%3ECY%3C%2Ftext%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+
+  <!--
+    THIS IS THE EDITOR FILE. Keep it. Do not upload it.
+    1. Open this file in a browser (double-click it).
+    2. Click "Edit resume" at the bottom left, change anything, add a photo, pick colours.
+    3. Click "Download index.html". That copy has no editor in it. Upload it to GitHub.
+    To change something later, open this file again. Your edits are remembered in the browser,
+    and "Save an editable copy" in the editor gives you a backup you can move to another computer.
+  -->
+
+  <style id="resume-style">
+    /* ============ Tokens: the only place colours and timings are defined ============ */
+    :root {
+      --deep: #262626;             /* charcoal blocks and text */
+      --deep-hover: #3a3a3a;
+      --paper: #ffffff;
+      --sand: #f5f5dc;             /* beige section background */
+      --accent: #f2d11a;           /* yellow highlight: 10.6:1 on charcoal. Never text on white or sand. */
+      --accent-hover: #f7dd4c;
+      --ink-muted: #4d4d4d;        /* 8.5:1 on white */
+      --rule: #d6d6d1;
+      --on-deep-muted: #cfcfcf;    /* 9.7:1 on charcoal */
+      /* Theme colours. The editor's colour pickers overwrite these (as a style on <html>). */
+      --block: #262626;            /* header, hero, skills and footer background */
+      --block-hover: #3a3a3a;      /* lines and panels on that background */
+      --on-block: #ffffff;         /* text on that background */
+      --on-accent: #262626;        /* text on the highlight colour */
+      --on-sand: #262626;          /* text on the soft background */
+
+      --font-sans: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --radius: 4px;
+
+      --dur-fast: 180ms;
+      --dur-base: 300ms;
+      --dur-slow: 600ms;
+      --ease-out: cubic-bezier(.2, .7, .2, 1);
+
+      --gutter: clamp(20px, 5vw, 64px);
+      --max: 1120px;
+      --header-h: 64px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; }
+      html { scroll-behavior: auto !important; }
+      *, *::before, *::after { animation: none !important; }
+    }
+
+    /* ============ Base ============ */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0; font-family: var(--font-sans); font-size: 18px; line-height: 1.6;
+      color: var(--deep); background: var(--paper);
+    }
+    img { max-width: 100%; display: block; }
+    h1, h2, h3, h4, p, ul, dl, dd { margin: 0; }
+    ul { padding: 0; list-style: none; }
+    a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    ::selection { background: var(--accent); color: var(--on-accent); }
+
+    :focus-visible { outline: 3px solid var(--deep); outline-offset: 3px; border-radius: var(--radius); }
+    .on-deep :focus-visible { outline-color: var(--accent); }
+
+    .skip-link {
+      position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 16px;
+      background: var(--accent); color: var(--on-accent); font-weight: 700; border-radius: var(--radius);
+      transition: top var(--dur-fast) var(--ease-out);
+    }
+    .skip-link:focus { top: 12px; }
+
+    .wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+    .section { padding-block: clamp(64px, 9vw, 120px); }
+    .section--sand { --deep: var(--on-sand); background: var(--sand); color: var(--deep); --ink-muted: var(--deep); --rule: color-mix(in srgb, var(--deep) 30%, transparent); }
+    .section--deep { background: var(--block); color: var(--on-block); --ink-muted: var(--on-deep-muted); --rule: var(--block-hover); }
+
+    /* Section header: heading in a narrow left column that stays in view while its content scrolls */
+    .split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .split > *, .about-grid > *, .two-col > * { min-width: 0; }
+    @media (min-width: 900px) {
+      .split { grid-template-columns: 240px minmax(0, 1fr); gap: 64px; }
+      .split > .section-head { position: sticky; top: calc(var(--header-h) + 40px); align-self: start; }
+    }
+    .section-title { font-size: clamp(34px, 4.6vw, 52px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+    .section-title::after { content: ""; display: block; width: 48px; height: 6px; margin-top: 16px; background: var(--deep); }
+    .section--deep .section-title::after { background: var(--accent); }
+    .section-note { margin-top: 14px; color: var(--ink-muted); font-size: 16px; max-width: 28ch; }
+
+    /* ============ Button kit: three variants, flat, 4px ============ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 48px; padding: 0 22px; font: inherit; font-size: 16px; font-weight: 700;
+      border: 2px solid transparent; border-radius: var(--radius); cursor: pointer; text-decoration: none;
+      transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out),
+                  border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn--accent { background: var(--accent); color: var(--on-accent); }
+    .btn--accent:hover { background: var(--accent-hover); }
+    .btn--quiet { color: inherit; border-color: currentColor; background: transparent; }
+    .btn--quiet:hover { background: var(--deep); border-color: var(--deep); color: var(--paper); }
+    .on-deep .btn--quiet:hover { background: var(--on-block); border-color: var(--on-block); color: var(--block); }
+    .btn--small { min-height: 44px; padding: 0 16px; font-size: 15px; }
+
+    /* ============ Header with reading progress ============ */
+    .site-header {
+      position: sticky; top: 0; z-index: 50; height: var(--header-h);
+      background: var(--block); color: var(--on-block); border-bottom: 1px solid var(--block-hover);
+    }
+    .site-header .wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { font-weight: 800; letter-spacing: -0.01em; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; min-height: 44px; }
+    .brand b { color: var(--accent); font-weight: 800; margin-right: 10px; }
+    .nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav a {
+      position: relative; display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; font-size: 15px; font-weight: 500;
+      color: var(--on-deep-muted); text-decoration: none; white-space: nowrap;
+      transition: color var(--dur-fast) var(--ease-out);
+    }
+    .nav a::after {
+      content: ""; position: absolute; left: 12px; right: 12px; bottom: 6px; height: 3px; background: var(--accent);
+      transform: scaleX(0); transform-origin: left; transition: transform var(--dur-base) var(--ease-out);
+    }
+    .nav a:hover { color: var(--on-block); }
+    .nav a[aria-current="true"] { color: var(--on-block); }
+    .nav a[aria-current="true"]::after { transform: scaleX(1); }
+    .progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+    @media (max-width: 640px) { .brand-long { display: none; } .brand b { margin-right: 0; } }
+
+    /* ============ Hero (charcoal) ============ */
+    .hero { background: var(--block); color: var(--on-block); padding-block: clamp(48px, 7vw, 96px); min-height: min(780px, calc(100vh - var(--header-h))); display: flex; align-items: center; }
+    .hero .wrap { display: grid; gap: 40px; align-items: center; }
+    @media (min-width: 900px) { .hero .wrap { grid-template-columns: 1.3fr .7fr; gap: 72px; } }
+    .hero h1 { font-size: clamp(52px, 9.4vw, 128px); font-weight: 800; line-height: .92; letter-spacing: -0.03em; text-transform: uppercase; }
+    .hero h1 .line { display: block; overflow: hidden; padding-block: .04em .12em; margin-bottom: -.12em; }
+    .hero h1 .line > span { display: inline-block; animation: rise var(--dur-slow) var(--ease-out) both; }
+    .hero h1 .line:nth-child(2) > span { animation-delay: 90ms; color: var(--accent); }
+    @keyframes rise { from { transform: translateY(110%); } to { transform: none; } }
+    .hero-role { margin-top: 28px; font-size: clamp(20px, 2.6vw, 28px); font-weight: 700; }
+    .hero .lede { margin-top: 16px; max-width: 46ch; font-size: 19px; color: var(--on-deep-muted); }
+    .actions { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px; }
+    .elsewhere { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 4px 24px; font-size: 16px; font-weight: 600; }
+    .elsewhere a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+    .arrow { display: inline-block; transition: transform var(--dur-fast) var(--ease-out); }
+    a:hover > .arrow, a:focus-visible > .arrow { transform: translate(3px, -3px); }
+    .fade-up { animation: fade-up var(--dur-slow) var(--ease-out) both; animation-delay: calc(180ms + var(--i, 0) * 70ms); }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+    .portrait { margin: 0; position: relative; aspect-ratio: 4 / 5; background: var(--block-hover); border-radius: var(--radius); overflow: hidden; max-width: 400px; justify-self: start; width: 100%; border-bottom: 8px solid var(--accent); }
+    @media (min-width: 900px) { .portrait { justify-self: end; } }
+    .portrait img { width: 100%; height: 100%; object-fit: cover; }
+    .portrait-empty { display: none; position: absolute; inset: 0; padding: 24px; flex-direction: column; justify-content: center; gap: 8px; border: 2px dashed var(--on-deep-muted); border-bottom: 0; color: var(--on-deep-muted); font-size: 16px; }
+    .portrait-empty strong { color: var(--on-block); font-size: 18px; }
+    .portrait.is-empty img { display: none; }
+    .portrait.is-empty .portrait-empty { display: flex; }
+
+    /* ============ About (white) ============ */
+    .about-grid { display: grid; gap: 40px; }
+    @media (min-width: 900px) { .about-grid { grid-template-columns: 1.3fr 1fr; gap: 64px; } }
+    .about-lead { font-size: clamp(26px, 3.2vw, 38px); line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; max-width: 18ch; }
+    .about-body { margin-top: 20px; color: var(--ink-muted); max-width: 46ch; font-size: 19px; }
+    .facts { border-top: 3px solid var(--deep); }
+    .facts div { display: grid; grid-template-columns: 100px 1fr; gap: 16px; padding-block: 14px; border-bottom: 1px solid var(--rule); font-size: 16px; }
+    .facts dt { color: var(--ink-muted); }
+    .facts dd { font-weight: 600; }
+    .copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+    .copy-row a { overflow-wrap: anywhere; }
+
+    /* ============ Experience (sand): a timeline whose line fills as you read ============ */
+    .roles { position: relative; padding-left: 32px; display: grid; gap: 56px; }
+    .roles::before, .roles::after { content: ""; position: absolute; left: 4px; top: 10px; bottom: 0; width: 2px; }
+    .roles::before { background: var(--rule); }
+    .roles::after { background: var(--deep); transform-origin: top; }
+    @supports (animation-timeline: view()) {
+      .roles::after { animation: fill linear both; animation-timeline: view(); animation-range: cover 20% cover 75%; }
+      @keyframes fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    }
+    .role { position: relative; }
+    .role::before { content: ""; position: absolute; z-index: 1; left: -32px; top: 10px; width: 10px; height: 10px; background: var(--deep); outline: 5px solid var(--sand); }
+    .role-head { display: grid; gap: 4px 24px; }
+    @media (min-width: 700px) { .role-head { grid-template-columns: 1fr auto; align-items: baseline; } }
+    .role h3 { font-size: clamp(24px, 2.8vw, 30px); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+    .role-org { margin-top: 2px; font-weight: 600; }
+    .role-when { font-size: 16px; font-weight: 700; }
+    .role-where { display: block; font-weight: 400; }
+    @media (min-width: 700px) { .role-when { text-align: right; } }
+    .works { margin-top: 20px; display: grid; column-gap: 40px; }
+    @media (min-width: 700px) { .works { grid-template-columns: 1fr 1fr; } }
+    .work { padding-block: 16px 20px; border-top: 1px solid var(--rule); }
+    .work-title { font-size: 18px; font-weight: 700; line-height: 1.3; }
+    .work-desc { margin-top: 6px; font-size: 16px; line-height: 1.55; }
+    .work-stack { margin-top: 8px; font-size: 15px; font-weight: 600; }
+
+    /* ============ Skills (charcoal) ============ */
+    .tabs { position: relative; display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--block-hover); scrollbar-width: none; margin-bottom: 8px; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex: none; min-height: 48px; padding: 0 16px; font: inherit; font-size: 16px; font-weight: 600; color: var(--on-deep-muted);
+      background: none; border: 0; cursor: pointer; transition: color var(--dur-fast) var(--ease-out);
+    }
+    .tab:hover, .tab[aria-selected="true"] { color: var(--on-block); }
+    .tab-ink { position: absolute; left: 0; bottom: 0; width: 100px; height: 3px; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur-base) var(--ease-out); pointer-events: none; }
+    #skill-panel { view-transition-name: skills; }
+    ::view-transition-old(skills), ::view-transition-new(skills) { animation-duration: 220ms; }
+    .skill-group { padding-block: 22px; border-bottom: 1px solid var(--rule); display: grid; gap: 12px; }
+    @media (min-width: 700px) { .skill-group { grid-template-columns: 150px 1fr; gap: 32px; align-items: baseline; } }
+    .skill-group[hidden] { display: none; }
+    .skill-group h3 { font-size: 17px; font-weight: 700; color: var(--accent); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { padding: 6px 14px; font-size: 16px; font-weight: 500; border: 1px solid var(--on-deep-muted); border-radius: var(--radius); }
+    .skills-count { margin-top: 14px; min-height: 1.6em; font-size: 15px; color: var(--on-deep-muted); }
+
+    /* ============ Projects (kept for when the section is un-commented) ============ */
+    .project { display: grid; gap: 8px; padding-block: 28px; border-top: 3px solid var(--deep); }
+    .project + .project { border-top: 1px solid var(--rule); }
+    @media (min-width: 900px) { .project { grid-template-columns: 1fr 220px; gap: 40px; align-items: start; } }
+    .project h3 { font-size: 24px; font-weight: 700; line-height: 1.2; }
+    .project p { margin-top: 8px; color: var(--ink-muted); max-width: 60ch; }
+    .project-stack { font-size: 16px; font-weight: 600; }
+    .project-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 600; }
+
+    /* ============ Education and certifications (sand) ============ */
+    .two-col { display: grid; gap: 56px; }
+    @media (min-width: 900px) { .two-col { grid-template-columns: .8fr 1.2fr; gap: 72px; } }
+    .col-title { font-size: clamp(28px, 3.4vw, 38px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; padding-bottom: 14px; border-bottom: 3px solid var(--deep); }
+    .edu { padding-block: 20px; }
+    .edu h3 { font-size: 22px; font-weight: 700; line-height: 1.25; }
+    .edu p { margin-top: 4px; }
+    .edu .honours { margin-top: 12px; font-weight: 700; }
+    .certs li { border-bottom: 1px solid var(--rule); }
+    .cert { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: baseline; min-height: 56px; padding-block: 14px; text-decoration: none; }
+    .cert-name { font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .cert:hover .cert-name { text-decoration-thickness: 2px; }
+    .cert-meta { font-size: 15px; white-space: nowrap; }
+    @media (max-width: 480px) { .cert { grid-template-columns: 1fr auto; } .cert-meta { grid-column: 1; grid-row: 2; margin-top: -10px; } .cert .arrow { grid-row: 1; grid-column: 2; } }
+
+    /* ============ Footer ============ */
+    .site-footer { background: var(--block); color: var(--on-block); padding-block: 64px 32px; font-size: 16px; }
+    .footer-grid { display: grid; gap: 32px; }
+    @media (min-width: 800px) { .footer-grid { grid-template-columns: 1.6fr 1fr 1fr 1.2fr; } }
+    .footer-grid h2 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--on-block); }
+    .footer-grid p, .footer-grid li { color: var(--on-deep-muted); }
+    .footer-grid a { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
+    .brand-foot { font-size: clamp(28px, 3.6vw, 40px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--on-block) !important; margin-bottom: 8px; }
+    .small-print { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--block-hover); color: var(--on-deep-muted); font-size: 15px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+    .foot-edit { font: inherit; color: inherit; background: none; border: 0; padding: 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+    .foot-edit:hover { color: var(--on-block); }
+
+    /* ============ Back to top ============ */
+    .to-top {
+      position: fixed; right: 20px; bottom: 20px; z-index: 60; width: 48px; height: 48px; display: grid; place-items: center;
+      background: var(--accent); color: var(--on-accent); border: 2px solid var(--on-accent); border-radius: var(--radius); font-size: 20px; font-weight: 800; text-decoration: none;
+      opacity: 0; visibility: hidden; transform: translateY(8px);
+      transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base), background-color var(--dur-fast) var(--ease-out);
+    }
+    .to-top.is-visible { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+    .to-top:hover { background: var(--accent-hover); }
+
+    /* ============ Toast (feedback for copy) ============ */
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; z-index: 80; max-width: calc(100vw - 32px);
+      padding: 12px 18px; background: var(--deep); color: var(--paper); border: 1px solid var(--on-deep-muted); border-left: 6px solid var(--accent); border-radius: var(--radius);
+      font-size: 16px; font-weight: 600; opacity: 0; transform: translate(-50%, 8px); pointer-events: none;
+      transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+    }
+    .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ============ Scroll reveal: progressive, content is visible without it ============ */
+    @supports (animation-timeline: view()) {
+      .reveal { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+      @keyframes reveal { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+    }
+
+    /* ============ Print / Save as PDF: same design and colours as the screen ============ */
+    /* The page is set to a desktop-width sheet with A4 proportions, so the PDF uses the wide layout, not the phone one. */
+    @page { size: 1280px 1810px; margin: 0; }
+    @media print {
+      html { -webkit-print-color-adjust: exact; print-color-adjust: exact; scroll-behavior: auto; }
+      /* Things that only make sense on a live page */
+      .skip-link, .toast, .to-top, .progress, .tabs, .skills-count, .copy-btn, [data-action="print"] { display: none !important; }
+      .site-header { position: static; }
+      .split > .section-head { position: static; }
+      /* Nothing may stay faded out or half-drawn */
+      .reveal, .fade-up, .hero h1 .line > span, .roles::after { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .skill-group[hidden] { display: grid !important; }
+      /* The wide layout, stated outright: browsers size print media queries by the paper setting, not by the sheet above */
+      .split { grid-template-columns: 240px minmax(0, 1fr); gap: 64px; }
+      .hero .wrap { grid-template-columns: 1.3fr .7fr; gap: 72px; }
+      .hero.no-photo .wrap { grid-template-columns: 1fr; }
+      .portrait { justify-self: end; }
+      .about-grid { grid-template-columns: 1.3fr 1fr; gap: 64px; }
+      .role-head { grid-template-columns: 1fr auto; align-items: baseline; }
+      .role-when { text-align: right; }
+      .works { grid-template-columns: 1fr 1fr; }
+      .skill-group { grid-template-columns: 150px 1fr; gap: 32px; align-items: baseline; }
+      .project { grid-template-columns: 1fr 220px; gap: 40px; align-items: start; }
+      .two-col { grid-template-columns: .8fr 1.2fr; gap: 72px; }
+      .footer-grid { grid-template-columns: 1.6fr 1fr 1fr 1.2fr; }
+      .brand-long { display: inline; }
+      /* Page breaks fall between sections and never through a job, project or certificate */
+      .hero { min-height: 0; padding-block: 96px; }
+      .section { padding-block: 80px; break-inside: avoid; }
+      .site-footer { break-inside: avoid; }
+      .role-head, .col-title { break-after: avoid; }
+      .role-head, .work, .skill-group, .certs li, .edu, .project, .facts div { break-inside: avoid; }
+    }
+
+    [hidden] { display: none !important; }
+
+    .btn--primary { background: var(--deep); color: var(--paper); }
+    .btn--primary:hover { background: var(--deep-hover); }
+    .hero.no-photo .portrait { display: none; }
+    @media (min-width: 900px) { .hero.no-photo .wrap { grid-template-columns: 1fr; } }
+
+    /* ============ Editor: only appears when you open the file yourself, or add ?edit to the address ============ */
+    :root { --editor-w: 420px; }
+    .edit-fab { position: fixed; left: 20px; bottom: 20px; z-index: 70; display: flex; gap: 8px; }
+    .edit-fab .btn { border-color: var(--on-accent); }
+    html.editing:not(.previewing) .edit-fab { display: none; }
+    .editor {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 90; width: min(var(--editor-w), 100vw);
+      display: none; flex-direction: column; background: var(--paper); color: var(--deep); border-left: 2px solid var(--deep);
+      font-size: 16px; line-height: 1.5;
+    }
+    html.editing:not(.previewing) .editor { display: flex; }
+    @media (min-width: 1000px) {
+      html.editing:not(.previewing) body { margin-right: var(--editor-w); }
+      html.editing:not(.previewing) .to-top { right: calc(var(--editor-w) + 20px); }
+    }
+    .ed-head { padding: 16px 20px; border-bottom: 2px solid var(--deep); background: var(--tint, #f2f2ef); }
+    .ed-head h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+    .ed-head p { margin-top: 4px; font-size: 15px; }
+    .ed-actions { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .ed-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 0 20px 32px; }
+    .ed-sec { border-bottom: 1px solid var(--rule); }
+    .ed-sec > summary, .ed-item > summary { cursor: pointer; min-height: 48px; display: flex; align-items: center; gap: 8px; font-weight: 700; list-style: none; }
+    .ed-sec > summary { font-size: 18px; }
+    .ed-sec > summary::-webkit-details-marker, .ed-item > summary::-webkit-details-marker { display: none; }
+    .ed-sec > summary::before, .ed-item > summary::before { content: "+"; width: 16px; font-weight: 800; }
+    .ed-sec[open] > summary::before, .ed-item[open] > summary::before { content: "–"; }
+    .ed-sec > .ed-inner { padding-bottom: 20px; display: grid; gap: 14px; }
+    .ed-field { display: grid; gap: 4px; }
+    .ed-field label, .ed-legend { font-size: 15px; font-weight: 600; }
+    .ed-hint { font-size: 14px; color: var(--ink-muted); }
+    .ed-field input, .ed-field textarea {
+      width: 100%; min-height: 44px; padding: 9px 12px; font: inherit; color: var(--deep); background: var(--paper);
+      border: 1px solid var(--ink-muted); border-radius: var(--radius);
+    }
+    .ed-field textarea { resize: vertical; line-height: 1.45; }
+    .ed-field input:focus-visible, .ed-field textarea:focus-visible { outline-offset: 0; }
+    .ed-item { border: 1px solid var(--rule); border-radius: var(--radius); padding: 0 12px; }
+    .ed-item[open] { border-color: var(--deep); }
+    .ed-item > .ed-inner { padding-bottom: 12px; display: grid; gap: 12px; }
+    .ed-list { display: grid; gap: 8px; }
+    .ed-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ed-sub { font-size: 15px; font-weight: 700; margin-top: 4px; }
+    .ed-colour { display: grid; grid-template-columns: 56px 1fr; gap: 4px 12px; align-items: center; }
+    .ed-colour input[type="color"] { grid-row: span 2; width: 56px; height: 48px; padding: 2px; background: var(--paper); border: 1px solid var(--ink-muted); border-radius: var(--radius); cursor: pointer; }
+    .ed-colour label { font-size: 15px; font-weight: 600; }
+    .ed-colour .ed-hint { grid-column: 2; }
+    .ed-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ed-preset { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px 10px; font: inherit; font-size: 15px; font-weight: 600; text-align: left; color: var(--deep); background: var(--paper); border: 1px solid var(--ink-muted); border-radius: var(--radius); cursor: pointer; }
+    .ed-preset:hover { border-color: var(--deep); background: var(--tint, #f2f2ef); }
+    .ed-preset span { flex: none; display: flex; width: 44px; height: 28px; border: 1px solid var(--deep); border-radius: var(--radius); overflow: hidden; }
+    .ed-preset span i { flex: 1; }
+    .ed-warn { padding: 10px 12px; font-size: 15px; font-weight: 600; border: 2px solid var(--deep); border-radius: var(--radius); }
+    .ed-check { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; cursor: pointer; font-size: 15px; }
+    .ed-check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--deep); flex: none; }
+    .ed-swatches { border: 0; padding: 0; margin: 0; display: grid; gap: 4px; }
+    .ed-swatch { display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; }
+    .ed-swatch input { width: 20px; height: 20px; accent-color: var(--deep); }
+    .ed-swatch i { width: 28px; height: 28px; border: 1px solid var(--deep); border-radius: var(--radius); }
+    .ed-help { display: grid; gap: 8px; padding-left: 20px; list-style: decimal; font-size: 15px; }
+    .ed-photo { width: 96px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--rule); }
+    .ed-foot { padding-top: 20px; display: grid; gap: 10px; }
+
+    @media print {
+      .editor, .edit-fab, .foot-edit { display: none !important; }
+      body { margin-right: 0 !important; }
+    }
+  
+</style>
+</head>
+
+<body>
+  <!--
+    The resume content lives in the block just below. It is filled in by the editor.
+  -->
+  <script type="application/json" id="resume-data">
+{
+  "fullName": "Cheah Yee Fei",
+  "nameLine1": "Cheah,",
+  "nameLine2": "Yee Fei",
+  "shortTitle": "Full-stack Java Consultant",
+  "role": "Full-stack Java Consultant, also known as Simon",
+  "tagline": "I started as a Technology Analyst at Deloitte Consulting SEA and now build full-stack Java systems for clients.",
+  "location": "Shah Alam, Malaysia",
+  "email": "simoncheahy@gmail.com",
+  "photo": "assets/me.jpg",
+  "colors": {
+    "main": "#262626",
+    "accent": "#f2d11a",
+    "soft": "#f5f5dc"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/SimonCYF"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/yee-fei-cheah-120790213/"
+    }
+  ],
+  "aboutLead": "Full Stack Developer / Data Analyst",
+  "aboutBody": "Building scalable, user-focused software solutions with modern technologies.",
+  "facts": [
+    {
+      "label": "Based in",
+      "value": "Shah Alam, Malaysia"
+    },
+    {
+      "label": "Now",
+      "value": "Full-stack Java consultant, dJava Factory"
+    },
+    {
+      "label": "Before",
+      "value": "Technology Analyst, Deloitte Consulting SEA"
+    }
+  ],
+  "experienceNote": "Newest first.",
+  "jobs": [
+    {
+      "title": "Full-stack Java consultant",
+      "org": "dJava Factory Sdn Bhd",
+      "when": "Apr 2024 – Nov 2026",
+      "where": "Kuala Lumpur",
+      "projects": [
+        {
+          "title": "Terminal Management System",
+          "desc": "Led a team of 4 end to end, from requirement gathering to delivery, building a system that lets the client control the terminals they own.",
+          "stack": ""
+        },
+        {
+          "title": "Employee Management System",
+          "desc": "Led a team of 3 end to end: requirement gathering, design, development, testing and cloud pipelines. HR and admins use it to manage employees (leave, claims, notifications and more).",
+          "stack": ""
+        },
+        {
+          "title": "Data Analytics",
+          "desc": "Extracted data to the client's requirements, enhanced their existing system and suggested improvements to it.",
+          "stack": ""
+        },
+        {
+          "title": "E-wallet",
+          "desc": "Built features from scratch based on client needs.",
+          "stack": ""
+        }
+      ]
+    },
+    {
+      "title": "Technology Analyst",
+      "org": "Deloitte Consulting SEA",
+      "when": "May 2022 – Apr 2024",
+      "where": "Southeast Asia",
+      "projects": [
+        {
+          "title": "Banking",
+          "desc": "Built features from scratch for core banking and online banking.",
+          "stack": ""
+        },
+        {
+          "title": "Inventory System",
+          "desc": "Tested the system, built new features and enhanced existing functions.",
+          "stack": ""
+        }
+      ]
+    }
+  ],
+  "skillsNote": "Pick a group to narrow the list.",
+  "skills": [
+    {
+      "group": "Back end",
+      "items": [
+        "Java",
+        "Quarkus",
+        "Spring Boot"
+      ]
+    },
+    {
+      "group": "Front end",
+      "items": [
+        "OutSystems (Reactive)",
+        "React (TypeScript)",
+        "React Native (TypeScript)"
+      ]
+    },
+    {
+      "group": "Cloud",
+      "items": [
+        "AWS"
+      ]
+    },
+    {
+      "group": "Data",
+      "items": [
+        "MySQL",
+        "PostgreSQL",
+        "MongoDB"
+      ]
+    }
+  ],
+  "projectsNote": "Things I built on my own time.",
+  "projects": [],
+  "education": [
+    {
+      "degree": "Bachelor of Software Engineering (Hons)",
+      "school": "UOW Malaysia KDU",
+      "when": "2019 – 2022",
+      "note": "First class honours"
+    }
+  ],
+  "certs": [
+    {
+      "name": "AWS Certified Solutions Architect – Associate",
+      "url": "https://www.credly.com/badges/bc5fe54b-e8f7-4767-a702-5372055e342e/public_url",
+      "meta": "Exp: Feb 2027"
+    },
+    {
+      "name": "AWS Certified Developer – Associate",
+      "url": "https://www.credly.com/badges/b42d3ddf-77d7-4f97-9c06-470653a0c5f8/public_url",
+      "meta": "Exp: Apr 2027"
+    },
+    {
+      "name": "AWS Certified Cloud Practitioner",
+      "url": "https://www.credly.com/badges/3967f6e9-7bba-4075-82df-c1a49b3c027b/public_url",
+      "meta": "Exp: Apr 2027"
+    },
+    {
+      "name": "AWS Certified AI Practitioner",
+      "url": "https://www.credly.com/badges/4e89b0c4-f0ec-4589-8f11-ebae98e96c20/public_url",
+      "meta": "Exp: Oct 2029"
+    },
+    {
+      "name": "OutSystems Associate Reactive Developer",
+      "url": "https://drive.google.com/file/d/1PxpevME-8Unx9XdNLvNyKy3gsh70ZVER/view",
+      "meta": ""
+    }
+  ],
+  "footerNote": "DO NOT COPY"
+}
+  </script>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header on-deep">
+    <div class="wrap">
+      <a class="brand" href="#top" id="brand" aria-label="Cheah Yee Fei, back to top"><b>CV</b><span class="brand-long" id="brand-long">Cheah, Yee Fei</span></a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects" data-nav="projects" hidden="">Projects</a>
+        <a href="#education">Education</a>
+      </nav>
+    </div>
+    <div class="progress" id="progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="main">
+    <section class="hero on-deep" id="top" aria-labelledby="hero-name">
+      <div class="wrap">
+        <div>
+          <h1 id="hero-name" aria-label="Cheah Yee Fei">
+            <span class="line" aria-hidden="true"><span id="name-1">Cheah,</span></span>
+            <span class="line" aria-hidden="true"><span id="name-2">Yee Fei</span></span>
+          </h1>
+          <p class="hero-role fade-up" style="--i:0" id="hero-role">Full-stack Java Consultant, also known as Simon</p>
+          <p class="lede fade-up" style="--i:1" id="hero-lede">I started as a Technology Analyst at Deloitte Consulting SEA and now build full-stack Java systems for clients.</p>
+          <div class="actions fade-up" style="--i:2">
+            <a class="btn btn--accent" id="email-btn" href="mailto:simoncheahy@gmail.com">Email me</a>
+            <button class="btn btn--quiet" type="button" data-action="print">Save as PDF</button>
+          </div>
+          <p class="elsewhere fade-up" style="--i:3" id="hero-links"><a href="https://github.com/SimonCYF" rel="noopener">GitHub <span class="arrow" aria-hidden="true">↗</span></a><a href="https://www.linkedin.com/in/yee-fei-cheah-120790213/" rel="noopener">LinkedIn <span class="arrow" aria-hidden="true">↗</span></a></p>
+        </div>
+        <figure class="portrait fade-up" id="portrait" style="--i:1">
+          <img id="portrait-img" alt="Portrait of Cheah Yee Fei" width="800" height="1000" fetchpriority="high" src="assets/me.jpg">
+          <div class="portrait-empty">
+            <strong>Your photo goes here</strong>
+            <span>Click “Edit resume”, open “Photo” and choose a picture. Visitors never see this box.</span>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="about" aria-labelledby="about-h">
+      <div class="wrap split">
+        <div class="section-head reveal">
+          <h2 class="section-title" id="about-h">About</h2>
+        </div>
+        <div class="about-grid">
+          <div class="reveal">
+            <p class="about-lead" id="about-lead">Full Stack Developer / Data Analyst</p>
+            <p class="about-body" id="about-body">Building scalable, user-focused software solutions with modern technologies.</p>
+          </div>
+          <dl class="facts reveal" id="facts"><div><dt>Based in</dt><dd>Shah Alam, Malaysia</dd></div><div><dt>Now</dt><dd>Full-stack Java consultant, dJava Factory</dd></div><div><dt>Before</dt><dd>Technology Analyst, Deloitte Consulting SEA</dd></div><div><dt>Email</dt><dd class="copy-row"><a href="mailto:simoncheahy@gmail.com">simoncheahy@gmail.com</a><button class="btn btn--quiet btn--small copy-btn" type="button" data-action="copy-email">Copy email</button></dd></div></dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--sand" id="experience" aria-labelledby="exp-h">
+      <div class="wrap split">
+        <div class="section-head reveal">
+          <h2 class="section-title" id="exp-h">Experience</h2>
+          <p class="section-note" id="exp-note">Newest first.</p>
+        </div>
+        <div class="roles" id="roles"><article class="role reveal"><header class="role-head"><div><h3>Full-stack Java consultant</h3><p class="role-org">dJava Factory Sdn Bhd</p></div><p class="role-when">Apr 2024 – Nov 2026<span class="role-where">Kuala Lumpur</span></p></header><ul class="works"><li class="work"><h4 class="work-title">Terminal Management System</h4><p class="work-desc">Led a team of 4 end to end, from requirement gathering to delivery, building a system that lets the client control the terminals they own.</p></li><li class="work"><h4 class="work-title">Employee Management System</h4><p class="work-desc">Led a team of 3 end to end: requirement gathering, design, development, testing and cloud pipelines. HR and admins use it to manage employees (leave, claims, notifications and more).</p></li><li class="work"><h4 class="work-title">Data Analytics</h4><p class="work-desc">Extracted data to the client's requirements, enhanced their existing system and suggested improvements to it.</p></li><li class="work"><h4 class="work-title">E-wallet</h4><p class="work-desc">Built features from scratch based on client needs.</p></li></ul></article><article class="role reveal"><header class="role-head"><div><h3>Technology Analyst</h3><p class="role-org">Deloitte Consulting SEA</p></div><p class="role-when">May 2022 – Apr 2024<span class="role-where">Southeast Asia</span></p></header><ul class="works"><li class="work"><h4 class="work-title">Banking</h4><p class="work-desc">Built features from scratch for core banking and online banking.</p></li><li class="work"><h4 class="work-title">Inventory System</h4><p class="work-desc">Tested the system, built new features and enhanced existing functions.</p></li></ul></article></div>
+      </div>
+    </section>
+
+    <section class="section section--deep on-deep" id="skills" aria-labelledby="skills-h">
+      <div class="wrap split">
+        <div class="section-head reveal">
+          <h2 class="section-title" id="skills-h">Skills</h2>
+          <p class="section-note" id="skills-note">Pick a group to narrow the list.</p>
+        </div>
+        <div>
+          <div class="tabs" role="tablist" aria-label="Skill groups" id="skill-tabs"><button class="tab" role="tab" id="tab-all" type="button" aria-selected="true" aria-controls="skill-panel" data-filter="all" tabindex="0">All</button><button class="tab" role="tab" id="tab-0" type="button" aria-selected="false" aria-controls="skill-panel" data-filter="0" tabindex="-1">Back end</button><button class="tab" role="tab" id="tab-1" type="button" aria-selected="false" aria-controls="skill-panel" data-filter="1" tabindex="-1">Front end</button><button class="tab" role="tab" id="tab-2" type="button" aria-selected="false" aria-controls="skill-panel" data-filter="2" tabindex="-1">Cloud</button><button class="tab" role="tab" id="tab-3" type="button" aria-selected="false" aria-controls="skill-panel" data-filter="3" tabindex="-1">Data</button><span class="tab-ink" id="tab-ink" aria-hidden="true"></span></div>
+          <div id="skill-panel" role="tabpanel" tabindex="0" aria-labelledby="tab-all"><div class="skill-group" data-cat="0"><h3>Back end</h3><ul class="chips"><li class="chip">Java</li><li class="chip">Quarkus</li><li class="chip">Spring Boot</li></ul></div><div class="skill-group" data-cat="1"><h3>Front end</h3><ul class="chips"><li class="chip">OutSystems (Reactive)</li><li class="chip">React (TypeScript)</li><li class="chip">React Native (TypeScript)</li></ul></div><div class="skill-group" data-cat="2"><h3>Cloud</h3><ul class="chips"><li class="chip">AWS</li></ul></div><div class="skill-group" data-cat="3"><h3>Data</h3><ul class="chips"><li class="chip">MySQL</li><li class="chip">PostgreSQL</li><li class="chip">MongoDB</li></ul></div></div>
+          <p class="skills-count" id="skills-count" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="projects" aria-labelledby="proj-h" hidden="">
+      <div class="wrap split">
+        <div class="section-head reveal">
+          <h2 class="section-title" id="proj-h">Projects</h2>
+          <p class="section-note" id="proj-note">Things I built on my own time.</p>
+        </div>
+        <div id="project-list"></div>
+      </div>
+    </section>
+
+    <section class="section section--sand" id="education" aria-labelledby="edu-h">
+      <div class="wrap two-col">
+        <div class="reveal" id="edu-col">
+          <h2 class="col-title" id="edu-h">Education</h2>
+          <div id="edu-list"><div class="edu"><h3>Bachelor of Software Engineering (Hons)</h3><p>UOW Malaysia KDU</p><p>2019 – 2022</p><p class="honours">First class honours</p></div></div>
+        </div>
+        <div class="reveal" id="cert-col">
+          <h2 class="col-title">Certifications</h2>
+          <ul class="certs" id="cert-list"><li><a class="cert" href="https://www.credly.com/badges/bc5fe54b-e8f7-4767-a702-5372055e342e/public_url" rel="noopener"><span class="cert-name">AWS Certified Solutions Architect – Associate</span><span class="cert-meta">Exp: Feb 2027</span><span class="arrow" aria-hidden="true">↗</span></a></li><li><a class="cert" href="https://www.credly.com/badges/b42d3ddf-77d7-4f97-9c06-470653a0c5f8/public_url" rel="noopener"><span class="cert-name">AWS Certified Developer – Associate</span><span class="cert-meta">Exp: Apr 2027</span><span class="arrow" aria-hidden="true">↗</span></a></li><li><a class="cert" href="https://www.credly.com/badges/3967f6e9-7bba-4075-82df-c1a49b3c027b/public_url" rel="noopener"><span class="cert-name">AWS Certified Cloud Practitioner</span><span class="cert-meta">Exp: Apr 2027</span><span class="arrow" aria-hidden="true">↗</span></a></li><li><a class="cert" href="https://www.credly.com/badges/4e89b0c4-f0ec-4589-8f11-ebae98e96c20/public_url" rel="noopener"><span class="cert-name">AWS Certified AI Practitioner</span><span class="cert-meta">Exp: Oct 2029</span><span class="arrow" aria-hidden="true">↗</span></a></li><li><a class="cert" href="https://drive.google.com/file/d/1PxpevME-8Unx9XdNLvNyKy3gsh70ZVER/view" rel="noopener"><span class="cert-name">OutSystems Associate Reactive Developer</span><span class="cert-meta"></span><span class="arrow" aria-hidden="true">↗</span></a></li></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer on-deep">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <p class="brand-foot" id="foot-name">Cheah Yee Fei</p>
+          <p id="foot-title">Full-stack Java Consultant</p>
+          <p id="foot-location">Shah Alam, Malaysia</p>
+        </div>
+        <div class="footer-nav">
+          <h2>Sections</h2>
+          <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li data-nav="projects" hidden=""><a href="#projects">Projects</a></li>
+            <li><a href="#education">Education</a></li>
+          </ul>
+        </div>
+        <div id="foot-links-col">
+          <h2>Elsewhere</h2>
+          <ul id="foot-links"><li><a href="https://github.com/SimonCYF" rel="noopener">GitHub</a></li><li><a href="https://www.linkedin.com/in/yee-fei-cheah-120790213/" rel="noopener">LinkedIn</a></li></ul>
+        </div>
+        <div id="foot-contact-col">
+          <h2>Contact</h2>
+          <ul><li><a id="foot-email" href="mailto:simoncheahy@gmail.com">simoncheahy@gmail.com</a></li></ul>
+        </div>
+      </div>
+      <p class="small-print">
+        <span>© <span id="year">2026</span> <span id="foot-copy">Cheah Yee Fei</span></span>
+        <span id="foot-note">DO NOT COPY</span>
+        <button class="foot-edit" type="button" id="foot-edit" data-action="edit-open">Edit this resume</button>
+      </p>
+    </div>
+  </footer>
+
+  <a class="to-top" id="to-top" href="#top" aria-label="Back to top"><span aria-hidden="true">↑</span></a>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Editor controls. Hidden from visitors of the published site. -->
+  <div class="edit-fab" id="edit-fab" hidden="">
+    <button class="btn btn--accent" type="button" id="fab-open" data-action="edit-open">Edit resume</button>
+    <button class="btn btn--primary" type="button" id="fab-download" data-action="download" hidden="">Download</button>
+  </div>
+  <aside class="editor" id="editor" aria-label="Resume editor"></aside>
+
+  <script id="resume-app">
+    (function () {
+      'use strict';
+
+      /* ================= Setup ================= */
+      var root = document.documentElement;
+      var $ = function (id) { return document.getElementById(id); };
+      var dataEl = $('resume-data');
+      var fileData = JSON.parse(dataEl.textContent);
+      var data = JSON.parse(JSON.stringify(fileData));
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* The editor shows when you open the file yourself, or add ?edit to the published address. Visitors never see it. */
+      var hosted = /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+      var editParam = /[?&]edit\b/.test(location.search) || location.hash === '#edit';
+      var locked = root.hasAttribute('data-locked');   /* a downloaded copy: view only, no editor */
+      var canEdit = !locked && (!hosted || editParam);
+      var DRAFT_KEY = 'resume-draft:' + location.pathname;
+      var dirty = false;
+
+      function el(tag, props, kids) {
+        var n = document.createElement(tag);
+        Object.keys(props || {}).forEach(function (k) {
+          var v = props[k];
+          if (v == null || v === false) { return; }
+          if (k === 'class') { n.className = v; }
+          else if (k === 'text') { n.textContent = v; }
+          else if (k.slice(0, 2) === 'on') { n.addEventListener(k.slice(2), v); }
+          else { n.setAttribute(k, v === true ? '' : v); }
+        });
+        (kids || []).forEach(function (c) { if (c) { n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); } });
+        return n;
+      }
+      function clear(node) { while (node.firstChild) { node.removeChild(node.firstChild); } return node; }
+      function safeUrl(u) {
+        u = (u || '').trim();
+        if (!u) { return ''; }
+        if (/^(https?:|mailto:|tel:|#|\/|\.)/i.test(u)) { return u; }
+        if (/^[a-z][a-z0-9+.-]*:/i.test(u)) { return ''; }   /* blocks javascript: and friends */
+        return 'https://' + u;
+      }
+      function arrow() { return el('span', { class: 'arrow', 'aria-hidden': 'true', text: '↗' }); }
+      function setText(id, text) { var n = $(id); n.textContent = text || ''; n.hidden = !text; }
+      function setMeta(sel, value) { var m = document.querySelector(sel); if (m) { m.setAttribute('content', value || ''); } }
+
+      /* ================= Render the page from the data ================= */
+      var filter = 'all';
+      /* Colour combinations offered in the editor. Any colour can also be picked freely. */
+      var PRESETS = [
+        { label: 'Charcoal + yellow', main: '#262626', accent: '#f2d11a', soft: '#f5f5dc' },
+        { label: 'Navy + sky',        main: '#14213d', accent: '#8ecbff', soft: '#e9f0f6' },
+        { label: 'Forest + mint',     main: '#16302b', accent: '#7fe0b0', soft: '#e9f3ec' },
+        { label: 'Plum + coral',      main: '#3b1f2b', accent: '#ff9f80', soft: '#f7ece6' },
+        { label: 'Burgundy + gold',   main: '#4a1522', accent: '#f0c75e', soft: '#f6efe2' },
+        { label: 'Teal + white',      main: '#0f4c5c', accent: '#ffffff', soft: '#e6f0f2' },
+        { label: 'Cream + red',       main: '#f4efe6', accent: '#c8321f', soft: '#fbf8f2' },
+        { label: 'Black + lime',      main: '#111111', accent: '#c6f432', soft: '#f1f3ea' }
+      ];
+      var INK = '#262626', WHITE = '#ffffff';
+      function rgb(hex) {
+        var m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
+        var n = parseInt(m ? m[1] : '262626', 16);
+        return [n >> 16 & 255, n >> 8 & 255, n & 255];
+      }
+      function hex(c) { return '#' + c.map(function (v) { return ('0' + Math.round(v).toString(16)).slice(-2); }).join(''); }
+      function mix(a, b, t) { var x = rgb(a), y = rgb(b); return hex(x.map(function (v, i) { return v + (y[i] - v) * t; })); }
+      function lum(h) {
+        var c = rgb(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+      }
+      function contrast(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+      function readable(bg) { return contrast(bg, WHITE) >= contrast(bg, INK) ? WHITE : INK; }   /* text colour that reads best on bg */
+      function colours() {
+        var old = { mint: PRESETS[2], sky: PRESETS[1], coral: PRESETS[3] }[data.theme] || PRESETS[0];
+        if (!data.colors) { data.colors = { main: old.main, accent: old.accent, soft: old.soft }; delete data.theme; }
+        var c = data.colors;
+        ['main', 'accent', 'soft'].forEach(function (k) { if (!/^#[0-9a-f]{6}$/i.test(c[k] || '')) { c[k] = PRESETS[0][k]; } });
+        return c;
+      }
+      /* Every colour on the page follows from the three picked ones; text colours are chosen so they stay readable. */
+      function applyColours() {
+        var c = colours(), on = readable(c.main), set = function (k, v) { root.style.setProperty(k, v); };
+        set('--block', c.main);
+        set('--on-block', on);
+        set('--block-hover', mix(c.main, on, 0.12));
+        set('--on-deep-muted', mix(on, c.main, 0.2));
+        set('--accent', c.accent);
+        set('--accent-hover', mix(c.accent, readable(c.accent) === WHITE ? INK : WHITE, 0.2));
+        set('--on-accent', readable(c.accent));
+        set('--sand', c.soft);
+        set('--on-sand', readable(c.soft));
+        setMeta('meta[name="theme-color"]', c.main);
+        return c;
+      }
+
+      function render() {
+        var d = data;
+        var c = applyColours();
+
+        /* Page title, search description, tab icon */
+        var title = d.fullName + (d.shortTitle ? ' – ' + d.shortTitle : '');
+        document.title = title;
+        setMeta('meta[name="description"]', d.tagline);
+        setMeta('meta[property="og:title"]', title);
+        setMeta('meta[property="og:description"]', d.tagline);
+        var initials = (d.fullName || '').split(/\s+/).slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
+        var icon = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='" + c.main + "'/>" +
+          "<text x='16' y='22' font-size='16' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='" + c.accent + "'>" +
+          initials.replace(/[<&'"]/g, '') + "</text></svg>";
+        document.querySelector('link[rel="icon"]').href = 'data:image/svg+xml,' + encodeURIComponent(icon);
+
+        /* Header and hero */
+        $('brand-long').textContent = [d.nameLine1, d.nameLine2].filter(Boolean).join(' ');
+        $('brand').setAttribute('aria-label', d.fullName + ', back to top');
+        $('hero-name').setAttribute('aria-label', d.fullName);
+        $('name-1').textContent = d.nameLine1 || '';
+        $('name-2').textContent = d.nameLine2 || '';
+        $('name-2').parentNode.hidden = !d.nameLine2;
+        setText('hero-role', d.role);
+        setText('hero-lede', d.tagline);
+        $('email-btn').href = 'mailto:' + (d.email || '');
+        $('email-btn').hidden = !d.email;
+
+        var links = (d.links || []).filter(function (l) { return l.label && safeUrl(l.url); });
+        var heroLinks = clear($('hero-links'));
+        var footLinks = clear($('foot-links'));
+        links.forEach(function (l) {
+          heroLinks.appendChild(el('a', { href: safeUrl(l.url), rel: 'noopener' }, [l.label + ' ', arrow()]));
+          footLinks.appendChild(el('li', {}, [el('a', { href: safeUrl(l.url), rel: 'noopener', text: l.label })]));
+        });
+        heroLinks.hidden = !links.length;
+        $('foot-links-col').hidden = !links.length;
+
+        /* Photo */
+        var img = $('portrait-img');
+        img.alt = 'Portrait of ' + d.fullName;
+        if (d.photo) {
+          if (img.getAttribute('src') !== d.photo) { photoState(false); img.setAttribute('src', d.photo); }
+        } else {
+          img.removeAttribute('src'); photoState(true);
+        }
+
+        /* About */
+        setText('about-lead', d.aboutLead);
+        setText('about-body', d.aboutBody);
+        var facts = clear($('facts'));
+        (d.facts || []).forEach(function (f) {
+          if (!f.label && !f.value) { return; }
+          facts.appendChild(el('div', {}, [el('dt', { text: f.label }), el('dd', { text: f.value })]));
+        });
+        if (d.email) {
+          facts.appendChild(el('div', {}, [el('dt', { text: 'Email' }), el('dd', { class: 'copy-row' }, [
+            el('a', { href: 'mailto:' + d.email, text: d.email }),
+            el('button', { class: 'btn btn--quiet btn--small copy-btn', type: 'button', 'data-action': 'copy-email', text: 'Copy email' })
+          ])]));
+        }
+
+        /* Experience */
+        setText('exp-note', d.experienceNote);
+        var roles = clear($('roles'));
+        (d.jobs || []).forEach(function (j) {
+          var works = el('ul', { class: 'works' }, (j.projects || []).map(function (p) {
+            return el('li', { class: 'work' }, [
+              el('h4', { class: 'work-title', text: p.title }),
+              p.desc ? el('p', { class: 'work-desc', text: p.desc }) : null,
+              p.stack ? el('p', { class: 'work-stack', text: p.stack }) : null
+            ]);
+          }));
+          roles.appendChild(el('article', { class: 'role reveal' }, [
+            el('header', { class: 'role-head' }, [
+              el('div', {}, [el('h3', { text: j.title }), j.org ? el('p', { class: 'role-org', text: j.org }) : null]),
+              el('p', { class: 'role-when' }, [j.when || '', j.where ? el('span', { class: 'role-where', text: j.where }) : null])
+            ]),
+            (j.projects || []).length ? works : null
+          ]));
+        });
+        $('experience').hidden = !(d.jobs || []).length;
+
+        /* Skills */
+        setText('skills-note', d.skillsNote);
+        var groups = d.skills || [];
+        if (filter !== 'all' && !groups[+filter]) { filter = 'all'; }
+        var tabList = clear($('skill-tabs'));
+        var panel = clear($('skill-panel'));
+        [{ group: 'All' }].concat(groups).forEach(function (g, i) {
+          var key = i === 0 ? 'all' : String(i - 1);
+          var on = key === filter;
+          tabList.appendChild(el('button', { class: 'tab', role: 'tab', id: 'tab-' + key, type: 'button', 'aria-selected': on ? 'true' : 'false',
+            'aria-controls': 'skill-panel', 'data-filter': key, tabindex: on ? '0' : '-1', text: g.group }));
+        });
+        tabList.appendChild(el('span', { class: 'tab-ink', id: 'tab-ink', 'aria-hidden': 'true' }));
+        groups.forEach(function (g, i) {
+          panel.appendChild(el('div', { class: 'skill-group', 'data-cat': String(i) }, [
+            el('h3', { text: g.group }),
+            el('ul', { class: 'chips' }, (g.items || []).map(function (s) { return el('li', { class: 'chip', text: s }); }))
+          ]));
+        });
+        applyFilter();
+        $('skills').hidden = !groups.length;
+
+        /* Personal projects (the section and its nav links appear only when there is at least one) */
+        var projects = d.projects || [];
+        setText('proj-note', d.projectsNote);
+        var list = clear($('project-list'));
+        projects.forEach(function (p) {
+          list.appendChild(el('article', { class: 'project reveal' }, [
+            el('div', {}, [el('h3', { text: p.title }), p.desc ? el('p', { text: p.desc }) : null]),
+            el('div', {}, [
+              p.stack ? el('p', { class: 'project-stack', text: p.stack }) : null,
+              safeUrl(p.url) ? el('a', { class: 'project-link', href: safeUrl(p.url), rel: 'noopener' }, ['View project ', arrow()]) : null
+            ])
+          ]));
+        });
+        $('projects').hidden = !projects.length;
+        Array.prototype.forEach.call(document.querySelectorAll('[data-nav="projects"]'), function (n) { n.hidden = !projects.length; });
+
+        /* Education and certifications */
+        var edu = clear($('edu-list'));
+        (d.education || []).forEach(function (e) {
+          edu.appendChild(el('div', { class: 'edu' }, [
+            el('h3', { text: e.degree }),
+            e.school ? el('p', { text: e.school }) : null,
+            e.when ? el('p', { text: e.when }) : null,
+            e.note ? el('p', { class: 'honours', text: e.note }) : null
+          ]));
+        });
+        $('edu-col').hidden = !(d.education || []).length;
+        var certs = clear($('cert-list'));
+        (d.certs || []).forEach(function (c) {
+          var url = safeUrl(c.url);
+          var inner = [el('span', { class: 'cert-name', text: c.name }), el('span', { class: 'cert-meta', text: c.meta || '' }), url ? arrow() : el('span')];
+          certs.appendChild(el('li', {}, [url ? el('a', { class: 'cert', href: url, rel: 'noopener' }, inner) : el('div', { class: 'cert' }, inner)]));
+        });
+        $('cert-col').hidden = !(d.certs || []).length;
+        $('education').hidden = $('edu-col').hidden && $('cert-col').hidden;
+
+        /* Footer */
+        $('foot-name').textContent = d.fullName;
+        setText('foot-title', d.shortTitle);
+        setText('foot-location', d.location);
+        $('foot-email').textContent = d.email || '';
+        $('foot-email').href = 'mailto:' + (d.email || '');
+        $('foot-contact-col').hidden = !d.email;
+        $('foot-copy').textContent = d.fullName;
+        $('foot-note').textContent = d.footerNote || '';
+        $('year').textContent = new Date().getFullYear();
+      }
+
+      /* Photo: visitors never see an empty box; the owner sees a labelled slot while editing */
+      function photoState(empty) {
+        $('portrait').classList.toggle('is-empty', empty);
+        $('top').classList.toggle('no-photo', empty && !canEdit);
+      }
+      $('portrait-img').addEventListener('error', function () { photoState(true); });
+      $('portrait-img').addEventListener('load', function () { photoState(false); });
+      function checkPhoto() { var im = $('portrait-img'); if (im.getAttribute('src') && im.complete && im.naturalWidth === 0) { photoState(true); } }
+
+      /* ================= Skill tabs: arrow keys, Home, End; sliding underline ================= */
+      var tabList = $('skill-tabs');
+      function moveInk() {
+        var current = tabList.querySelector('[aria-selected="true"]');
+        var ink = $('tab-ink');
+        if (current && ink) { ink.style.transform = 'translateX(' + current.offsetLeft + 'px) scaleX(' + (current.offsetWidth / 100) + ')'; }
+      }
+      function applyFilter() {
+        var shown = 0;
+        Array.prototype.forEach.call($('skill-panel').children, function (g) {
+          var match = filter === 'all' || g.getAttribute('data-cat') === filter;
+          g.hidden = !match;
+          if (match) { shown += g.querySelectorAll('.chip').length; }
+        });
+        var tab = $('tab-' + filter);
+        $('skill-panel').setAttribute('aria-labelledby', 'tab-' + filter);
+        $('skills-count').textContent = filter === 'all' || !tab ? '' : shown + (shown === 1 ? ' skill' : ' skills') + ' in ' + tab.textContent + '.';
+        moveInk();
+      }
+      function selectTab(tab, focus) {
+        filter = tab.getAttribute('data-filter');
+        Array.prototype.forEach.call(tabList.querySelectorAll('[role="tab"]'), function (t) {
+          var on = t === tab;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+        });
+        if (document.startViewTransition && !reduceMotion) { document.startViewTransition(applyFilter); } else { applyFilter(); }
+        if (focus) { tab.focus(); tab.scrollIntoView({ inline: 'nearest', block: 'nearest' }); }
+      }
+      tabList.addEventListener('click', function (e) {
+        var tab = e.target.closest('[role="tab"]');
+        if (tab) { selectTab(tab, false); }
+      });
+      tabList.addEventListener('keydown', function (e) {
+        var tabs = Array.prototype.slice.call(tabList.querySelectorAll('[role="tab"]'));
+        var i = tabs.indexOf(e.target);
+        if (i < 0) { return; }
+        var next = null;
+        if (e.key === 'ArrowRight') { next = tabs[(i + 1) % tabs.length]; }
+        if (e.key === 'ArrowLeft') { next = tabs[(i - 1 + tabs.length) % tabs.length]; }
+        if (e.key === 'Home') { next = tabs[0]; }
+        if (e.key === 'End') { next = tabs[tabs.length - 1]; }
+        if (next) { e.preventDefault(); selectTab(next, true); }
+      });
+      window.addEventListener('resize', moveInk);
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(moveInk); }
+
+      /* ================= Toast, copy email, save as PDF ================= */
+      var toast = $('toast');
+      var toastTimer;
+      function say(message) {
+        toast.textContent = message;
+        toast.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { toast.classList.remove('is-visible'); }, 4000);
+      }
+      function copyEmail(btn) {
+        function failed() { say('Could not copy. Select the address and press Ctrl+C (Cmd+C on Mac).'); }
+        if (!navigator.clipboard || !navigator.clipboard.writeText) { failed(); return; }
+        navigator.clipboard.writeText(data.email).then(function () {
+          btn.textContent = 'Copied';
+          say('Email copied to your clipboard.');
+          setTimeout(function () { btn.textContent = 'Copy email'; }, 2000);
+        }, failed);
+      }
+      document.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-action]');
+        if (!t) { return; }
+        var action = t.getAttribute('data-action');
+        if (action === 'copy-email') { copyEmail(t); }
+        if (action === 'print') { say('In the print dialog, choose “Save as PDF”. Keep margins on Default.'); setTimeout(function () { window.print(); }, 350); }
+        if (locked) { return; }
+        if (action === 'edit-open') { enableEdit(); openEditor(); }
+        if (action === 'edit-preview') { root.classList.add('previewing'); syncFab(); $('fab-open').focus(); }
+        if (action === 'edit-close') { root.classList.remove('editing', 'previewing'); syncFab(); $('fab-open').focus(); }
+        if (action === 'download') { download(true); }
+        if (action === 'download-editable') { download(false); }
+        if (action === 'discard') { discard(); }
+      });
+
+      /* ================= Reading progress, back to top, current section ================= */
+      var ticking = false;
+      function onScroll() {
+        ticking = false;
+        var max = root.scrollHeight - window.innerHeight;
+        var y = window.scrollY || root.scrollTop;
+        $('progress').style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
+        $('to-top').classList.toggle('is-visible', y > window.innerHeight * 0.8);
+      }
+      window.addEventListener('scroll', function () {
+        if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+      }, { passive: true });
+
+      var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) { return; }
+            navLinks.forEach(function (a) {
+              a.removeAttribute('aria-current');
+              if (a.getAttribute('href') === '#' + entry.target.id) { a.setAttribute('aria-current', 'true'); }
+            });
+          });
+        }, { rootMargin: '-45% 0px -50% 0px' });
+        navLinks.forEach(function (a) { var t = document.querySelector(a.getAttribute('href')); if (t) { io.observe(t); } });
+      }
+
+      /* ================= Editor (never runs in a downloaded, view-only copy) ================= */
+      var editor = $('editor');
+      var openKeys = { basics: true };
+      var uid = 0;
+      var renderTimer, draftTimer;
+
+      function changed() {
+        dirty = true;
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(render, 80);
+        clearTimeout(draftTimer);
+        draftTimer = setTimeout(function () {
+          try { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch (err) { /* private window or storage full: the Download button still works */ }
+        }, 400);
+        syncFab();
+      }
+      function syncFab() {
+        if (locked) { return; }
+        var previewing = root.classList.contains('previewing');
+        $('fab-open').textContent = previewing ? 'Back to editor' : 'Edit resume';
+        $('fab-download').hidden = !(previewing || dirty);
+      }
+
+      function field(label, obj, key, opt) {
+        opt = opt || {};
+        var id = 'ed-' + (uid += 1);
+        var input = opt.multiline ? el('textarea', { id: id, rows: opt.rows || 3 }) : el('input', { id: id, type: opt.type || 'text', autocomplete: 'off' });
+        input.value = opt.get ? opt.get() : (obj[key] || '');
+        if (opt.hint) { input.setAttribute('aria-describedby', id + '-h'); }
+        input.addEventListener('input', function () {
+          if (opt.set) { opt.set(input.value); } else { obj[key] = input.value; }
+          changed();
+        });
+        return el('div', { class: 'ed-field' }, [
+          el('label', { for: id, text: label }),
+          opt.hint ? el('p', { class: 'ed-hint', id: id + '-h', text: opt.hint }) : null,
+          input
+        ]);
+      }
+      function remember(details, key) {
+        if (openKeys[key]) { details.setAttribute('open', ''); }
+        details.addEventListener('toggle', function () { openKeys[key] = details.open; });
+      }
+      function section(key, title, kids) {
+        var d = el('details', { class: 'ed-sec' }, [el('summary', { text: title }), el('div', { class: 'ed-inner' }, kids)]);
+        remember(d, key);
+        return d;
+      }
+      /* A list you can add to, reorder and remove from (jobs, projects, skills, links...) */
+      function listEditor(key, arr, o) {
+        var wrap = el('div', { class: 'ed-list' });
+        arr.forEach(function (item, i) {
+          var name = function () { return o.label(item) || 'New ' + o.noun; };
+          var summary = el('summary', { text: name() });
+          function move(to) { arr.splice(to, 0, arr.splice(i, 1)[0]); openKeys[key + '.' + to] = true; openKeys[key + '.' + i] = false; changed(); buildForm(); }
+          var d = el('details', { class: 'ed-item' }, [summary, el('div', { class: 'ed-inner' }, o.fields(item, key + '.' + i).concat([
+            el('div', { class: 'ed-row' }, [
+              i > 0 ? el('button', { class: 'btn btn--quiet btn--small', type: 'button', text: 'Move up', onclick: function () { move(i - 1); } }) : null,
+              i < arr.length - 1 ? el('button', { class: 'btn btn--quiet btn--small', type: 'button', text: 'Move down', onclick: function () { move(i + 1); } }) : null,
+              el('button', { class: 'btn btn--quiet btn--small', type: 'button', text: 'Remove', onclick: function () {
+                if (window.confirm('Remove “' + name() + '”?')) { arr.splice(i, 1); changed(); buildForm(); }
+              } })
+            ])
+          ]))]);
+          d.addEventListener('input', function () { summary.textContent = name(); });
+          remember(d, key + '.' + i);
+          wrap.appendChild(d);
+        });
+        wrap.appendChild(el('div', {}, [el('button', { class: 'btn btn--quiet btn--small', type: 'button', text: 'Add ' + o.noun, onclick: function () {
+          arr.push(o.blank()); openKeys[key + '.' + (arr.length - 1)] = true; changed(); buildForm();
+        } })]));
+        return wrap;
+      }
+
+      function photoField() {
+        var input = el('input', { id: 'ed-photo', type: 'file', accept: 'image/*' });
+        input.addEventListener('change', function () {
+          var file = input.files && input.files[0];
+          if (!file) { return; }
+          var fail = function () { say('That file could not be read as a picture. Try a JPG or PNG.'); };
+          var reader = new FileReader();
+          reader.onerror = fail;
+          reader.onload = function () {
+            var im = new Image();
+            im.onerror = fail;
+            im.onload = function () {
+              /* Crop to a 4:5 portrait from the centre and shrink, so the file stays small */
+              var W = 800, H = 1000, c = document.createElement('canvas');
+              c.width = W; c.height = H;
+              var scale = Math.max(W / im.width, H / im.height);
+              var w = im.width * scale, h = im.height * scale;
+              c.getContext('2d').drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+              data.photo = c.toDataURL('image/jpeg', 0.85);
+              changed(); buildForm();
+              say('Photo added. It is saved inside the file when you download.');
+            };
+            im.src = reader.result;
+          };
+          reader.readAsDataURL(file);
+        });
+        return [
+          data.photo && !$('portrait').classList.contains('is-empty') ? el('img', { class: 'ed-photo', src: data.photo, alt: 'Current photo' }) : el('p', { class: 'ed-hint', text: 'No photo yet.' }),
+          el('div', { class: 'ed-field' }, [
+            el('label', { for: 'ed-photo', text: 'Choose a picture' }),
+            el('p', { class: 'ed-hint', text: 'A head-and-shoulders portrait works best. It is cropped to 4:5 and stored inside the file, so there is nothing else to upload.' }),
+            input
+          ]),
+          data.photo ? el('div', {}, [el('button', { class: 'btn btn--quiet btn--small', type: 'button', text: 'Remove photo', onclick: function () {
+            data.photo = ''; changed(); buildForm();
+          } })]) : null
+        ];
+      }
+
+      function coloursField() {
+        var c = colours();
+        var warn = el('p', { class: 'ed-warn', role: 'status' });
+        function check() {
+          var low = contrast(c.accent, c.main) < 3;
+          warn.hidden = !low;
+          warn.textContent = low ? 'The highlight colour is hard to see on the main colour. Make one of them lighter or darker.' : '';
+        }
+        function picker(key, label, hint) {
+          var id = 'ed-col-' + key;
+          var input = el('input', { type: 'color', id: id, value: c[key] });
+          input.addEventListener('input', function () { c[key] = input.value; check(); changed(); });
+          return el('div', { class: 'ed-colour' }, [input, el('label', { for: id, text: label }), el('p', { class: 'ed-hint', text: hint })]);
+        }
+        check();
+        return [
+          el('p', { class: 'ed-sub', text: 'Start from a combination' }),
+          el('div', { class: 'ed-presets' }, PRESETS.map(function (p) {
+            return el('button', { class: 'ed-preset', type: 'button', onclick: function () {
+              c.main = p.main; c.accent = p.accent; c.soft = p.soft; changed(); buildForm();
+            } }, [el('span', { 'aria-hidden': 'true' }, [el('i', { style: 'background:' + p.main }), el('i', { style: 'background:' + p.accent }), el('i', { style: 'background:' + p.soft })]), p.label]);
+          })),
+          el('p', { class: 'ed-sub', text: 'Or pick your own' }),
+          picker('main', 'Main colour', 'Top bar, the big name area, Skills and the footer.'),
+          picker('accent', 'Highlight colour', 'Your name, buttons, underlines and the tab icon.'),
+          picker('soft', 'Soft background', 'Experience and Education sections.'),
+          warn,
+          el('p', { class: 'ed-hint', text: 'Text switches between dark and white by itself so it stays readable on whatever you pick.' })
+        ];
+      }
+
+      function buildForm() {
+        var d = data;
+        ['links', 'facts', 'jobs', 'skills', 'projects', 'education', 'certs'].forEach(function (k) { if (!Array.isArray(d[k])) { d[k] = []; } });
+        var scroll = editor.querySelector('.ed-body') ? editor.querySelector('.ed-body').scrollTop : 0;
+        clear(editor);
+        uid = 0;
+
+        editor.appendChild(el('div', { class: 'ed-head' }, [
+          el('h2', { text: 'Edit resume', id: 'ed-title', tabindex: '-1' }),
+          el('p', { text: 'The page updates as you type. Download gives you a finished index.html with no editor in it, ready to upload.' }),
+          el('div', { class: 'ed-actions' }, [
+            el('button', { class: 'btn btn--primary btn--small', type: 'button', 'data-action': 'download', text: 'Download index.html' }),
+            el('button', { class: 'btn btn--quiet btn--small', type: 'button', 'data-action': 'edit-preview', text: 'Preview' }),
+            el('button', { class: 'btn btn--quiet btn--small', type: 'button', 'data-action': 'edit-close', text: 'Close' })
+          ])
+        ]));
+
+        var body = el('div', { class: 'ed-body' }, [
+          section('basics', 'Name and headline', [
+            field('Full name', d, 'fullName', { hint: 'Used in the browser tab, the footer and search results.' }),
+            field('Big name, first line', d, 'nameLine1'),
+            field('Big name, second line (coloured)', d, 'nameLine2', { hint: 'Leave empty to show the name on one line.' }),
+            field('Job title', d, 'shortTitle', { hint: 'Short. For example: Graphic Designer.' }),
+            field('Line under your name', d, 'role'),
+            field('One or two sentences about you', d, 'tagline', { multiline: true }),
+            field('City, country', d, 'location'),
+            field('Email', d, 'email', { type: 'email' })
+          ]),
+          section('photo', 'Photo', photoField()),
+          section('links', 'Links (GitHub, LinkedIn, portfolio)', [
+            listEditor('links', d.links, { noun: 'link', label: function (x) { return x.label; }, blank: function () { return { label: '', url: '' }; },
+              fields: function (x) { return [field('Name', x, 'label'), field('Web address', x, 'url', { type: 'url', hint: 'Paste the full address, starting with https://' })]; } })
+          ]),
+          section('about', 'About', [
+            field('Headline', d, 'aboutLead'),
+            field('Paragraph', d, 'aboutBody', { multiline: true, rows: 4 }),
+            el('p', { class: 'ed-sub', text: 'Quick facts' }),
+            listEditor('facts', d.facts, { noun: 'fact', label: function (x) { return x.label; }, blank: function () { return { label: '', value: '' }; },
+              fields: function (x) { return [field('Label', x, 'label', { hint: 'For example: Based in, Now, Languages.' }), field('Text', x, 'value')]; } })
+          ]),
+          section('jobs', 'Experience', [
+            field('Small note under the heading', d, 'experienceNote'),
+            listEditor('jobs', d.jobs, { noun: 'job', label: function (x) { return [x.title, x.org].filter(Boolean).join(', '); },
+              blank: function () { return { title: '', org: '', when: '', where: '', projects: [] }; },
+              fields: function (job, key) {
+                if (!Array.isArray(job.projects)) { job.projects = []; }
+                return [
+                  field('Job title', job, 'title'),
+                  field('Company', job, 'org'),
+                  field('Dates', job, 'when', { hint: 'For example: Apr 2024 – Present.' }),
+                  field('Place', job, 'where'),
+                  el('p', { class: 'ed-sub', text: 'Projects or achievements in this job' }),
+                  listEditor(key + '.projects', job.projects, { noun: 'project', label: function (x) { return x.title; }, blank: function () { return { title: '', desc: '', stack: '' }; },
+                    fields: function (p) { return [
+                      field('Title', p, 'title'),
+                      field('What it was, your part, the result', p, 'desc', { multiline: true, rows: 4, hint: 'One to three sentences. Numbers help: team size, users, time saved.' }),
+                      field('Tools used (optional)', p, 'stack', { hint: 'For example: Java · Quarkus · PostgreSQL' })
+                    ]; } })
+                ];
+              } })
+          ]),
+          section('skills', 'Skills', [
+            field('Small note under the heading', d, 'skillsNote'),
+            listEditor('skills', d.skills, { noun: 'skill group', label: function (x) { return x.group; }, blank: function () { return { group: '', items: [] }; },
+              fields: function (g) { return [
+                field('Group name', g, 'group'),
+                field('Skills', g, 'items', { multiline: true, hint: 'Separate each skill with a comma.',
+                  get: function () { return (g.items || []).join(', '); },
+                  set: function (v) { g.items = v.split(',').map(function (s) { return s.trim(); }).filter(Boolean); } })
+              ]; } })
+          ]),
+          section('projects', 'Personal projects (optional)', [
+            el('p', { class: 'ed-hint', text: 'This section and its menu link appear on the page once you add a project.' }),
+            field('Small note under the heading', d, 'projectsNote'),
+            listEditor('projects', d.projects, { noun: 'project', label: function (x) { return x.title; }, blank: function () { return { title: '', desc: '', stack: '', url: '' }; },
+              fields: function (p) { return [
+                field('Title', p, 'title'),
+                field('What it is', p, 'desc', { multiline: true }),
+                field('Tools used (optional)', p, 'stack'),
+                field('Link (optional)', p, 'url', { type: 'url' })
+              ]; } })
+          ]),
+          section('education', 'Education', [
+            listEditor('education', d.education, { noun: 'qualification', label: function (x) { return x.degree; }, blank: function () { return { degree: '', school: '', when: '', note: '' }; },
+              fields: function (e) { return [field('Qualification', e, 'degree'), field('School', e, 'school'), field('Years', e, 'when'), field('Result or note (optional)', e, 'note')]; } })
+          ]),
+          section('certs', 'Certifications', [
+            listEditor('certs', d.certs, { noun: 'certification', label: function (x) { return x.name; }, blank: function () { return { name: '', url: '', meta: '' }; },
+              fields: function (c) { return [field('Name', c, 'name'), field('Link to the certificate (optional)', c, 'url', { type: 'url' }), field('Small note (optional)', c, 'meta', { hint: 'For example: Exp: Feb 2027' })]; } })
+          ]),
+          section('style', 'Colours', coloursField()),
+          section('footer', 'Footer', [
+            field('Small text at the bottom right', d, 'footerNote')
+          ]),
+          section('publish', 'How to put it online', [
+            el('ol', { class: 'ed-help' }, [
+              el('li', { text: 'Click “Download index.html”. Everything, including your photo, is inside that one file. It has no Edit button, so nobody can change it.' }),
+              el('li', { text: 'On github.com, open your repository, choose Add file, then Upload files, and drag the new index.html in.' }),
+              el('li', { text: 'Click Commit changes. The website updates in a minute or two.' }),
+              el('li', { text: 'To change something later, open this editor file again, edit, and download a new index.html. Your edits are remembered in this browser.' })
+            ])
+          ]),
+          el('div', { class: 'ed-foot' }, [
+            el('p', { class: 'ed-sub', text: 'Keep your work' }),
+            el('p', { class: 'ed-hint', text: 'Your edits are remembered in this browser only. Save an editable copy if you want a backup, or to carry on from another computer.' }),
+            el('div', { class: 'ed-row' }, [
+              el('button', { class: 'btn btn--quiet btn--small', type: 'button', 'data-action': 'download-editable', text: 'Save an editable copy' }),
+              el('button', { class: 'btn btn--quiet btn--small', type: 'button', 'data-action': 'discard', text: 'Discard my edits' })
+            ])
+          ])
+        ]);
+        editor.appendChild(body);
+        body.scrollTop = scroll;
+      }
+
+      function openEditor() {
+        var wasPreviewing = root.classList.contains('previewing');
+        root.classList.add('editing');
+        root.classList.remove('previewing');
+        buildForm();
+        syncFab();
+        if (!wasPreviewing) { $('ed-title').focus(); }
+        setTimeout(moveInk, 0);
+      }
+      function discard() {
+        if (!window.confirm('Discard every edit since the file was last downloaded? This cannot be undone.')) { return; }
+        data = JSON.parse(JSON.stringify(fileData));
+        dirty = false;
+        try { localStorage.removeItem(DRAFT_KEY); } catch (err) { /* nothing stored */ }
+        render(); buildForm(); syncFab();
+        say('Edits discarded. Back to the saved version.');
+      }
+
+      /* Download: a full copy of this page with the new content inside it */
+      function buildFile(lock) {
+        clearTimeout(renderTimer);
+        filter = 'all';
+        render();
+        var copy = root.cloneNode(true);
+        var q = function (sel) { return copy.querySelector(sel); };
+        /* Keep only this page's own parts, so nothing added by a browser extension or a preview window ends up in the file */
+        var keepHead = 'meta, title, link[rel="icon"], link[rel="preconnect"], link[href*="fonts.googleapis.com"], style#resume-style';
+        var keepBody = 'script#resume-data, script#resume-app, .skip-link, .site-header, main, .site-footer, #to-top, #toast, #edit-fab, #editor';
+        Array.prototype.slice.call(q('head').children).forEach(function (n) { if (!n.matches(keepHead)) { n.remove(); } });
+        Array.prototype.slice.call(q('body').children).forEach(function (n) { if (!n.matches(keepBody)) { n.remove(); } });
+        Array.prototype.slice.call(copy.querySelectorAll('main script, main style, main iframe, header script, footer script')).forEach(function (n) { n.remove(); });
+        Array.prototype.slice.call(copy.attributes).forEach(function (at) { if (at.name !== 'lang' && at.name !== 'style') { copy.removeAttribute(at.name); } });
+        Array.prototype.slice.call(q('body').attributes).forEach(function (at) { q('body').removeAttribute(at.name); });
+        clear(q('#editor'));
+        q('#edit-fab').hidden = true;
+        q('#fab-download').hidden = true;
+        q('#fab-open').textContent = 'Edit resume';
+        q('#toast').textContent = ''; q('#toast').className = 'toast';
+        q('#to-top').className = 'to-top';
+        q('#progress').removeAttribute('style');
+        q('#tab-ink').removeAttribute('style');
+        q('#top').classList.remove('no-photo');
+        q('#portrait').classList.remove('is-empty');
+        q('#foot-edit').hidden = false;
+        if (lock) {
+          /* The published copy: remove every way into the editor */
+          ['#editor', '#edit-fab', '#foot-edit'].forEach(function (sel) { q(sel).remove(); });
+          copy.setAttribute('data-locked', '');
+        }
+        Array.prototype.forEach.call(copy.querySelectorAll('[aria-current]'), function (a) { a.removeAttribute('aria-current'); });
+        q('#resume-data').textContent = '\n' + JSON.stringify(data, null, 2).replace(/</g, '\\u003c') + '\n  ';
+        return '<!doctype html>\n' + copy.outerHTML + '\n';
+      }
+      function download(lock) {
+        try {
+          var url = URL.createObjectURL(new Blob([buildFile(lock)], { type: 'text/html' }));
+          var a = el('a', { href: url, download: lock ? 'index.html' : 'resume-editor.html' });
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+          dirty = false;   /* the edits stay remembered in this browser, so this editor file opens with them next time */
+          syncFab();
+          say(lock ? 'Downloaded index.html. It is view-only: upload it to publish.' : 'Saved resume-editor.html. Open that file whenever you want to edit again.');
+        } catch (err) {
+          say('The download did not start. Try again, or use a different browser.');
+        }
+      }
+      window.addEventListener('beforeunload', function (e) { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+      /* ================= Start ================= */
+      var restored = false;
+      function enableEdit() {
+        if (!canEdit || $('edit-fab').hidden) {
+          canEdit = true;
+          $('edit-fab').hidden = false;
+          if (!dirty) {
+            try {
+              var draft = localStorage.getItem(DRAFT_KEY);
+              if (draft && draft !== JSON.stringify(fileData)) { data = JSON.parse(draft); restored = true; }
+            } catch (err) { /* no draft available */ }
+          }
+          if ($('portrait').classList.contains('is-empty')) { photoState(true); }
+        }
+      }
+      if (canEdit) { enableEdit(); }
+      render();
+      checkPhoto();
+      onScroll();
+      syncFab();
+      if (restored) { say('Your edits from last time are loaded.'); }
+      if (canEdit && editParam) { openEditor(); }
+    })();
+  </script>
+
+
+</body></html>
