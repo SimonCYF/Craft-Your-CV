@@ -1,0 +1,38 @@
+/* Pieces every template shares: text size, bullet points, organisation icons, levels, pictures and the QR code. */
+body { zoom: var(--scale, 1); }
+
+.with-logo { display: flex; align-items: flex-start; gap: 14px; }
+.with-logo > div { min-width: 0; }
+.logo { flex: none; width: 48px; height: 48px; object-fit: contain; background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: 3px; }
+
+ul.bullets { margin-top: 10px; padding-left: 1.15em; list-style: disc; display: grid; gap: 4px; max-width: 70ch; }
+ul.bullets li { display: list-item; padding: 0; border: 0; min-height: 0; }
+ul.bullets li::before { content: none; }
+ul.bullets li::marker { color: currentColor; }
+
+.levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0 40px; }
+.levels li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; padding-block: 12px; border-bottom: 1px solid var(--rule); }
+.lv-name { font-weight: 700; }
+.lv-label { grid-column: 1; font-size: .88em; opacity: .8; }
+.lv-dots { grid-column: 2; grid-row: 1 / span 2; display: inline-flex; gap: 5px; }
+.lv-dots i { width: 11px; height: 11px; border-radius: 50%; border: 2px solid currentColor; }
+.lv-dots i.on { background: currentColor; }
+
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.gallery figure { margin: 0; }
+.gallery img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: var(--radius); }
+.gallery figcaption { margin-top: 8px; font-size: .88em; }
+
+.qr { margin: 0; display: flex; align-items: center; gap: 14px; }
+.qr-code { flex: none; width: 104px; height: 104px; padding: 6px; background: #fff; border-radius: var(--radius); }
+.qr-code svg { display: block; width: 100%; height: 100%; }
+.qr figcaption { font-size: .88em; font-weight: 600; max-width: 18ch; overflow-wrap: anywhere; }
+
+@media print {
+  .gallery { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  ul.bullets li, .levels li, .gallery li, .qr { break-inside: avoid; }
+  .logo { width: 36px; height: 36px; }
+  .qr-code { width: 84px; height: 84px; }
+}
+/* A row with an icon lines its date up with the top, not the text baseline */
+.role-head:has(.with-logo), .entry-head:has(.with-logo) { align-items: start; }

@@ -56,3 +56,33 @@ The preview, the thumbnails, the download and the PDF all come from that one fun
 Uploaded files are never run or inserted into the page. Only the JSON data block is read, then every field is
 checked and anything unexpected is dropped. Links are limited to web, mail and phone addresses, and photos to
 embedded images or web addresses.
+
+
+
+## What people can add
+
+- Profile photo, an icon per organisation, and picture galleries (all stored inside the resume file)
+- A QR code for any link (drawn in the browser with `qrcode-generator`, no outside service)
+- Ready-made sections: Languages (with levels), Co-curricular activities, Achievements, References, and more; or a custom section with any name and layout
+- Bullet points edited one by one (Enter adds the next, pasting several lines makes several bullets)
+- Drag and drop for sections, entries and bullets (`@dnd-kit`; also works by keyboard: focus the handle, Space, arrow keys, Space)
+- Text size: Small, Normal, Large, Extra large
+
+Shared pieces used by every template (bullets, levels, gallery, QR, icons) live in `src/render/shared.ts` and `src/render/common.css`.
+
+## Deploy to AWS CloudFront (GitHub Actions)
+
+Pushing to `master` runs `.github/workflows/deploy-frontend.yml`, which builds the site,
+creates/updates an S3 bucket and CloudFront distribution (`.github/cloudformation/frontend.yml`),
+uploads `dist/`, and refreshes the cache.
+
+**One-time setup**
+1. In GitHub: Settings > Secrets and variables > Actions > Secrets, add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+   (an IAM user allowed to use CloudFormation, S3, CloudFront and ACM).
+2. Push to `master` (or run the workflow manually). The run summary prints your `https://xxxx.cloudfront.net` address.
+
+**Custom domain (later, after you buy one)**
+1. Add repo Variables: `DOMAIN_NAME` (e.g. `resume.example.com`). Optional: `ALTERNATE_DOMAIN_NAME`, `HOSTED_ZONE_ID` (Route 53 only).
+2. Run the workflow. Without Route 53, it pauses on the certificate: open AWS Certificate Manager (region us-east-1),
+   copy the validation CNAME to your registrar's DNS, and the run continues once validated.
+3. Add a CNAME from your domain to the CloudFront address shown in the run summary.
