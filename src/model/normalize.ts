@@ -1,4 +1,4 @@
-import type { Colors, Fact, LinkItem, ListItem, Point, Resume, Section, SectionType, TagGroup, TemplateId, TimelineItem } from './types';
+import type { Colors, Fact, GalleryItem, LevelItem, LinkItem, ListItem, Point, Resume, Scale, Section, SectionType, TagGroup, TemplateId, TimelineItem } from './types';
 
 /* Turns anything we might be handed (an uploaded file, an old save, a preset) into a valid Resume.
    Unknown fields are dropped and missing ones filled in, so the rest of the app never has to check. */
@@ -12,6 +12,8 @@ export const newId = (): string => (crypto.randomUUID ? crypto.randomUUID().slic
 
 export const DEFAULT_COLORS: Colors = { main: '#262626', accent: '#f2d11a', soft: '#f5f5dc' };
 export const TEMPLATE_IDS: TemplateId[] = ['bold', 'classic', 'sidebar'];
+export const SCALES: Scale[] = ['small', 'normal', 'large', 'xlarge'];
+const scale = (v: unknown): Scale => (SCALES.includes(v as Scale) ? (v as Scale) : 'normal');
 
 function colors(v: unknown): Colors {
   const c = obj(v);
@@ -32,10 +34,13 @@ function photo(v: unknown): string {
 
 const links = (v: unknown): LinkItem[] => arr(v).map((l) => ({ label: str(obj(l).label), url: str(obj(l).url) }));
 const facts = (v: unknown): Fact[] => arr(v).map((f) => ({ label: str(obj(f).label), value: str(obj(f).value) }));
-const points = (v: unknown): Point[] => arr(v).map((p) => ({ title: str(obj(p).title), desc: str(obj(p).desc), stack: str(obj(p).stack) }));
+const lines = (v: unknown): string[] => arr(v).map(str);
+const points = (v: unknown): Point[] => arr(v).map((p) => ({ title: str(obj(p).title), desc: str(obj(p).desc), stack: str(obj(p).stack), bullets: lines(obj(p).bullets) }));
 const timeline = (v: unknown): TimelineItem[] =>
-  arr(v).map((t) => ({ title: str(obj(t).title), org: str(obj(t).org), when: str(obj(t).when), where: str(obj(t).where), body: str(obj(t).body), points: points(obj(t).points) }));
+  arr(v).map((t) => ({ title: str(obj(t).title), org: str(obj(t).org), when: str(obj(t).when), where: str(obj(t).where), body: str(obj(t).body), logo: photo(obj(t).logo), bullets: lines(obj(t).bullets), points: points(obj(t).points) }));
 const groups = (v: unknown): TagGroup[] => arr(v).map((g) => ({ name: str(obj(g).name), items: arr(obj(g).items).map(str).filter(Boolean) }));
+const levels = (v: unknown): LevelItem[] => arr(v).map((i) => ({ name: str(obj(i).name), label: str(obj(i).label), level: Math.max(0, Math.min(5, Math.round(Number(obj(i).level)) || 0)) }));
+const gallery = (v: unknown): GalleryItem[] => arr(v).map((i) => ({ image: photo(obj(i).image), caption: str(obj(i).caption) }));
 const list = (v: unknown): ListItem[] => arr(v).map((i) => ({ name: str(obj(i).name), url: str(obj(i).url), meta: str(obj(i).meta), desc: str(obj(i).desc) }));
 
 function section(v: unknown): Section | null {
@@ -46,6 +51,8 @@ function section(v: unknown): Section | null {
     case 'timeline': return { ...base, type: 'timeline', items: timeline(s.items) };
     case 'tags': return { ...base, type: 'tags', groups: groups(s.groups) };
     case 'links': return { ...base, type: 'links', items: list(s.items) };
+    case 'levels': return { ...base, type: 'levels', items: levels(s.items) };
+    case 'gallery': return { ...base, type: 'gallery', items: gallery(s.items) };
     default: return null;
   }
 }
@@ -63,7 +70,7 @@ function fromV1(d: Record<string, any>): Resume {
   }
   if (arr(d.jobs).length) {
     sections.push({ id: newId(), type: 'timeline', title: 'Experience', note: str(d.experienceNote),
-      items: arr(d.jobs).map((j) => ({ title: str(j.title), org: str(j.org), when: str(j.when), where: str(j.where), body: '', points: points(j.projects) })) });
+      items: arr(d.jobs).map((j) => ({ title: str(j.title), org: str(j.org), when: str(j.when), where: str(j.where), body: '', logo: '', bullets: [], points: points(j.projects) })) });
   }
   if (arr(d.skills).length) {
     sections.push({ id: newId(), type: 'tags', title: 'Skills', note: str(d.skillsNote),
@@ -75,7 +82,7 @@ function fromV1(d: Record<string, any>): Resume {
   }
   if (arr(d.education).length) {
     sections.push({ id: newId(), type: 'timeline', title: 'Education', note: '',
-      items: arr(d.education).map((e) => ({ title: str(e.degree), org: str(e.school), when: str(e.when), where: '', body: str(e.note), points: [] })) });
+      items: arr(d.education).map((e) => ({ title: str(e.degree), org: str(e.school), when: str(e.when), where: '', body: str(e.note), logo: '', bullets: [], points: [] })) });
   }
   if (arr(d.certs).length) {
     sections.push({ id: newId(), type: 'links', title: 'Certifications', note: '',
@@ -85,9 +92,9 @@ function fromV1(d: Record<string, any>): Resume {
     version: 2,
     profile: {
       fullName: str(d.fullName), title: str(d.shortTitle), headline: str(d.role), summary: str(d.tagline), location: str(d.location),
-      email: str(d.email), phone: '', photo: photo(d.photo), links: links(d.links), footerNote: str(d.footerNote),
+      email: str(d.email), phone: '', photo: photo(d.photo), links: links(d.links), footerNote: str(d.footerNote), qrUrl: '', qrLabel: '',
     },
-    style: { template: 'bold', colors: colors(d.colors ?? old[str(d.theme)]) },
+    style: { template: 'bold', colors: colors(d.colors ?? old[str(d.theme)]), scale: 'normal' },
     sections,
   };
 }
@@ -103,9 +110,9 @@ export function normalize(raw: unknown): Resume {
       version: 2,
       profile: {
         fullName: str(p.fullName), title: str(p.title), headline: str(p.headline), summary: str(p.summary), location: str(p.location),
-        email: str(p.email), phone: str(p.phone), photo: photo(p.photo), links: links(p.links), footerNote: str(p.footerNote),
+        email: str(p.email), phone: str(p.phone), photo: photo(p.photo), links: links(p.links), footerNote: str(p.footerNote), qrUrl: str(p.qrUrl), qrLabel: str(p.qrLabel),
       },
-      style: { template: TEMPLATE_IDS.includes(st.template) ? st.template : 'bold', colors: colors(st.colors) },
+      style: { template: TEMPLATE_IDS.includes(st.template) ? st.template : 'bold', colors: colors(st.colors), scale: scale(st.scale) },
       sections: arr(d.sections).map(section).filter((s): s is Section => s !== null),
     };
   }
@@ -129,10 +136,14 @@ export async function readResumeFile(file: File): Promise<Resume> {
   return normalize(parsed);
 }
 
+export const blankEntry = (): TimelineItem => ({ title: '', org: '', when: '', where: '', body: '', logo: '', bullets: [], points: [] });
+
 export function blankSection(type: SectionType, title: string): Section {
   const base = { id: newId(), title, note: '' };
   if (type === 'text') return { ...base, type, lead: '', body: '', facts: [] };
-  if (type === 'timeline') return { ...base, type, items: [{ title: '', org: '', when: '', where: '', body: '', points: [] }] };
+  if (type === 'timeline') return { ...base, type, items: [blankEntry()] };
   if (type === 'tags') return { ...base, type, groups: [{ name: '', items: [] }] };
+  if (type === 'levels') return { ...base, type, items: [{ name: '', label: '', level: 0 }] };
+  if (type === 'gallery') return { ...base, type, items: [] };
   return { ...base, type: 'links', items: [{ name: '', url: '', meta: '', desc: '' }] };
 }

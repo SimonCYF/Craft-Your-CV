@@ -308,3 +308,12 @@ a:hover > .arrow, a:focus-visible > .arrow { transform: translate(3px, -3px); }
 .cert-stack { font-size: 15px; font-weight: 600; }
 .skill-panel:focus-visible { outline-offset: 6px; }
 .is-preview .fade-up, .is-preview .hero h1 .line > span { animation: none; }
+
+/* ============ Added pieces ============ */
+.footer-qr { margin-top: 40px; }
+ul.bullets { font-size: 16px; }
+.work ul.bullets { margin-top: 6px; }
+/* Long section names (Certifications, Co-curricular activities) must fit the heading column */
+.section-title { overflow-wrap: break-word; }
+@media (min-width: 900px) { .split { grid-template-columns: 300px minmax(0, 1fr); gap: 48px; } .section-title { font-size: 38px; } }
+@media print { .split { grid-template-columns: 300px minmax(0, 1fr); gap: 48px; } .section-title { font-size: 38px; } }

@@ -1,6 +1,6 @@
 import type { Resume, Section } from '@/model/types';
 import css from './classic.css?raw';
-import { esc, ext, has, page, paras, safeUrl, type RenderOptions } from './shared';
+import { bullets, esc, ext, gallery, has, levels, page, paras, qr, safeUrl, withLogo, type RenderOptions } from './shared';
 
 /* Classic: a traditional one-column resume on a white sheet. The safest choice for printing and for screening software. */
 
@@ -12,15 +12,19 @@ function section(s: Section): string {
       ${facts.length ? `<dl class="pairs">${facts.map((f) => `<div class="row"><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>` : ''}`;
   } else if (s.type === 'timeline') {
     inner = s.items.filter((i) => has(i.title) || has(i.org)).map((i) => {
-      const pts = i.points.filter((p) => has(p.title) || has(p.desc));
+      const pts = i.points.filter((p) => has(p.title) || has(p.desc) || p.bullets.some(has));
       return `<div class="row">
         <p class="when">${esc(i.when)}${has(i.where) ? `<span>${esc(i.where)}</span>` : ''}</p>
-        <div><h3>${esc(i.title)}</h3>${has(i.org) ? `<p class="org">${esc(i.org)}</p>` : ''}${has(i.body) ? `<div class="body">${paras(i.body)}</div>` : ''}
-        ${pts.length ? `<ul class="points">${pts.map((p) => `<li>${has(p.title) ? `<strong>${esc(p.title)}${has(p.desc) ? '.' : ''}</strong> ` : ''}${esc(p.desc)}${has(p.stack) ? `<span class="stack">${esc(p.stack)}</span>` : ''}</li>`).join('')}</ul>` : ''}</div>
+        <div>${withLogo(i.logo, `<h3>${esc(i.title)}</h3>${has(i.org) ? `<p class="org">${esc(i.org)}</p>` : ''}`)}${has(i.body) ? `<div class="body">${paras(i.body)}</div>` : ''}${bullets(i.bullets)}
+        ${pts.length ? `<ul class="points">${pts.map((p) => `<li>${has(p.title) ? `<strong>${esc(p.title)}${has(p.desc) ? '.' : ''}</strong> ` : ''}${esc(p.desc)}${bullets(p.bullets)}${has(p.stack) ? `<span class="stack">${esc(p.stack)}</span>` : ''}</li>`).join('')}</ul>` : ''}</div>
       </div>`;
     }).join('');
   } else if (s.type === 'tags') {
     inner = `<dl class="pairs">${s.groups.filter((g) => g.items.length).map((g) => `<div class="row"><dt>${esc(g.name)}</dt><dd>${g.items.map(esc).join(', ')}</dd></div>`).join('')}</dl>`;
+  } else if (s.type === 'levels') {
+    inner = levels(s.items);
+  } else if (s.type === 'gallery') {
+    inner = `<div class="gap">${gallery(s.items)}</div>`;
   } else {
     inner = `<ul class="items">${s.items.filter((i) => has(i.name)).map((i) => {
       const url = safeUrl(i.url);
@@ -40,14 +44,14 @@ export function renderClassic(r: Resume, o: RenderOptions = {}): string {
     ...links.map((l) => `<li><a ${ext(safeUrl(l.url))}>${esc(l.label)}</a></li>`),
   ].join('');
   const body = `<main class="sheet">
-  <header class="top${has(p.photo) ? ' has-photo' : ''}">
+  <header class="top${has(p.photo) || qr(r) ? ' has-photo' : ''}">
     <div>
       <h1>${esc(p.fullName || 'Your name')}</h1>
       ${has(p.headline || p.title) ? `<p class="title">${esc(p.headline || p.title)}</p>` : ''}
       ${contact ? `<ul class="contact">${contact}</ul>` : ''}
       ${has(p.summary) ? `<p class="summary">${esc(p.summary)}</p>` : ''}
     </div>
-    ${has(p.photo) ? `<img class="photo" src="${esc(p.photo)}" alt="Portrait of ${esc(p.fullName)}" width="800" height="1000">` : ''}
+    ${has(p.photo) || qr(r) ? `<div class="top-side">${has(p.photo) ? `<img class="photo" src="${esc(p.photo)}" alt="Portrait of ${esc(p.fullName)}" width="800" height="1000">` : ''}${qr(r)}</div>` : ''}
   </header>
   ${r.sections.filter((s) => has(s.title)).map(section).join('\n')}
   <footer class="foot"><span>© <span data-year></span> ${esc(p.fullName)}</span><span>${esc(p.footerNote)}</span></footer>

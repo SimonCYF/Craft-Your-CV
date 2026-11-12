@@ -82,3 +82,13 @@ a:hover { text-decoration-thickness: 2px; }
   .items li { break-inside: avoid; padding-block: 6pt; }
   .foot { margin-top: 20pt; font-size: 8.5pt; }
 }
+
+/* Added pieces */
+.top-side { display: grid; gap: 16px; justify-items: end; }
+.top-side .qr { flex-direction: column; align-items: flex-end; gap: 6px; text-align: right; }
+.top-side .qr-code { width: 96px; height: 96px; padding: 0; }
+.top-side .qr figcaption { font-size: 13px; max-width: 16ch; }
+@media (max-width: 560px) { .top-side { order: -1; grid-auto-flow: column; justify-content: start; justify-items: start; align-items: end; } .top-side .qr { align-items: flex-start; text-align: left; } }
+.gap { margin-top: 16px; }
+.points ul.bullets { margin-top: 4px; }
+@media print { .top-side .qr-code { width: 24mm; height: 24mm; } .top-side .qr figcaption { font-size: 8pt; } .photo { width: 30mm; } }

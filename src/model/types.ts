@@ -5,8 +5,12 @@ export type TemplateId = 'bold' | 'classic' | 'sidebar';
 export interface Colors { main: string; accent: string; soft: string }
 export interface LinkItem { label: string; url: string }
 export interface Fact { label: string; value: string }
-export interface Point { title: string; desc: string; stack: string }
-export interface TimelineItem { title: string; org: string; when: string; where: string; body: string; points: Point[] }
+export interface Point { title: string; desc: string; stack: string; bullets: string[] }
+/** logo: a small organisation icon (data: URL). bullets: short one-line points under the entry. */
+export interface TimelineItem { title: string; org: string; when: string; where: string; body: string; logo: string; bullets: string[]; points: Point[] }
+export interface LevelItem { name: string; label: string; level: number }   // level 0 (no dots) to 5
+export interface GalleryItem { image: string; caption: string }
+export type Scale = 'small' | 'normal' | 'large' | 'xlarge';
 export interface TagGroup { name: string; items: string[] }
 export interface ListItem { name: string; url: string; meta: string; desc: string }
 
@@ -20,7 +24,12 @@ export interface TagsSection extends SectionBase { type: 'tags'; groups: TagGrou
 /** A list of named things, each with an optional link (Certifications, Projects, Awards). */
 export interface LinksSection extends SectionBase { type: 'links'; items: ListItem[] }
 
-export type Section = TextSection | TimelineSection | TagsSection | LinksSection;
+/** Named things with a level out of five (Languages, Tools). */
+export interface LevelsSection extends SectionBase { type: 'levels'; items: LevelItem[] }
+/** Pictures with captions (Portfolio, Certificates, Event photos). */
+export interface GallerySection extends SectionBase { type: 'gallery'; items: GalleryItem[] }
+
+export type Section = TextSection | TimelineSection | TagsSection | LinksSection | LevelsSection | GallerySection;
 export type SectionType = Section['type'];
 
 export interface Profile {
@@ -34,12 +43,14 @@ export interface Profile {
   photo: string;      // data: URL (stored inside the file) or a web address
   links: LinkItem[];
   footerNote: string;
+  qrUrl: string;      // web address the QR code opens (empty = no QR code)
+  qrLabel: string;    // small text beside the code
 }
 
 export interface Resume {
   version: 2;
   profile: Profile;
-  style: { template: TemplateId; colors: Colors };
+  style: { template: TemplateId; colors: Colors; scale: Scale };
   sections: Section[];
 }
 

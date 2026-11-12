@@ -1,5 +1,7 @@
-import type { Colors, Resume } from '@/model/types';
+import qrcode from 'qrcode-generator';
+import type { Colors, GalleryItem, LevelItem, Resume, Scale } from '@/model/types';
 import runtime from './runtime.js?raw';
+import common from './common.css?raw';
 
 /* Helpers every template uses. Templates are plain functions from a Resume to one HTML string,
    so the live preview and the downloaded file are always the same thing. */
@@ -23,6 +25,41 @@ export const arrow = '<span class="arrow" aria-hidden="true">↗</span>';
 export const has = (s: string): boolean => !!s && s.trim() !== '';
 export const paras = (s: string, cls = ''): string =>
   s.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean).map((p) => `<p${cls ? ` class="${cls}"` : ''}>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
+
+/* ---------- Pieces shared by every template ---------- */
+export const SCALE_VALUE: Record<Scale, number> = { small: 0.9, normal: 1, large: 1.1, xlarge: 1.2 };
+
+/** One-line points. Empty lines are skipped. */
+export function bullets(items: string[]): string {
+  const rows = items.filter(has);
+  return rows.length ? `<ul class="bullets">${rows.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>` : '';
+}
+
+/** Puts an organisation icon (if there is one) in front of a heading block. */
+export const withLogo = (logo: string, inner: string): string =>
+  has(logo) ? `<div class="with-logo"><img class="logo" src="${esc(logo)}" alt="" width="48" height="48"><div>${inner}</div></div>` : `<div>${inner}</div>`;
+
+export function levels(items: LevelItem[]): string {
+  return `<ul class="levels">${items.filter((i) => has(i.name)).map((i) => `<li><span class="lv-name">${esc(i.name)}</span>${has(i.label) ? `<span class="lv-label">${esc(i.label)}</span>` : ''}${
+    i.level > 0 ? `<span class="lv-dots" role="img" aria-label="Level ${i.level} of 5">${[1, 2, 3, 4, 5].map((n) => `<i${n <= i.level ? ' class="on"' : ''}></i>`).join('')}</span>` : ''}</li>`).join('')}</ul>`;
+}
+
+export function gallery(items: GalleryItem[]): string {
+  return `<ul class="gallery">${items.filter((i) => has(i.image)).map((i) => `<li><figure><img src="${esc(i.image)}" alt="${esc(i.caption)}" loading="lazy">${has(i.caption) ? `<figcaption>${esc(i.caption)}</figcaption>` : ''}</figure></li>`).join('')}</ul>`;
+}
+
+/** A QR code for the profile link, drawn as an inline picture so it works offline and prints sharply. Always dark on white so phones can read it. */
+export function qr(resume: Resume): string {
+  const url = safeUrl(resume.profile.qrUrl);
+  if (!url) return '';
+  try {
+    const code = qrcode(0, 'M');
+    code.addData(url);
+    code.make();
+    const svg = code.createSvgTag({ cellSize: 4, margin: 0, scalable: true }).replace('<svg ', `<svg role="img" aria-label="QR code for ${esc(url)}" `);
+    return `<figure class="qr"><div class="qr-code">${svg}</div><figcaption>${esc(resume.profile.qrLabel || 'Scan to open my profile')}</figcaption></figure>`;
+  } catch { return ''; }   /* address too long to fit in a code */
+}
 
 /* ---------- Colour maths: everything follows from the three picked colours ---------- */
 const INK = '#262626';
@@ -73,7 +110,7 @@ export function page(resume: Resume, o: RenderOptions, parts: { fonts: string; c
   const title = [p.fullName || 'Resume', p.title].filter(Boolean).join(' – ');
   const data = JSON.stringify(resume, null, 1).replace(/</g, '\\u003c');
   return `<!doctype html>
-<html lang="en" style="${colourVars(resume.style.colors)}"${o.preview ? ' class="is-preview"' : ''}>
+<html lang="en" style="${colourVars(resume.style.colors)}; --scale: ${SCALE_VALUE[resume.style.scale] ?? 1}"${o.preview ? ' class="is-preview"' : ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -88,6 +125,7 @@ export function page(resume: Resume, o: RenderOptions, parts: { fonts: string; c
 <link href="${parts.fonts}" rel="stylesheet">
 <style>
 ${parts.css}
+${common}
 </style>
 </head>
 <body${parts.bodyClass ? ` class="${parts.bodyClass}"` : ''}>

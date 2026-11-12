@@ -9,5 +9,6 @@ export const COPY = {
   storageFailed: 'This browser would not save your changes (private window or storage full). Download the file to keep your work.',
   downloadDone: 'Downloaded. Upload that file to any web host, or back here to edit it again.',
   photoFailed: 'That file could not be read as a picture. Try a JPG or PNG.',
+  qrTooLong: 'That address is very long, so the code will be dense and hard to scan. A shorter link works better.',
   lowContrast: 'The highlight colour is hard to see on the main colour. Make one of them lighter or darker.',
 };

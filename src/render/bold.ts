@@ -1,10 +1,10 @@
 import type { Resume, Section } from '@/model/types';
 import css from './bold.css?raw';
-import { arrow, esc, ext, has, page, paras, safeUrl, type RenderOptions } from './shared';
+import { arrow, bullets, esc, ext, gallery, has, levels, page, paras, qr, safeUrl, withLogo, type RenderOptions } from './shared';
 
 /* Bold: dark full-width name area, sticky section headings, timeline. The original design. */
 
-const BG: Record<Section['type'], string> = { text: 'section--paper', timeline: 'section--sand', tags: 'section--deep on-deep', links: 'section--paper' };
+const BG: Record<Section['type'], string> = { text: 'section--paper', timeline: 'section--sand', tags: 'section--deep on-deep', links: 'section--paper', levels: 'section--sand', gallery: 'section--paper' };
 
 function head(s: Section): string {
   return `<div class="section-head reveal"><h2 class="section-title" id="h-${s.id}">${esc(s.title)}</h2>${has(s.note) ? `<p class="section-note">${esc(s.note)}</p>` : ''}</div>`;
@@ -21,14 +21,15 @@ function sectionBody(s: Section, extraFact = ''): string {
   }
   if (s.type === 'timeline') {
     return `<div class="roles">${s.items.filter((i) => has(i.title) || has(i.org)).map((i) => {
-      const pts = i.points.filter((p) => has(p.title) || has(p.desc));
+      const pts = i.points.filter((p) => has(p.title) || has(p.desc) || p.bullets.some(has));
       return `<article class="role reveal">
         <header class="role-head">
-          <div><h3>${esc(i.title)}</h3>${has(i.org) ? `<p class="role-org">${esc(i.org)}</p>` : ''}</div>
+          ${withLogo(i.logo, `<h3>${esc(i.title)}</h3>${has(i.org) ? `<p class="role-org">${esc(i.org)}</p>` : ''}`)}
           <p class="role-when">${esc(i.when)}${has(i.where) ? `<span class="role-where">${esc(i.where)}</span>` : ''}</p>
         </header>
         ${paras(i.body, 'role-body')}
-        ${pts.length ? `<ul class="works">${pts.map((p) => `<li class="work">${has(p.title) ? `<h4 class="work-title">${esc(p.title)}</h4>` : ''}${has(p.desc) ? `<p class="work-desc">${esc(p.desc)}</p>` : ''}${has(p.stack) ? `<p class="work-stack">${esc(p.stack)}</p>` : ''}</li>`).join('')}</ul>` : ''}
+        ${bullets(i.bullets)}
+        ${pts.length ? `<ul class="works">${pts.map((p) => `<li class="work">${has(p.title) ? `<h4 class="work-title">${esc(p.title)}</h4>` : ''}${has(p.desc) ? `<p class="work-desc">${esc(p.desc)}</p>` : ''}${bullets(p.bullets)}${has(p.stack) ? `<p class="work-stack">${esc(p.stack)}</p>` : ''}</li>`).join('')}</ul>` : ''}
       </article>`;
     }).join('')}</div>`;
   }
@@ -45,6 +46,8 @@ function sectionBody(s: Section, extraFact = ''): string {
       <p class="skills-count" role="status" aria-live="polite"></p>
     </div>`;
   }
+  if (s.type === 'levels') return `<div class="reveal">${levels(s.items)}</div>`;
+  if (s.type === 'gallery') return `<div class="reveal">${gallery(s.items)}</div>`;
   return `<ul class="certs reveal">${s.items.filter((i) => has(i.name)).map((i) => {
     const url = safeUrl(i.url);
     const inner = `<span class="cert-text"><span class="cert-name">${esc(i.name)}</span>${has(i.desc) ? `<span class="cert-desc">${esc(i.desc)}</span>` : ''}</span><span class="cert-meta">${esc(i.meta)}</span>${url ? arrow : '<span></span>'}`;
@@ -105,6 +108,7 @@ export function renderBold(r: Resume, o: RenderOptions = {}): string {
       ${links.length ? `<div><h2>Elsewhere</h2><ul>${links.map((l) => `<li><a ${ext(safeUrl(l.url))}>${esc(l.label)}</a></li>`).join('')}</ul></div>` : '<div></div>'}
       ${has(p.email) || has(p.phone) ? `<div><h2>Contact</h2><ul>${has(p.email) ? `<li><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></li>` : ''}${has(p.phone) ? `<li><a href="tel:${esc(p.phone.replace(/[^+\d]/g, ''))}">${esc(p.phone)}</a></li>` : ''}</ul></div>` : ''}
     </div>
+    ${qr(r) ? `<div class="footer-qr">${qr(r)}</div>` : ''}
     <p class="small-print"><span>© <span data-year></span> ${esc(p.fullName)}</span><span>${esc(p.footerNote)}</span></p>
   </div>
 </footer>

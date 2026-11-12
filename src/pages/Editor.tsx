@@ -1,20 +1,22 @@
 import { useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Download, Monitor, Plus, Printer, Smartphone } from 'lucide-react';
-import type { Colors, LinkItem, Profile, Resume, Section, StoredResume } from '@/model/types';
-import { blankSection } from '@/model/normalize';
-import { SECTION_CHOICES } from '@/model/presets';
+import type { Colors, LinkItem, Profile, Resume, Scale, Section, SectionType, StoredResume } from '@/model/types';
+import { blankEntry, blankSection } from '@/model/normalize';
+import { LAYOUT_CHOICES, SECTION_CHOICES } from '@/model/presets';
 import { COLOUR_PRESETS, TEMPLATES, renderResume } from '@/render';
 import { contrast } from '@/render/shared';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Field, ListEditor, MoveButtons, Panel, moved } from '@/components/form';
+import { BulletsEditor, DragHandle, Field, ImageField, ListEditor, Panel, RemoveButton, Sortable, SortableRow, moved } from '@/components/form';
 import { Preview, type PreviewHandle } from '@/components/Preview';
 import { useToast } from '@/lib/toast';
-import { downloadResume, readPhoto } from '@/lib/files';
+import { downloadResume, readLogo, readPhoto, readPicture } from '@/lib/files';
 import { cn } from '@/lib/utils';
 import { COPY } from '@/copy';
 import type { SaveState } from '@/App';
+
+type PickImage = (read: (file: File) => Promise<string>, then: (dataUrl: string) => void) => (file: File) => void;
 
 interface Props {
   item: StoredResume;
@@ -23,6 +25,7 @@ interface Props {
   onBack: () => void;
 }
 
+const SCALE_CHOICES: { id: Scale; name: string }[] = [{ id: 'small', name: 'Small' }, { id: 'normal', name: 'Normal' }, { id: 'large', name: 'Large' }, { id: 'xlarge', name: 'Extra large' }];
 const SAVE_TEXT: Record<SaveState, string> = { saved: 'Saved in this browser', saving: 'Saving…', failed: 'Not saved. Download to keep your work.' };
 
 export default function Editor({ item, saveState, onChange, onBack }: Props) {
@@ -41,6 +44,8 @@ export default function Editor({ item, saveState, onChange, onBack }: Props) {
 
   const p = resume.profile;
   const c = resume.style.colors;
+  /* Reads a picked picture, then hands the result on; tells the person if the file was not a picture */
+  const pick: PickImage = (read, then) => async (file) => { try { then(await read(file)); } catch { say(COPY.photoFailed); } };
 
   return (
     <div className="flex h-dvh flex-col bg-tint">
@@ -67,7 +72,7 @@ export default function Editor({ item, saveState, onChange, onBack }: Props) {
 
       <div className="grid min-h-0 flex-1 lg:grid-cols-[440px_minmax(0,1fr)]">
         <div className={cn('min-h-0 overflow-y-auto border-r-2 border-ink bg-paper px-5 pb-16', pane === 'preview' && 'hidden lg:block')}>
-          <Panel title="Template and colours" defaultOpen>
+          <Panel title="Template, text size and colours" defaultOpen>
             <fieldset className="grid gap-2">
               <legend className="mb-1 text-[15px] font-bold">Template</legend>
               {TEMPLATES.map((t) => {
@@ -79,6 +84,20 @@ export default function Editor({ item, saveState, onChange, onBack }: Props) {
                   </label>
                 );
               })}
+            </fieldset>
+            <fieldset>
+              <legend className="mb-1 mt-2 text-[15px] font-bold">Text size</legend>
+              <div className="grid grid-cols-4 gap-1.5">
+                {SCALE_CHOICES.map((sc) => {
+                  const on = resume.style.scale === sc.id;
+                  return (
+                    <label key={sc.id} className={cn('flex min-h-11 cursor-pointer items-center justify-center rounded-sm border px-1 text-center text-sm font-semibold has-[:focus-visible]:outline has-[:focus-visible]:outline-3', on ? 'border-2 border-ink bg-ink text-paper' : 'border-muted hover:bg-tint')}>
+                      <input type="radio" name="scale" className="sr-only" checked={on} onChange={() => set({ style: { ...resume.style, scale: sc.id } })} />
+                      {sc.name}
+                    </label>
+                  );
+                })}
+              </div>
             </fieldset>
             <p className="mt-2 text-[15px] font-bold">Colours: start from a combination</p>
             <div className="grid grid-cols-2 gap-2">
@@ -111,20 +130,10 @@ export default function Editor({ item, saveState, onChange, onBack }: Props) {
             <Field label="Small text at the bottom (optional)" value={p.footerNote} onChange={(footerNote) => setProfile({ footerNote })} />
           </Panel>
 
-          <Panel title="Photo">
-            {p.photo ? <img src={p.photo} alt="Current photo" className="aspect-[4/5] w-24 rounded-sm border border-rule object-cover" /> : <p className="text-sm text-muted">No photo yet. The resume looks fine without one.</p>}
-            <div className="grid gap-1">
-              <Label htmlFor="photo-file">Choose a picture</Label>
-              <p className="text-sm text-muted">A head-and-shoulders portrait works best. It is cropped to 4:5 and stored inside the resume file.</p>
-              <input id="photo-file" type="file" accept="image/*" className="text-[15px] file:mr-3 file:min-h-11 file:cursor-pointer file:rounded-sm file:border-2 file:border-solid file:border-ink file:bg-paper file:px-3 file:font-bold"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  e.target.value = '';
-                  if (!file) return;
-                  try { setProfile({ photo: await readPhoto(file) }); } catch { say(COPY.photoFailed); }
-                }} />
-            </div>
-            {p.photo ? <div><Button size="sm" onClick={() => setProfile({ photo: '' })}>Remove photo</Button></div> : null}
+          <Panel title="Photo (optional)">
+            <ImageField label="Your picture" shape="portrait" value={p.photo}
+              hint="A head-and-shoulders portrait works best. It is cropped to 4:5 and stored inside the resume file. The resume looks fine without one."
+              onPick={pick(readPhoto, (photo) => setProfile({ photo }))} onRemove={() => setProfile({ photo: '' })} />
           </Panel>
 
           <Panel title="Links (GitHub, LinkedIn, portfolio)">
@@ -136,19 +145,36 @@ export default function Editor({ item, saveState, onChange, onBack }: Props) {
             </ListEditor>
           </Panel>
 
+          <Panel title="QR code (optional)">
+            <Field label="Web address the code opens" type="url" hint="People scan it with their phone camera. Handy on a printed resume. Leave empty for no code." value={p.qrUrl} onChange={(qrUrl) => setProfile({ qrUrl })} />
+            {p.links.filter((l) => l.label && l.url).length ? (
+              <div className="flex flex-wrap gap-2">
+                {p.links.filter((l) => l.label && l.url).map((l, i) => (
+                  <Button key={i} size="sm" onClick={() => setProfile({ qrUrl: l.url, qrLabel: p.qrLabel || `Scan for my ${l.label}` })}>Use my {l.label}</Button>
+                ))}
+              </div>
+            ) : null}
+            <Field label="Text beside the code" hint="For example: Scan for my LinkedIn." value={p.qrLabel} onChange={(qrLabel) => setProfile({ qrLabel })} />
+            {p.qrUrl.length > 300 ? <p role="status" className="rounded-sm border-2 border-ink p-2.5 text-[15px] font-semibold">{COPY.qrTooLong}</p> : null}
+          </Panel>
+
           <div className="flex items-end justify-between gap-3 border-b-[3px] border-ink pb-2 pt-8">
             <h2 className="text-2xl font-extrabold tracking-tight">Sections</h2>
-            <p className="text-sm text-muted">Shown in this order.</p>
+            <p className="text-sm text-muted">Drag the handle to reorder.</p>
           </div>
           {resume.sections.length === 0 ? <p className="py-4 text-muted">No sections yet. Add the first one below.</p> : null}
-          {resume.sections.map((s, i) => (
-            <Panel key={s.id} title={s.title || 'Untitled section'}
-              actions={<MoveButtons index={i} count={resume.sections.length} what={s.title || 'section'}
-                onMove={(to) => setSections(moved(resume.sections, i, to))}
-                onRemove={() => { if (window.confirm(`Remove the “${s.title || 'Untitled'}” section and everything in it?`)) setSections(resume.sections.filter((x) => x.id !== s.id)); }} />}>
-              <SectionForm section={s} onChange={(patch) => setSection(s.id, patch)} />
-            </Panel>
-          ))}
+          <Sortable ids={resume.sections.map((s) => s.id)} onMove={(from, to) => setSections(moved(resume.sections, from, to))}>
+            {resume.sections.map((s) => (
+              <SortableRow key={s.id} id={s.id}>
+                <Panel title={s.title || 'Untitled section'}
+                  handle={<DragHandle what={`${s.title || 'untitled'} section`} />}
+                  actions={<RemoveButton what={`${s.title || 'untitled'} section`}
+                    onRemove={() => { if (window.confirm(`Remove the “${s.title || 'Untitled'}” section and everything in it?`)) setSections(resume.sections.filter((x) => x.id !== s.id)); }} />}>
+                  <SectionForm section={s} onChange={(patch) => setSection(s.id, patch)} pick={pick} />
+                </Panel>
+              </SortableRow>
+            ))}
+          </Sortable>
           <div className="pt-5">
             <AddSection onAdd={(type, title) => setSections([...resume.sections, blankSection(type, title)])} />
           </div>
@@ -180,29 +206,46 @@ function ColourPicker({ label, hint, value, onChange }: { label: string; hint: s
   );
 }
 
-function AddSection({ onAdd }: { onAdd: (type: Section['type'], title: string) => void }) {
+function AddSection({ onAdd }: { onAdd: (type: SectionType, title: string) => void }) {
+  const [name, setName] = useState('');
+  const [layout, setLayout] = useState<SectionType>('timeline');
   return (
     <Dialog>
       <DialogTrigger asChild><Button variant="primary"><Plus />Add section</Button></DialogTrigger>
-      <DialogContent title="Add a section" description="Pick the shape that fits. You can rename it to anything afterwards.">
-        <ul className="grid gap-2">
+      <DialogContent title="Add a section" description="Pick a ready-made one, or make your own at the bottom. Everything can be renamed afterwards.">
+        <ul className="grid gap-2 sm:grid-cols-2">
           {SECTION_CHOICES.map((choice) => (
-            <li key={choice.type}>
+            <li key={choice.title}>
               <DialogClose asChild>
-                <button type="button" onClick={() => onAdd(choice.type, choice.title)} className="w-full rounded-sm border border-muted p-3 text-left hover:border-ink hover:bg-tint">
-                  <span className="block text-lg font-bold">{choice.title}</span>
-                  <span className="block text-[15px] text-muted">{choice.hint}</span>
+                <button type="button" onClick={() => onAdd(choice.type, choice.title)} className="h-full w-full rounded-sm border border-muted p-3 text-left hover:border-ink hover:bg-tint">
+                  <span className="block font-bold">{choice.title}</span>
+                  <span className="block text-sm text-muted">{choice.hint}</span>
                 </button>
               </DialogClose>
             </li>
           ))}
         </ul>
+        <form className="mt-5 grid gap-3 border-t-[3px] border-ink pt-4" onSubmit={(e) => e.preventDefault()}>
+          <h3 className="text-lg font-extrabold">Custom section</h3>
+          <Field label="Section name" hint="Anything you like: Publications, Hobbies, Military service…" value={name} onChange={setName} />
+          <div className="grid gap-1">
+            <Label htmlFor="custom-layout">How it is laid out</Label>
+            <select id="custom-layout" value={layout} onChange={(e) => setLayout(e.target.value as SectionType)} className="min-h-11 w-full rounded-sm border border-muted bg-paper px-3 text-base">
+              {LAYOUT_CHOICES.map((l) => <option key={l.type} value={l.type}>{l.name}: {l.hint}</option>)}
+            </select>
+          </div>
+          <div>
+            <DialogClose asChild>
+              <Button variant="primary" type="submit" disabled={!name.trim()} onClick={() => { onAdd(layout, name.trim()); setName(''); }}><Plus />Add custom section</Button>
+            </DialogClose>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
 }
 
-function SectionForm({ section: s, onChange }: { section: Section; onChange: (patch: Partial<Section>) => void }) {
+function SectionForm({ section: s, onChange, pick }: { section: Section; onChange: (patch: Partial<Section>) => void; pick: PickImage }) {
   const common = (<>
     <Field label="Section title" value={s.title} onChange={(title) => onChange({ title })} />
     <Field label="Small note under the title (optional)" value={s.note} onChange={(note) => onChange({ note })} />
@@ -225,18 +268,21 @@ function SectionForm({ section: s, onChange }: { section: Section; onChange: (pa
     return (<>
       {common}
       <ListEditor items={s.items} onChange={(items) => onChange({ items })} noun="entry" label={(i) => [i.title, i.org].filter(Boolean).join(', ')}
-        blank={() => ({ title: '', org: '', when: '', where: '', body: '', points: [] })}>
+        blank={blankEntry}>
         {(i, set) => (<>
           <Field label="Title" hint="Job title or qualification." value={i.title} onChange={(title) => set({ title })} />
-          <Field label="Company or school" value={i.org} onChange={(org) => set({ org })} />
+          <Field label="Organisation" hint="Company, school, club or society." value={i.org} onChange={(org) => set({ org })} />
+          <ImageField label="Organisation icon (optional)" hint="A small logo shown beside the title." value={i.logo} onPick={pick(readLogo, (logo) => set({ logo }))} onRemove={() => set({ logo: '' })} />
           <Field label="Dates" hint="For example: Apr 2024 – Present." value={i.when} onChange={(when) => set({ when })} />
           <Field label="Place (optional)" value={i.where} onChange={(where) => set({ where })} />
           <Field label="Short description (optional)" multiline value={i.body} onChange={(body) => set({ body })} />
-          <p className="text-[15px] font-bold">Projects or achievements</p>
-          <ListEditor items={i.points} onChange={(points) => set({ points })} noun="project" label={(pt) => pt.title} blank={() => ({ title: '', desc: '', stack: '' })}>
+          <BulletsEditor label="Bullet points" hint="One short line each. Press Enter for the next one. Drag to reorder." items={i.bullets} onChange={(bullets) => set({ bullets })} />
+          <p className="text-[15px] font-bold">Projects (optional)</p>
+          <ListEditor items={i.points} onChange={(points) => set({ points })} noun="project" label={(pt) => pt.title} blank={() => ({ title: '', desc: '', stack: '', bullets: [] as string[] })}>
             {(pt, setPt) => (<>
               <Field label="Title" value={pt.title} onChange={(title) => setPt({ title })} />
               <Field label="What it was, your part, the result" multiline rows={4} hint="One to three sentences. Numbers help: team size, users, time saved." value={pt.desc} onChange={(desc) => setPt({ desc })} />
+              <BulletsEditor label="Bullet points (optional)" items={pt.bullets} onChange={(bullets) => setPt({ bullets })} />
               <Field label="Tools used (optional)" hint="For example: Java · Quarkus · PostgreSQL" value={pt.stack} onChange={(stack) => setPt({ stack })} />
             </>)}
           </ListEditor>
@@ -255,14 +301,47 @@ function SectionForm({ section: s, onChange }: { section: Section; onChange: (pa
       </ListEditor>
     </>);
   }
+  if (s.type === 'levels') {
+    return (<>
+      {common}
+      <ListEditor items={s.items} onChange={(items) => onChange({ items })} noun="item" label={(i) => [i.name, i.label].filter(Boolean).join(', ')} blank={() => ({ name: '', label: '', level: 0 })}>
+        {(i, set) => (<>
+          <Field label="Name" hint="For example: English." value={i.name} onChange={(name) => set({ name })} />
+          <Field label="Level in words (optional)" hint="For example: Native, Fluent, Conversational, Basic." value={i.label} onChange={(label) => set({ label })} />
+          <fieldset>
+            <legend className="mb-1 text-[15px] font-semibold">Level shown as dots</legend>
+            <div className="flex flex-wrap gap-1.5">
+              {[0, 1, 2, 3, 4, 5].map((n) => (
+                <label key={n} className={cn('flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-sm border px-2 text-sm font-semibold has-[:focus-visible]:outline has-[:focus-visible]:outline-3', i.level === n ? 'border-2 border-ink bg-ink text-paper' : 'border-muted hover:bg-tint')}>
+                  <input type="radio" className="sr-only" checked={i.level === n} onChange={() => set({ level: n })} />
+                  {n === 0 ? 'None' : n}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </>)}
+      </ListEditor>
+    </>);
+  }
+  if (s.type === 'gallery') {
+    return (<>
+      {common}
+      <ListEditor items={s.items} onChange={(items) => onChange({ items })} noun="picture" label={(i) => i.caption || (i.image ? 'Picture' : '')} blank={() => ({ image: '', caption: '' })}>
+        {(i, set) => (<>
+          <ImageField label="Picture" shape="wide" hint="JPG or PNG. Large pictures are shrunk to fit." value={i.image} onPick={pick(readPicture, (image) => set({ image }))} onRemove={() => set({ image: '' })} />
+          <Field label="Caption (optional)" hint="Also read aloud by screen readers, so say what the picture shows." value={i.caption} onChange={(caption) => set({ caption })} />
+        </>)}
+      </ListEditor>
+    </>);
+  }
   return (<>
     {common}
     <ListEditor items={s.items} onChange={(items) => onChange({ items })} noun="item" label={(i) => i.name} blank={() => ({ name: '', url: '', meta: '', desc: '' })}>
       {(i, set) => (<>
         <Field label="Name" value={i.name} onChange={(name) => set({ name })} />
         <Field label="Link (optional)" type="url" value={i.url} onChange={(url) => set({ url })} />
-        <Field label="Small note (optional)" hint="For example: Exp: Feb 2027, or the tools used." value={i.meta} onChange={(meta) => set({ meta })} />
-        <Field label="Description (optional)" multiline value={i.desc} onChange={(desc) => set({ desc })} />
+        <Field label="Small note (optional)" hint="Shown on the right. For example: a year, an expiry date, or a person's role." value={i.meta} onChange={(meta) => set({ meta })} />
+        <Field label="Description (optional)" hint="For a reference: how you know them and how to reach them." multiline value={i.desc} onChange={(desc) => set({ desc })} />
       </>)}
     </ListEditor>
   </>);

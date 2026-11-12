@@ -114,3 +114,20 @@ a.item:hover .name { text-decoration-thickness: 2px; }
   .item { padding-block: 2.5mm; }
   .foot { margin-top: 8mm; font-size: 8pt; }
 }
+
+/* Added pieces */
+@media (min-width: 900px) { .side { height: calc(100vh / var(--scale, 1)); } }
+.side .levels { grid-template-columns: 1fr; margin-top: 8px; }
+.side .levels li { border-color: var(--block-hover); padding-block: 9px; font-size: 16px; }
+.side-qr { margin-top: 32px; }
+.gap { margin-top: 20px; }
+.points ul.bullets { font-size: 16px; color: var(--muted); margin-top: 4px; }
+.points ul.bullets li { border: 0; padding: 0; }
+@media print {
+  .side { height: auto; }
+  .side .levels li { font-size: 9pt; padding-block: 1.6mm; }
+  .lv-dots i { width: 7px; height: 7px; border-width: 1px; }
+  .side-qr { margin-top: 7mm; }
+  .qr figcaption, ul.bullets { font-size: 9pt; }
+}
+@media print { .points ul.bullets { font-size: 9pt; } }
