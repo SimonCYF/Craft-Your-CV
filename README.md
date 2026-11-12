@@ -87,6 +87,15 @@ uploads `dist/`, and refreshes the cache.
    copy the validation CNAME to your registrar's DNS, and the run continues once validated.
 3. Add a CNAME from your domain to the CloudFront address shown in the run summary.
 
+## Languages
+
+The app and the fixed words in downloaded resumes come in English, Bahasa Melayu, 中文（简体）, தமிழ், हिन्दी and Español.
+
+- `src/i18n/locales/<id>.ts` maps each English sentence to its translation. Missing entries show in English.
+- Wrap new UI text in `t('English text')` (from `useT()`); add the translation to each locale file.
+- `src/render/labels.ts` holds the fixed words inside a downloaded resume (set per resume in the editor).
+- To add a language: add a locale file, register it in `src/i18n/index.tsx` (`LOCALES`, `DICTIONARIES`), `src/render/labels.ts` and `LANGS` in `src/model/normalize.ts`.
+
 ## Help
 
 Need help? Email simon@craftyourcv.org.

@@ -6,6 +6,7 @@
 
   all('[data-year]').forEach(function (n) { n.textContent = new Date().getFullYear(); });
 
+  var L = window.CYC_LABELS || {};
   var toast = document.getElementById('toast');
   var toastTimer;
   function say(message) {
@@ -21,16 +22,16 @@
     if (!t) { return; }
     var action = t.getAttribute('data-action');
     if (action === 'print') {
-      say('In the print dialog, choose “Save as PDF”. Keep margins on Default.');
+      say(L.printHint || 'In the print dialog, choose “Save as PDF”. Keep margins on Default.');
       setTimeout(function () { window.print(); }, 350);
     }
     if (action === 'copy-email') {
-      var failed = function () { say('Could not copy. Select the address and press Ctrl+C (Cmd+C on Mac).'); };
+      var failed = function () { say(L.copyFail || 'Could not copy. Select the address and press Ctrl+C (Cmd+C on Mac).'); };
       if (!navigator.clipboard || !navigator.clipboard.writeText) { failed(); return; }
       navigator.clipboard.writeText(t.getAttribute('data-email')).then(function () {
-        t.textContent = 'Copied';
-        say('Email copied to your clipboard.');
-        setTimeout(function () { t.textContent = 'Copy email'; }, 2000);
+        t.textContent = L.copied || 'Copied';
+        say(L.copyDone || 'Email copied to your clipboard.');
+        setTimeout(function () { t.textContent = L.copyEmail || 'Copy email'; }, 2000);
       }, failed);
     }
   });

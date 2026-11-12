@@ -50,7 +50,7 @@ export interface Profile {
 export interface Resume {
   version: 2;
   profile: Profile;
-  style: { template: TemplateId; colors: Colors; scale: Scale };
+  style: { template: TemplateId; colors: Colors; scale: Scale; /** language of the fixed words in the downloaded file */ lang: string };
   sections: Section[];
 }
 

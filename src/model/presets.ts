@@ -1,23 +1,24 @@
 import type { Resume, SectionType, TemplateId } from './types';
+import { translateTo as tr } from '@/i18n';
 import { DEFAULT_COLORS, newId, normalize } from './normalize';
 
 /* Starting points. The example people are made up; their text shows what goes where. */
 
-export function blankResume(template: TemplateId = 'bold'): Resume {
+export function blankResume(template: TemplateId = 'bold', lang = 'en'): Resume {
   return normalize({
     version: 2,
     profile: { fullName: '', title: '', headline: '', summary: '', location: '', email: '', phone: '', photo: '', links: [], footerNote: '' },
-    style: { template, colors: { ...DEFAULT_COLORS } },
+    style: { template, colors: { ...DEFAULT_COLORS }, lang },
     sections: [
-      { id: newId(), type: 'text', title: 'About', note: '', lead: '', body: '', facts: [] },
-      { id: newId(), type: 'timeline', title: 'Experience', note: '', items: [{ title: '', org: '', when: '', where: '', body: '', points: [] }] },
-      { id: newId(), type: 'tags', title: 'Skills', note: '', groups: [{ name: '', items: [] }] },
-      { id: newId(), type: 'timeline', title: 'Education', note: '', items: [{ title: '', org: '', when: '', where: '', body: '', points: [] }] },
+      { id: newId(), type: 'text', title: tr(lang, 'About'), note: '', lead: '', body: '', facts: [] },
+      { id: newId(), type: 'timeline', title: tr(lang, 'Experience'), note: '', items: [{ title: '', org: '', when: '', where: '', body: '', points: [] }] },
+      { id: newId(), type: 'tags', title: tr(lang, 'Skills'), note: '', groups: [{ name: '', items: [] }] },
+      { id: newId(), type: 'timeline', title: tr(lang, 'Education'), note: '', items: [{ title: '', org: '', when: '', where: '', body: '', points: [] }] },
     ],
   });
 }
 
-export function exampleResume(template: TemplateId = 'bold'): Resume {
+export function exampleResume(template: TemplateId = 'bold', lang = 'en'): Resume {
   return normalize({
     version: 2,
     profile: {
@@ -32,12 +33,12 @@ export function exampleResume(template: TemplateId = 'bold'): Resume {
       links: [{ label: 'GitHub', url: 'https://github.com' }, { label: 'LinkedIn', url: 'https://www.linkedin.com' }],
       footerNote: '',
     },
-    style: { template, colors: { ...DEFAULT_COLORS } },
+    style: { template, colors: { ...DEFAULT_COLORS }, lang },
     sections: [
-      { id: newId(), type: 'text', title: 'About', note: '', lead: 'Say what kind of work you do in one line.',
+      { id: newId(), type: 'text', title: tr(lang, 'About'), note: '', lead: 'Say what kind of work you do in one line.',
         body: 'Then add two or three sentences: the problems you like, the tools you reach for, and what you are looking for next.',
         facts: [{ label: 'Based in', value: 'Kuala Lumpur, Malaysia' }, { label: 'Now', value: 'Software Engineer, Example Sdn Bhd' }, { label: 'Languages', value: 'English, Malay, Mandarin' }] },
-      { id: newId(), type: 'timeline', title: 'Experience', note: 'Newest first.', items: [
+      { id: newId(), type: 'timeline', title: tr(lang, 'Experience'), note: 'Newest first.', items: [
         { title: 'Software Engineer', org: 'Example Sdn Bhd', when: '2023 – Present', where: 'Kuala Lumpur', body: '', points: [
           { title: 'Customer portal', desc: 'What it was, your part in it, and the result.', stack: 'Java · React · PostgreSQL', bullets: ['Start each bullet with what you did.', 'Numbers help: team size, users, time saved.'] },
           { title: 'Payments integration', desc: 'One to three sentences per project is enough.', stack: '' },
@@ -46,19 +47,19 @@ export function exampleResume(template: TemplateId = 'bold'): Resume {
           { title: 'Internal tools', desc: 'Describe the work in plain words a recruiter outside your field would follow.', stack: '' },
         ] },
       ] },
-      { id: newId(), type: 'tags', title: 'Skills', note: '', groups: [
+      { id: newId(), type: 'tags', title: tr(lang, 'Skills'), note: '', groups: [
         { name: 'Back end', items: ['Java', 'Spring Boot', 'Node.js'] },
         { name: 'Front end', items: ['React', 'TypeScript'] },
         { name: 'Data', items: ['PostgreSQL', 'MySQL'] },
       ] },
-      { id: newId(), type: 'timeline', title: 'Education', note: '', items: [
+      { id: newId(), type: 'timeline', title: tr(lang, 'Education'), note: '', items: [
         { title: 'Bachelor of Computer Science', org: 'Example University', when: '2017 – 2021', where: '', body: 'Result or one notable thing (optional).', points: [] },
       ] },
-      { id: newId(), type: 'links', title: 'Certifications', note: '', items: [
+      { id: newId(), type: 'links', title: tr(lang, 'Certifications'), note: '', items: [
         { name: 'Example Cloud Certification', url: 'https://example.com', meta: 'Exp: 2027', desc: '' },
         { name: 'Another Certificate', url: '', meta: '', desc: '' },
       ] },
-      { id: newId(), type: 'levels', title: 'Languages', note: '', items: [
+      { id: newId(), type: 'levels', title: tr(lang, 'Languages'), note: '', items: [
         { name: 'English', label: 'Fluent', level: 5 }, { name: 'Malay', label: 'Fluent', level: 4 }, { name: 'Mandarin', label: 'Conversational', level: 3 },
       ] },
     ],

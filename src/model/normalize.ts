@@ -13,6 +13,7 @@ export const newId = (): string => (crypto.randomUUID ? crypto.randomUUID().slic
 export const DEFAULT_COLORS: Colors = { main: '#262626', accent: '#f2d11a', soft: '#f5f5dc' };
 export const TEMPLATE_IDS: TemplateId[] = ['bold', 'classic', 'sidebar'];
 export const SCALES: Scale[] = ['small', 'normal', 'large', 'xlarge'];
+const LANGS = ['en', 'ms', 'zh', 'ta', 'hi', 'es'];
 const scale = (v: unknown): Scale => (SCALES.includes(v as Scale) ? (v as Scale) : 'normal');
 
 function colors(v: unknown): Colors {
@@ -94,7 +95,7 @@ function fromV1(d: Record<string, any>): Resume {
       fullName: str(d.fullName), title: str(d.shortTitle), headline: str(d.role), summary: str(d.tagline), location: str(d.location),
       email: str(d.email), phone: '', photo: photo(d.photo), links: links(d.links), footerNote: str(d.footerNote), qrUrl: '', qrLabel: '',
     },
-    style: { template: 'bold', colors: colors(d.colors ?? old[str(d.theme)]), scale: 'normal' },
+    style: { template: 'bold', colors: colors(d.colors ?? old[str(d.theme)]), scale: 'normal', lang: 'en' },
     sections,
   };
 }
@@ -112,7 +113,7 @@ export function normalize(raw: unknown): Resume {
         fullName: str(p.fullName), title: str(p.title), headline: str(p.headline), summary: str(p.summary), location: str(p.location),
         email: str(p.email), phone: str(p.phone), photo: photo(p.photo), links: links(p.links), footerNote: str(p.footerNote), qrUrl: str(p.qrUrl), qrLabel: str(p.qrLabel),
       },
-      style: { template: TEMPLATE_IDS.includes(st.template) ? st.template : 'bold', colors: colors(st.colors), scale: scale(st.scale) },
+      style: { template: TEMPLATE_IDS.includes(st.template) ? st.template : 'bold', colors: colors(st.colors), scale: scale(st.scale), lang: LANGS.includes(str(st.lang)) ? str(st.lang) : 'en' },
       sections: arr(d.sections).map(section).filter((s): s is Section => s !== null),
     };
   }

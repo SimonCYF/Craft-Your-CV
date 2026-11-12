@@ -1,7 +1,9 @@
 import qrcode from 'qrcode-generator';
+import type { Labels } from './labels';
 import type { Colors, GalleryItem, LevelItem, Resume, Scale } from '@/model/types';
 import runtime from './runtime.js?raw';
 import common from './common.css?raw';
+import { fill, labelsFor } from './labels';
 
 /* Helpers every template uses. Templates are plain functions from a Resume to one HTML string,
    so the live preview and the downloaded file are always the same thing. */
@@ -39,9 +41,9 @@ export function bullets(items: string[]): string {
 export const withLogo = (logo: string, inner: string): string =>
   has(logo) ? `<div class="with-logo"><img class="logo" src="${esc(logo)}" alt="" width="48" height="48"><div>${inner}</div></div>` : `<div>${inner}</div>`;
 
-export function levels(items: LevelItem[]): string {
+export function levels(items: LevelItem[], L: Labels): string {
   return `<ul class="levels">${items.filter((i) => has(i.name)).map((i) => `<li><span class="lv-name">${esc(i.name)}</span>${has(i.label) ? `<span class="lv-label">${esc(i.label)}</span>` : ''}${
-    i.level > 0 ? `<span class="lv-dots" role="img" aria-label="Level ${i.level} of 5">${[1, 2, 3, 4, 5].map((n) => `<i${n <= i.level ? ' class="on"' : ''}></i>`).join('')}</span>` : ''}</li>`).join('')}</ul>`;
+    i.level > 0 ? `<span class="lv-dots" role="img" aria-label="${esc(fill(L.levelOf, { n: i.level }))}">${[1, 2, 3, 4, 5].map((n) => `<i${n <= i.level ? ' class="on"' : ''}></i>`).join('')}</span>` : ''}</li>`).join('')}</ul>`;
 }
 
 export function gallery(items: GalleryItem[]): string {
@@ -50,14 +52,15 @@ export function gallery(items: GalleryItem[]): string {
 
 /** A QR code for the profile link, drawn as an inline picture so it works offline and prints sharply. Always dark on white so phones can read it. */
 export function qr(resume: Resume): string {
+  const L = labelsFor(resume.style.lang);
   const url = safeUrl(resume.profile.qrUrl);
   if (!url) return '';
   try {
     const code = qrcode(0, 'M');
     code.addData(url);
     code.make();
-    const svg = code.createSvgTag({ cellSize: 4, margin: 0, scalable: true }).replace('<svg ', `<svg role="img" aria-label="QR code for ${esc(url)}" `);
-    return `<figure class="qr"><div class="qr-code">${svg}</div><figcaption>${esc(resume.profile.qrLabel || 'Scan to open my profile')}</figcaption></figure>`;
+    const svg = code.createSvgTag({ cellSize: 4, margin: 0, scalable: true }).replace('<svg ', `<svg role="img" aria-label="${esc(fill(L.qrFor, { url }))}" `);
+    return `<figure class="qr"><div class="qr-code">${svg}</div><figcaption>${esc(resume.profile.qrLabel || L.scanDefault)}</figcaption></figure>`;
   } catch { return ''; }   /* address too long to fit in a code */
 }
 
@@ -107,10 +110,11 @@ function favicon(resume: Resume): string {
 /** Wraps a template's body in a complete page. The resume's data rides along so the file can be uploaded and edited again. */
 export function page(resume: Resume, o: RenderOptions, parts: { fonts: string; css: string; body: string; bodyClass?: string }): string {
   const p = resume.profile;
-  const title = [p.fullName || 'Resume', p.title].filter(Boolean).join(' – ');
+  const L = labelsFor(resume.style.lang);
+  const title = [p.fullName || L.resume, p.title].filter(Boolean).join(' – ');
   const data = JSON.stringify(resume, null, 1).replace(/</g, '\\u003c');
   return `<!doctype html>
-<html lang="en" style="${colourVars(resume.style.colors)}; --scale: ${SCALE_VALUE[resume.style.scale] ?? 1}"${o.preview ? ' class="is-preview"' : ''}>
+<html lang="${esc(resume.style.lang || 'en')}" style="${colourVars(resume.style.colors)}; --scale: ${SCALE_VALUE[resume.style.scale] ?? 1}"${o.preview ? ' class="is-preview"' : ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -135,7 +139,7 @@ ${parts.body}
 <script type="application/json" id="resume-data">
 ${data}
 </script>
-${o.still ? '' : `<script>\n${runtime}\n</script>`}
+${o.still ? '' : `<script>window.CYC_LABELS = ${JSON.stringify({ printHint: L.printHint, copyDone: L.copyDone, copyFail: L.copyFail, copied: L.copied, copyEmail: L.copyEmail }).replace(/</g, '\\u003c')};</script>\n<script>\n${runtime}\n</script>`}
 </body>
 </html>
 `;

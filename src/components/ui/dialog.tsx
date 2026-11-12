@@ -2,12 +2,14 @@ import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useT } from '@/i18n';
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogClose = DialogPrimitive.Close;
 
 export function DialogContent({ className, children, title, description, ...props }: Omit<DialogPrimitive.DialogContentProps, 'title'> & { title: string; description?: string }) {
+  const t = useT();
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-ink/60" />
@@ -20,7 +22,7 @@ export function DialogContent({ className, children, title, description, ...prop
             <DialogPrimitive.Title className="text-2xl font-extrabold tracking-tight">{title}</DialogPrimitive.Title>
             {description ? <DialogPrimitive.Description className="mt-1 text-[15px] text-muted">{description}</DialogPrimitive.Description> : null}
           </div>
-          <DialogPrimitive.Close className="grid size-10 shrink-0 place-items-center rounded-sm hover:bg-tint" aria-label="Close">
+          <DialogPrimitive.Close className="grid size-10 shrink-0 place-items-center rounded-sm hover:bg-tint" aria-label={t('Close')}>
             <X className="size-5" />
           </DialogPrimitive.Close>
         </div>

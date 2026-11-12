@@ -1,3 +1,4 @@
+import { fill, labelsFor, type Labels } from './labels';
 import type { LevelsSection, Resume, Section, TagsSection } from '@/model/types';
 import css from './sidebar.css?raw';
 import { arrow, bullets, esc, ext, gallery, has, levels, page, paras, qr, safeUrl, withLogo, type RenderOptions } from './shared';
@@ -10,7 +11,7 @@ type Main = Exclude<Section, Side>;
 const chips = (s: TagsSection): string =>
   s.groups.filter((g) => g.items.length).map((g) => `<div class="group">${has(g.name) ? `<h3>${esc(g.name)}</h3>` : ''}<ul class="chips">${g.items.map((t) => `<li class="chip">${esc(t)}</li>`).join('')}</ul></div>`).join('');
 
-function section(s: Main): string {
+function section(s: Main, L: Labels): string {
   let inner = '';
   if (s.type === 'text') {
     const facts = s.facts.filter((f) => has(f.label) || has(f.value));
@@ -39,6 +40,7 @@ function section(s: Main): string {
 }
 
 export function renderSidebar(r: Resume, o: RenderOptions = {}): string {
+  const L = labelsFor(r.style.lang);
   const p = r.profile;
   const links = p.links.filter((l) => has(l.label) && safeUrl(l.url));
   const sections = r.sections.filter((s) => has(s.title));
@@ -52,18 +54,18 @@ export function renderSidebar(r: Resume, o: RenderOptions = {}): string {
   ].join('');
   const intro = has(p.headline) || has(p.summary);
   const body = `<div class="page">
-  <aside class="side" aria-label="Contact and skills">
-    ${has(p.photo) ? `<img class="photo" src="${esc(p.photo)}" alt="Portrait of ${esc(p.fullName)}" width="800" height="1000">` : ''}
-    <h1>${esc(p.fullName || 'Your name')}</h1>
+  <aside class="side" aria-label="${esc(L.contactAndSkills)}">
+    ${has(p.photo) ? `<img class="photo" src="${esc(p.photo)}" alt="${esc(fill(L.portraitOf, { name: p.fullName }))}" width="800" height="1000">` : ''}
+    <h1>${esc(p.fullName || L.yourName)}</h1>
     ${has(p.title) ? `<p class="title">${esc(p.title)}</p>` : ''}
     ${contact ? `<ul class="contact">${contact}</ul>` : ''}
-    ${side.map((s) => `<section aria-labelledby="h-${s.id}"><h2 id="h-${s.id}">${esc(s.title)}</h2>${s.type === 'tags' ? chips(s) : levels(s.items)}</section>`).join('')}
+    ${side.map((s) => `<section aria-labelledby="h-${s.id}"><h2 id="h-${s.id}">${esc(s.title)}</h2>${s.type === 'tags' ? chips(s) : levels(s.items, L)}</section>`).join('')}
     ${qr(r) ? `<div class="side-qr">${qr(r)}</div>` : ''}
-    <button class="side-print" type="button" data-action="print">Save as PDF</button>
+    <button class="side-print" type="button" data-action="print">${esc(L.savePdf)}</button>
   </aside>
   <main class="main"><div class="main-inner">
     ${intro ? `<div class="intro">${has(p.headline) ? `<p class="headline">${esc(p.headline)}</p>` : ''}${has(p.summary) ? `<p class="summary">${esc(p.summary)}</p>` : ''}</div>` : ''}
-    ${main.map(section).join('\n')}
+    ${main.map((s) => section(s, L)).join('\n')}
     <footer class="foot"><span>© <span data-year></span> ${esc(p.fullName)}</span><span>${esc(p.footerNote)}</span></footer>
   </div></main>
 </div>`;

@@ -1,3 +1,4 @@
+import { fill, labelsFor, type Labels } from './labels';
 import type { Resume, Section } from '@/model/types';
 import css from './bold.css?raw';
 import { arrow, bullets, esc, ext, gallery, has, levels, page, paras, qr, safeUrl, withLogo, type RenderOptions } from './shared';
@@ -10,7 +11,7 @@ function head(s: Section): string {
   return `<div class="section-head reveal"><h2 class="section-title" id="h-${s.id}">${esc(s.title)}</h2>${has(s.note) ? `<p class="section-note">${esc(s.note)}</p>` : ''}</div>`;
 }
 
-function sectionBody(s: Section, extraFact = ''): string {
+function sectionBody(s: Section, L: Labels, extraFact = ''): string {
   if (s.type === 'text') {
     const facts = s.facts.filter((f) => has(f.label) || has(f.value));
     const dl = facts.length > 0 || extraFact !== '';
@@ -39,14 +40,14 @@ function sectionBody(s: Section, extraFact = ''): string {
     const tab = (key: string, label: string, on: boolean) =>
       `<button class="tab" role="tab" type="button" id="t-${s.id}-${key}" aria-selected="${on}" aria-controls="p-${s.id}" data-filter="${key}" tabindex="${on ? 0 : -1}">${esc(label)}</button>`;
     return `<div>
-      ${tabs ? `<div class="tabs" role="tablist" aria-label="${esc(s.title)} groups">${tab('all', 'All', true)}${groups.map((g, i) => tab(String(i), g.name, false)).join('')}<span class="tab-ink" aria-hidden="true"></span></div>` : ''}
+      ${tabs ? `<div class="tabs" role="tablist" aria-label="${esc(fill(L.groups, { title: s.title }))}">${tab('all', L.all, true)}${groups.map((g, i) => tab(String(i), g.name, false)).join('')}<span class="tab-ink" aria-hidden="true"></span></div>` : ''}
       <div class="skill-panel" id="p-${s.id}"${tabs ? ` role="tabpanel" aria-labelledby="t-${s.id}-all" tabindex="0"` : ''}>
         ${groups.map((g, i) => `<div class="skill-group" data-cat="${i}"><h3>${esc(g.name)}</h3><ul class="chips">${g.items.map((t) => `<li class="chip">${esc(t)}</li>`).join('')}</ul></div>`).join('')}
       </div>
       <p class="skills-count" role="status" aria-live="polite"></p>
     </div>`;
   }
-  if (s.type === 'levels') return `<div class="reveal">${levels(s.items)}</div>`;
+  if (s.type === 'levels') return `<div class="reveal">${levels(s.items, L)}</div>`;
   if (s.type === 'gallery') return `<div class="reveal">${gallery(s.items)}</div>`;
   return `<ul class="certs reveal">${s.items.filter((i) => has(i.name)).map((i) => {
     const url = safeUrl(i.url);
@@ -56,6 +57,7 @@ function sectionBody(s: Section, extraFact = ''): string {
 }
 
 export function renderBold(r: Resume, o: RenderOptions = {}): string {
+  const L = labelsFor(r.style.lang);
   const p = r.profile;
   const words = p.fullName.trim().split(/\s+/).filter(Boolean);
   const line1 = words.length > 1 ? words[0] : p.fullName;
@@ -65,11 +67,11 @@ export function renderBold(r: Resume, o: RenderOptions = {}): string {
   const nav = sections.map((s) => `<a href="#s-${s.id}">${esc(s.title)}</a>`).join('');
   const firstText = sections.findIndex((x) => x.type === 'text');
 
-  const body = `<a class="skip-link" href="#main">Skip to content</a>
+  const body = `<a class="skip-link" href="#main">${esc(L.skip)}</a>
 <header class="site-header on-deep">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="${esc(p.fullName)}, back to top"><b>CV</b><span class="brand-long">${esc(p.fullName)}</span></a>
-    <nav class="nav" aria-label="Sections">${nav}</nav>
+    <a class="brand" href="#top" aria-label="${esc(p.fullName)}, ${esc(L.backToTop.toLowerCase())}"><b>CV</b><span class="brand-long">${esc(p.fullName)}</span></a>
+    <nav class="nav" aria-label="${esc(L.sections)}">${nav}</nav>
   </div>
   <div class="progress" id="progress" aria-hidden="true"></div>
 </header>
@@ -78,24 +80,24 @@ export function renderBold(r: Resume, o: RenderOptions = {}): string {
     <div class="wrap">
       <div>
         <h1 id="hero-name" aria-label="${esc(p.fullName)}">
-          <span class="line" aria-hidden="true"><span>${esc(line1 || 'Your name')}</span></span>
+          <span class="line" aria-hidden="true"><span>${esc(line1 || L.yourName)}</span></span>
           ${line2 ? `<span class="line" aria-hidden="true"><span>${esc(line2)}</span></span>` : ''}
         </h1>
         ${has(p.headline || p.title) ? `<p class="hero-role fade-up" style="--i:0">${esc(p.headline || p.title)}</p>` : ''}
         ${has(p.summary) ? `<p class="lede fade-up" style="--i:1">${esc(p.summary)}</p>` : ''}
         <div class="actions fade-up" style="--i:2">
-          ${has(p.email) ? `<a class="btn btn--accent" href="mailto:${esc(p.email)}">Email me</a>` : ''}
-          <button class="btn btn--quiet" type="button" data-action="print">Save as PDF</button>
+          ${has(p.email) ? `<a class="btn btn--accent" href="mailto:${esc(p.email)}">${esc(L.emailMe)}</a>` : ''}
+          <button class="btn btn--quiet" type="button" data-action="print">${esc(L.savePdf)}</button>
         </div>
         ${links.length ? `<p class="elsewhere fade-up" style="--i:3">${links.map((l) => `<a ${ext(safeUrl(l.url))}>${esc(l.label)} ${arrow}</a>`).join('')}</p>` : ''}
       </div>
-      ${has(p.photo) ? `<figure class="portrait fade-up" style="--i:1"><img src="${esc(p.photo)}" alt="Portrait of ${esc(p.fullName)}" width="800" height="1000" fetchpriority="high"></figure>` : ''}
+      ${has(p.photo) ? `<figure class="portrait fade-up" style="--i:1"><img src="${esc(p.photo)}" alt="${esc(fill(L.portraitOf, { name: p.fullName }))}" width="800" height="1000" fetchpriority="high"></figure>` : ''}
     </div>
   </section>
   ${sections.map((s, i) => {
     /* The first text section also carries the email, with a copy button */
-    const inner = sectionBody(s, i === firstText && has(p.email)
-      ? `<div><dt>Email</dt><dd class="copy-row"><a href="mailto:${esc(p.email)}">${esc(p.email)}</a><button class="btn btn--quiet btn--small copy-btn" type="button" data-action="copy-email" data-email="${esc(p.email)}">Copy email</button></dd></div>`
+    const inner = sectionBody(s, L, i === firstText && has(p.email)
+      ? `<div><dt>${esc(L.email)}</dt><dd class="copy-row"><a href="mailto:${esc(p.email)}">${esc(p.email)}</a><button class="btn btn--quiet btn--small copy-btn" type="button" data-action="copy-email" data-email="${esc(p.email)}">${esc(L.copyEmail)}</button></dd></div>`
       : '');
     return `<section class="section ${BG[s.type]}" id="s-${s.id}" aria-labelledby="h-${s.id}"><div class="wrap split">${head(s)}${inner}</div></section>`;
   }).join('\n')}
@@ -104,15 +106,15 @@ export function renderBold(r: Resume, o: RenderOptions = {}): string {
   <div class="wrap">
     <div class="footer-grid">
       <div><p class="brand-foot">${esc(p.fullName)}</p>${has(p.title) ? `<p>${esc(p.title)}</p>` : ''}${has(p.location) ? `<p>${esc(p.location)}</p>` : ''}</div>
-      <div class="footer-nav"><h2>Sections</h2><ul>${sections.map((s) => `<li><a href="#s-${s.id}">${esc(s.title)}</a></li>`).join('')}</ul></div>
-      ${links.length ? `<div><h2>Elsewhere</h2><ul>${links.map((l) => `<li><a ${ext(safeUrl(l.url))}>${esc(l.label)}</a></li>`).join('')}</ul></div>` : '<div></div>'}
-      ${has(p.email) || has(p.phone) ? `<div><h2>Contact</h2><ul>${has(p.email) ? `<li><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></li>` : ''}${has(p.phone) ? `<li><a href="tel:${esc(p.phone.replace(/[^+\d]/g, ''))}">${esc(p.phone)}</a></li>` : ''}</ul></div>` : ''}
+      <div class="footer-nav"><h2>${esc(L.sections)}</h2><ul>${sections.map((s) => `<li><a href="#s-${s.id}">${esc(s.title)}</a></li>`).join('')}</ul></div>
+      ${links.length ? `<div><h2>${esc(L.elsewhere)}</h2><ul>${links.map((l) => `<li><a ${ext(safeUrl(l.url))}>${esc(l.label)}</a></li>`).join('')}</ul></div>` : '<div></div>'}
+      ${has(p.email) || has(p.phone) ? `<div><h2>${esc(L.contact)}</h2><ul>${has(p.email) ? `<li><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></li>` : ''}${has(p.phone) ? `<li><a href="tel:${esc(p.phone.replace(/[^+\d]/g, ''))}">${esc(p.phone)}</a></li>` : ''}</ul></div>` : ''}
     </div>
     ${qr(r) ? `<div class="footer-qr">${qr(r)}</div>` : ''}
     <p class="small-print"><span>© <span data-year></span> ${esc(p.fullName)}</span><span>${esc(p.footerNote)}</span></p>
   </div>
 </footer>
-<a class="to-top" id="to-top" href="#top" aria-label="Back to top"><span aria-hidden="true">↑</span></a>`;
+<a class="to-top" id="to-top" href="#top" aria-label="${esc(L.backToTop)}"><span aria-hidden="true">↑</span></a>`;
 
   return page(r, o, { fonts: 'https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap', css, body });
 }

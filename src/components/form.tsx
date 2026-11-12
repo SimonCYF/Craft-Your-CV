@@ -8,6 +8,7 @@ import { GripVertical, Minus, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input, Label, Textarea } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useT } from '@/i18n';
 
 /* The form pieces the editor is built from: a labelled field, a collapsible panel, lists you can drag into order. */
 
@@ -67,10 +68,11 @@ export function SortableRow({ id, className, children }: { id: string; className
 }
 
 export function DragHandle({ what }: { what: string }) {
+  const t = useT();
   const ctx = useContext(HandleContext);
   if (!ctx) return null;
   return (
-    <button type="button" ref={ctx.setRef} {...ctx.attributes} {...ctx.listeners} aria-label={`Drag to move ${what}`} title="Drag to reorder"
+    <button type="button" ref={ctx.setRef} {...ctx.attributes} {...ctx.listeners} aria-label={t('Drag to move {what}', { what })} title={t('Drag to reorder')}
       className="flex size-9 shrink-0 cursor-grab touch-none items-center justify-center rounded-sm text-muted hover:bg-tint hover:text-ink active:cursor-grabbing">
       <GripVertical className="size-5" />
     </button>
@@ -109,7 +111,8 @@ export function Panel({ title, children, defaultOpen = false, actions, handle, l
 }
 
 export function RemoveButton({ what, onRemove }: { what: string; onRemove: () => void }) {
-  return <Button variant="ghost" size="icon" aria-label={`Remove ${what}`} onClick={onRemove}><Trash2 /></Button>;
+  const t = useT();
+  return <Button variant="ghost" size="icon" aria-label={t('Remove {what}', { what })} onClick={onRemove}><Trash2 /></Button>;
 }
 
 /** A list you can add to, drag into order and remove from: jobs, projects, links, skill groups… */
@@ -117,6 +120,7 @@ export function ListEditor<T>({ items, onChange, noun, label, blank, children }:
   items: T[]; onChange: (items: T[]) => void; noun: string; label: (item: T) => string; blank: () => T;
   children: (item: T, set: (patch: Partial<T>) => void) => ReactNode;
 }) {
+  const t = useT();
   /* Remount panels when the order or count changes so each keeps the right open state */
   const [stamp, setStamp] = useState(0);
   const [justAdded, setJustAdded] = useState(-1);
@@ -126,7 +130,7 @@ export function ListEditor<T>({ items, onChange, noun, label, blank, children }:
     <div className="grid grid-cols-1 gap-2">
       <Sortable ids={ids} onMove={(from, to) => change(moved(items, from, to))}>
         {items.map((item, i) => {
-          const name = label(item) || `New ${noun}`;
+          const name = label(item) || t('New {noun}', { noun: t(noun) });
           return (
             <SortableRow key={ids[i]} id={ids[i]}>
               <Panel
@@ -134,7 +138,7 @@ export function ListEditor<T>({ items, onChange, noun, label, blank, children }:
                 title={name}
                 defaultOpen={i === justAdded}
                 handle={<DragHandle what={name} />}
-                actions={<RemoveButton what={name} onRemove={() => { if (window.confirm(`Remove “${name}”?`)) change(items.filter((_, j) => j !== i)); }} />}
+                actions={<RemoveButton what={name} onRemove={() => { if (window.confirm(t('Remove “{name}”?', { name }))) change(items.filter((_, j) => j !== i)); }} />}
               >
                 {children(item, (patch) => onChange(items.map((x, j) => (j === i ? { ...x, ...patch } : x))))}
               </Panel>
@@ -142,13 +146,14 @@ export function ListEditor<T>({ items, onChange, noun, label, blank, children }:
           );
         })}
       </Sortable>
-      <div><Button size="sm" onClick={() => change([...items, blank()], items.length)}><Plus />Add {noun}</Button></div>
+      <div><Button size="sm" onClick={() => change([...items, blank()], items.length)}><Plus />{t('Add {noun}', { noun: t(noun) })}</Button></div>
     </div>
   );
 }
 
 /** Bullet points, one box each. Enter adds the next one; pasting several lines makes several bullets. */
 export function BulletsEditor({ label, hint, items, onChange }: { label: string; hint?: string; items: string[]; onChange: (items: string[]) => void }) {
+  const t = useT();
   const [stamp, setStamp] = useState(0);
   const box = useRef<HTMLDivElement>(null);
   const ids = items.map((_, i) => `${stamp}-${i}`);
@@ -163,11 +168,11 @@ export function BulletsEditor({ label, hint, items, onChange }: { label: string;
       <Sortable ids={ids} onMove={(from, to) => restamp(moved(items, from, to))}>
         {items.map((text, i) => (
           <SortableRow key={ids[i]} id={ids[i]} className="flex items-start gap-0.5">
-            <DragHandle what={`bullet ${i + 1}`} />
+            <DragHandle what={t('bullet {n}', { n: i + 1 })} />
             <Textarea
               rows={1}
               value={text}
-              aria-label={`Bullet ${i + 1}`}
+              aria-label={t('Bullet {n}', { n: i + 1 })}
               className="min-h-11 [field-sizing:content]"
               onChange={(e) => onChange(items.map((x, j) => (j === i ? e.target.value : x)))}
               onKeyDown={(e) => {
@@ -183,11 +188,11 @@ export function BulletsEditor({ label, hint, items, onChange }: { label: string;
                 restamp(next);
               }}
             />
-            <RemoveButton what={`bullet ${i + 1}`} onRemove={() => restamp(items.filter((_, j) => j !== i))} />
+            <RemoveButton what={t('bullet {n}', { n: i + 1 })} onRemove={() => restamp(items.filter((_, j) => j !== i))} />
           </SortableRow>
         ))}
       </Sortable>
-      <div><Button size="sm" variant="ghost" onClick={() => addAfter(items.length - 1)}><Plus />Add bullet</Button></div>
+      <div><Button size="sm" variant="ghost" onClick={() => addAfter(items.length - 1)}><Plus />{t('Add bullet')}</Button></div>
     </div>
   );
 }
@@ -196,6 +201,7 @@ export function BulletsEditor({ label, hint, items, onChange }: { label: string;
 export function ImageField({ label, hint, value, onPick, onRemove, shape = 'square' }: {
   label: string; hint?: string; value: string; onPick: (file: File) => void; onRemove: () => void; shape?: 'square' | 'portrait' | 'wide';
 }) {
+  const t = useT();
   const id = useId();
   return (
     <div className="grid gap-1.5">
@@ -206,7 +212,7 @@ export function ImageField({ label, hint, value, onPick, onRemove, shape = 'squa
         <input id={id} type="file" accept="image/png,image/jpeg,image/webp,image/gif"
           className="max-w-full text-[15px] file:mr-3 file:min-h-11 file:cursor-pointer file:rounded-sm file:border-2 file:border-solid file:border-ink file:bg-paper file:px-3 file:font-bold"
           onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ''; if (file) onPick(file); }} />
-        {value ? <Button size="sm" onClick={onRemove}>Remove</Button> : null}
+        {value ? <Button size="sm" onClick={onRemove}>{t('Remove')}</Button> : null}
       </div>
     </div>
   );
