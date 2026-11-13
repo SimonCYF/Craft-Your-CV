@@ -9,6 +9,7 @@ and download one self-contained HTML file. There is no backend, no sign-up and n
 - **Sections**: add, rename, reorder and remove. Four shapes cover most resumes: text, timeline, tags and link list.
 - **My resumes**: saved in the browser (IndexedDB). Duplicate, download or delete from the home page.
 - **Upload to re-edit**: any file this app downloaded can be uploaded again. Files from the earlier single-file editor are upgraded automatically.
+- **Resume review** (`#/review`): score a saved, uploaded (PDF, Word, HTML, text) or pasted resume out of 100 for summary, experience, achievement impact, skills and ATS readability, with the reasons and fixes. Paste a job advert to see missing skills and keywords, experience to highlight, qualifications you have but did not mention, and gaps. A proofreader flags spelling, grammar, date, gap, length, personal-information, contact and formatting problems. All rule-based and local: nothing is uploaded. PDF and Word readers load only when a file is chosen.
 - **Download**: one view-only `.html` file with the photo inside. It also prints to PDF in the same design.
 
 ## Run it
@@ -36,6 +37,8 @@ Every push to the main branch then publishes a new version. No environment varia
 | `src/model/types.ts` | The shape of a resume. Start here. |
 | `src/model/normalize.ts` | Cleans uploaded or stored data and upgrades old files. |
 | `src/model/presets.ts` | The example and empty starting resumes. |
+| `src/review/` | The review engine: `score.ts`, `jobmatch.ts`, `proofread.ts`, plus `lexicon.ts` (word lists to extend), `importText.ts` and `extract.ts` (read uploaded files). No UI code, no network. |
+| `src/pages/Review.tsx` | The review screen. |
 | `src/render/` | The templates. Each is a function from a resume to an HTML string, plus a CSS file. |
 | `src/render/runtime.js` | The small script that goes inside every downloaded resume. |
 | `src/pages/` | The two screens: Home and Editor. |

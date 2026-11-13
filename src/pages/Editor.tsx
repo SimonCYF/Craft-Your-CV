@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Download, Monitor, Plus, Printer, Smartphone } from 'lucide-react';
+import { ArrowLeft, ClipboardCheck, Download, Monitor, Plus, Printer, Smartphone } from 'lucide-react';
 import type { Colors, LinkItem, Profile, Resume, Scale, Section, SectionType, StoredResume } from '@/model/types';
 import { blankEntry, blankSection } from '@/model/normalize';
 import { LAYOUT_CHOICES, SECTION_CHOICES } from '@/model/presets';
@@ -24,12 +24,13 @@ interface Props {
   saveState: SaveState;
   onChange: (patch: Partial<Pick<StoredResume, 'name' | 'resume'>>) => void;
   onBack: () => void;
+  onReview: () => void;
 }
 
 const SCALE_CHOICES: { id: Scale; name: string }[] = [{ id: 'small', name: 'Small' }, { id: 'normal', name: 'Normal' }, { id: 'large', name: 'Large' }, { id: 'xlarge', name: 'Extra large' }];
 const SAVE_TEXT: Record<SaveState, string> = { saved: 'Saved in this browser', saving: 'Saving…', failed: 'Not saved. Download to keep your work.' };   // English keys; translated where shown
 
-export default function Editor({ item, saveState, onChange, onBack }: Props) {
+export default function Editor({ item, saveState, onChange, onBack, onReview }: Props) {
   const say = useToast();
   const { t, locale } = useI18n();
   const { resume } = item;
@@ -68,6 +69,7 @@ export default function Editor({ item, saveState, onChange, onBack }: Props) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <LanguageSelect className="min-h-9 rounded-sm border border-ink-hover bg-ink-hover px-2 text-sm font-semibold text-paper" />
+          <Button size="sm" className="border-paper text-paper hover:bg-paper hover:text-ink" onClick={onReview}><ClipboardCheck />{t('Review')}</Button>
           <Button size="sm" className="border-paper text-paper hover:bg-paper hover:text-ink" onClick={() => preview.current?.print()}><Printer />{t('Save as PDF')}</Button>
           <Button size="sm" variant="accent" className="border-accent" onClick={() => { downloadResume(resume, item.name); say(t(COPY.downloadDone)); }}><Download />{t('Download')}</Button>
         </div>

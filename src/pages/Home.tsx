@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { Copy, Download, FilePlus2, Trash2, Upload } from 'lucide-react';
+import { ClipboardCheck, Copy, Download, FilePlus2, Trash2, Upload } from 'lucide-react';
 import type { Resume, StoredResume, TemplateId } from '@/model/types';
 import { blankResume, exampleResume } from '@/model/presets';
 import { NotAResumeError, readResumeFile } from '@/model/normalize';
@@ -16,11 +16,12 @@ interface Props {
   onCreate: (resume: Resume, name: string, open?: boolean) => string;
   onOpen: (id: string) => void;
   onRemove: (id: string) => void;
+  onReview: (id?: string) => void;
 }
 
 const when = (ms: number, tag: string) => new Date(ms).toLocaleString(tag, { dateStyle: 'medium', timeStyle: 'short' });
 
-export default function Home({ list, onCreate, onOpen, onRemove }: Props) {
+export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Props) {
   const say = useToast();
   const { t, tag, locale } = useI18n();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -52,6 +53,7 @@ export default function Home({ list, onCreate, onOpen, onRemove }: Props) {
           <div className="mt-8 flex flex-wrap gap-3">
             <Button variant="accent" className="border-accent" asChild><a href="#templates">{t('Choose a template')}</a></Button>
             <Button className="border-paper text-paper hover:bg-paper hover:text-ink" onClick={() => fileInput.current?.click()}><Upload />{t('Upload a resume to edit')}</Button>
+            <Button className="border-paper text-paper hover:bg-paper hover:text-ink" onClick={() => onReview()}><ClipboardCheck />{t('Review my resume')}</Button>
             <input ref={fileInput} type="file" accept=".html,.htm,.json,text/html,application/json" className="sr-only" aria-label={t('Upload a resume file')} onChange={(e) => upload(e.target.files?.[0])} />
           </div>
         </div>
@@ -98,6 +100,7 @@ export default function Home({ list, onCreate, onOpen, onRemove }: Props) {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button variant="primary" size="sm" onClick={() => onOpen(r.id)}>{t('Edit')}</Button>
+                    <Button size="sm" onClick={() => onReview(r.id)}><ClipboardCheck />{t('Review')}</Button>
                     <Button size="sm" onClick={() => { downloadResume(r.resume, r.name); say(t(COPY.downloadDone)); }}><Download />{t('Download')}</Button>
                     <Button size="sm" onClick={() => onCreate(structuredClone(r.resume), t('{name} (copy)', { name: r.name || t('Untitled resume') }), false)}><Copy />{t('Duplicate')}</Button>
                     <Button size="sm" variant="ghost" onClick={() => { if (window.confirm(t('Delete “{name}” from this browser? This cannot be undone.', { name: r.name || t('Untitled resume') }))) onRemove(r.id); }}>
