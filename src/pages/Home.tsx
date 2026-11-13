@@ -24,7 +24,7 @@ interface Props {
 const when = (ms: number, tag: string) => new Date(ms).toLocaleString(tag, { dateStyle: 'medium', timeStyle: 'short' });
 
 const STEPS: { name: string; text: string }[] = [
-  { name: 'Build', text: 'Pick a clean, ATS-friendly template and fill in the form.' },
+  { name: 'Craft', text: 'Pick a clean, ATS-friendly template and fill in the form.' },
   { name: 'Review', text: 'Get a score for each part, and the exact reasons it is weak.' },
   { name: 'Improve', text: 'Fix the weak lines with specific rewrites and a full proofread.' },
   { name: 'Apply', text: 'Match it to a job advert and write the cover letter.' },
@@ -85,10 +85,10 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
             <p className="font-extrabold"><span className="text-accent">CV</span> {COPY.appName}</p>
             <LanguageSelect className="min-h-10 rounded-sm border border-paper bg-ink px-2 text-[15px] font-semibold text-paper" />
           </div>
-          <h1 className="mt-6 max-w-[20ch] text-4xl font-extrabold uppercase leading-[.98] tracking-tight sm:text-6xl">{t('Build a resume that gets you')} <span className="text-accent">{t('shortlisted')}</span></h1>
+          <h1 className="mt-6 max-w-[20ch] text-4xl font-extrabold uppercase leading-[.98] tracking-tight sm:text-6xl">{t('Craft a resume that gets you')} <span className="text-accent">{t('shortlisted')}</span></h1>
           <p className="mt-6 max-w-[54ch] text-lg text-on-ink-muted">{t(COPY.tagline)}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button variant="accent" className="border-accent" asChild><a href="#templates">{t('Build my resume')}</a></Button>
+            <Button variant="accent" className="border-accent" asChild><a href="#templates">{t('Craft my resume')}</a></Button>
             <Button className="border-paper text-paper hover:bg-paper hover:text-ink" onClick={() => onReview()}><ClipboardCheck />{t('Review my resume')}</Button>
             <Button className="border-paper text-paper hover:bg-paper hover:text-ink" onClick={() => fileInput.current?.click()}><Upload />{t('Upload a resume to edit')}</Button>
             <input ref={fileInput} type="file" accept=".html,.htm,.json,text/html,application/json" className="sr-only" aria-label={t('Upload a resume file')} onChange={(e) => upload(e.target.files?.[0])} />
@@ -112,9 +112,9 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
           </div>
           <ul className="mt-8 grid gap-10 md:grid-cols-3">
             {TEMPLATES.map((tp) => (
-              <li key={tp.id} className="grid content-start gap-4">
+              <li key={tp.id} className="flex flex-col gap-4">
                 <TemplateThumb resume={examples[tp.id]} />
-                <div>
+                <div className="flex-1">
                   <h3 className="flex flex-wrap items-center gap-2 text-2xl font-bold">
                     {t(tp.name)}
                     <span className={tp.ats === 'best' ? 'rounded-sm border-2 border-ink bg-accent px-2 text-sm font-extrabold' : 'rounded-sm border border-rule bg-tint px-2 text-sm font-semibold text-muted'}>

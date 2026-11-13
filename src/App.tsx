@@ -87,7 +87,7 @@ function Shell() {
   if (list === null) return <p className="p-8 text-muted">{t('Loading your resumes…')}</p>;
 
   if (reviewId !== null) {
-    return <Review list={list} initialId={reviewId || null} onBack={() => go(null)} onCreate={create} />;
+    return <Review list={list} initialId={reviewId || null} onBack={() => go(null)} onCreate={create} onUpdate={update} />;
   }
 
   const current = openId ? list.find((r) => r.id === openId) : undefined;

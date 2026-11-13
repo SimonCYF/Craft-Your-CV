@@ -1,5 +1,5 @@
-import { useDeferredValue, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, Info, PencilLine, RotateCcw, TriangleAlert, X } from 'lucide-react';
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, Check, ClipboardPaste, Copy, Download, Eye, FileUp, FolderOpen, Info, PencilLine, RotateCcw, Save, Sparkles, TriangleAlert, Undo2, X } from 'lucide-react';
 import type { Resume, StoredResume } from '@/model/types';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/lib/toast';
@@ -10,18 +10,22 @@ import { scoreResume } from '@/review/score';
 import { matchJob } from '@/review/jobmatch';
 import { proofread } from '@/review/proofread';
 import { generateCoverLetter } from '@/review/coverLetter';
+import { suggest, replaceLine } from '@/review/suggest';
+import { recruiterScan } from '@/review/recruiter';
+import { aiAvailable, aiRewrite } from '@/review/ai';
 import { slug } from '@/lib/files';
-import { PROOF_CATEGORIES, type CategoryScore, type Issue, type MatchReport, type Severity } from '@/review/types';
+import { PROOF_CATEGORIES, type CategoryScore, type Issue, type MatchReport, type Priority, type ScanReport, type Severity, type Suggestion } from '@/review/types';
 
 interface Props {
   list: StoredResume[];
   initialId: string | null;
   onBack: () => void;
   onCreate: (resume: Resume, name: string, open?: boolean) => string;
+  onUpdate: (id: string, patch: { resume: Resume }) => void;
 }
 
 type Source = 'saved' | 'upload' | 'paste';
-type Tab = 'score' | 'match' | 'proof' | 'letter';
+type Tab = 'score' | 'fix' | 'scan' | 'match' | 'proof' | 'letter';
 
 const bandClass = (n: number) => (n >= 80 ? 'bg-ink text-paper' : n >= 60 ? 'bg-accent text-ink' : 'bg-paper text-ink border-ink');
 const SEVERITY: Record<Severity, { label: string; cls: string }> = {
@@ -30,7 +34,7 @@ const SEVERITY: Record<Severity, { label: string; cls: string }> = {
   tip: { label: 'Tip', cls: 'bg-tint text-ink border border-rule' },
 };
 
-export default function Review({ list, initialId, onBack, onCreate }: Props) {
+export default function Review({ list, initialId, onBack, onCreate, onUpdate }: Props) {
   const t = useT();
   const say = useToast();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -44,6 +48,11 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
   const [company, setCompany] = useState<string | null>(null);   // null = use the name found in the advert
   const [manager, setManager] = useState('');
   const [edited, setEdited] = useState<string | null>(null);      // the person's own edits to the letter
+  const [applied, setApplied] = useState<{ from: string; to: string }[]>([]);   // corrections the person accepted
+  const [rejected, setRejected] = useState<string[]>([]);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [aiText, setAiText] = useState<Record<string, string>>({});
+  const [aiBusy, setAiBusy] = useState(false);
 
   const deferredPaste = useDeferredValue(pasted);
   const deferredAd = useDeferredValue(ad);
@@ -54,10 +63,34 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
     return deferredPaste.trim().length > 40 ? { resume: loadResumeText(deferredPaste).resume, name: '', from: 'paste', how: 'parsed' } : null;
   }, [source, list, savedId, file, deferredPaste]);
 
-  const match = useMemo(() => (subject ? matchJob(subject.resume, deferredAd) : null), [subject, deferredAd]);
-  const score = useMemo(() => (subject ? scoreResume(subject.resume, match ?? undefined) : null), [subject, match]);
-  const issues = useMemo(() => (subject ? proofread(subject.resume) : []), [subject]);
-  const letter = useMemo(() => (subject ? generateCoverLetter(subject.resume, deferredAd, match, { company: company ?? undefined, manager }) : null), [subject, deferredAd, match, company, manager]);
+  /* The resume under review, with every accepted correction applied. Scores update as lines are accepted. */
+  useEffect(() => { setApplied([]); setRejected([]); setDrafts({}); setAiText({}); }, [subject?.resume]);
+  const work = useMemo(() => (subject ? applied.reduce((r, a) => replaceLine(r, a.from, a.to), subject.resume) : null), [subject, applied]);
+
+  const match = useMemo(() => (work ? matchJob(work, deferredAd) : null), [work, deferredAd]);
+  const score = useMemo(() => (work ? scoreResume(work, match ?? undefined) : null), [work, match]);
+  const before = useMemo(() => (subject && applied.length ? scoreResume(subject.resume, match ?? undefined).overall : null), [subject, applied.length, match]);
+  const issues = useMemo(() => (work ? proofread(work) : []), [work]);
+  const letter = useMemo(() => (work ? generateCoverLetter(work, deferredAd, match, { company: company ?? undefined, manager }) : null), [work, deferredAd, match, company, manager]);
+  const suggestions = useMemo(() => (work ? suggest(work).filter((x) => !rejected.includes(x.id)) : []), [work, rejected]);
+  const scan = useMemo(() => (work ? recruiterScan(work, match) : null), [work, match]);
+
+  const apply = (from: string, to: string) => { setApplied((a) => [...a, { from, to }]); say(t('Applied. Your score has been updated.')); };
+  const reject = (id: string) => setRejected((r) => [...r, id]);
+  async function askAi(list: Suggestion[]) {
+    setAiBusy(true);
+    try {
+      const out = await aiRewrite(list.map((x) => ({ text: x.original, role: x.where, issues: x.issues })), match?.title || work?.profile.title || '');
+      setAiText((m) => ({ ...m, ...Object.fromEntries(list.map((x, i) => [x.id, out[i]]).filter(([, v]) => v)) }));
+    } catch (err) {
+      say(t(err instanceof Error && err.message === 'busy' ? 'The AI is busy. Try again in a minute.' : 'The AI could not be reached. The local suggestions still work.'));
+    } finally { setAiBusy(false); }
+  }
+  function saveChanges() {
+    if (!subject || !work) return;
+    if (subject.from === 'saved') { onUpdate(savedId, { resume: work }); say(t('Saved to “My resumes”.')); }
+    else { onCreate(work, subject.name || work.profile.fullName || t('Imported resume'), false); say(t('Added to “My resumes”.')); }
+  }
 
   async function pick(f: File | undefined) {
     if (!f) return;
@@ -142,7 +175,7 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
           ) : (
             <>
               <div role="tablist" aria-label={t('Review results')} className="flex flex-wrap gap-2">
-                {([['score', 'Score', null], ['match', 'Job match', match ? `${match.percent}%` : null], ['proof', 'Proofread', issues.length ? String(issues.length) : '✓'], ['letter', 'Cover letter', null]] as const).map(([id, name, badge]) => (
+                {([['score', 'Score', null], ['fix', 'Fix my lines', suggestions.length ? String(suggestions.length) : '✓'], ['scan', 'Recruiter scan', null], ['match', 'Job match', match ? `${match.percent}%` : null], ['proof', 'Proofread', issues.length ? String(issues.length) : '✓'], ['letter', 'Cover letter', null]] as const).map(([id, name, badge]) => (
                   <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
                     className={cn('min-h-11 rounded-sm border-2 px-4 font-bold', tab === id ? 'border-ink bg-ink text-paper' : 'border-ink bg-paper hover:bg-tint')}>
                     {t(name)}{badge && <span className={cn('ml-2 rounded-sm px-1.5 text-sm', tab === id ? 'bg-accent text-ink' : 'bg-ink text-paper')}>{badge}</span>}
@@ -153,12 +186,22 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
               {subject.how === 'parsed' && (
                 <div className="mt-4 flex flex-wrap items-center gap-3 rounded-sm border-2 border-ink bg-sand p-3 text-[15px]">
                   <p className="min-w-60 flex-1">{t('This resume was read from plain text, so a few details may have landed in the wrong place. Open it in the editor to check it and fix the issues below.')}</p>
-                  <Button size="sm" variant="primary" onClick={() => { onCreate(subject.resume, subject.name || subject.resume.profile.fullName || t('Imported resume'), true); say(t('Added to “My resumes”.')); }}><PencilLine />{t('Open in editor')}</Button>
+                  <Button size="sm" variant="primary" onClick={() => { onCreate(work ?? subject.resume, subject.name || subject.resume.profile.fullName || t('Imported resume'), true); say(t('Added to “My resumes”.')); }}><PencilLine />{t('Open in editor')}</Button>
+                </div>
+              )}
+
+              {applied.length > 0 && (
+                <div className="mt-4 flex flex-wrap items-center gap-3 rounded-sm border-2 border-ink bg-accent p-3 text-[15px] font-semibold">
+                  <p className="min-w-60 flex-1">{t('{n} correction(s) applied', { n: applied.length })}{before !== null && <> · {t('Score')} {before} → <span className="font-extrabold">{score.overall}</span></>}</p>
+                  <Button size="sm" onClick={() => setApplied((a) => a.slice(0, -1))}><Undo2 />{t('Undo last')}</Button>
+                  <Button size="sm" variant="primary" onClick={saveChanges}><Save />{subject.from === 'saved' ? t('Save to my resume') : t('Save as a new resume')}</Button>
                 </div>
               )}
 
               <div className="mt-5" role="tabpanel">
-                {tab === 'score' && <ScoreTab t={t} overall={score.overall} categories={score.categories} hasAd={!!match} />}
+                {tab === 'score' && <ScoreTab t={t} overall={score.overall} categories={score.categories} priorities={score.priorities} hasAd={!!match} />}
+                {tab === 'fix' && <FixTab t={t} items={suggestions} drafts={drafts} onDraft={(id, v) => setDrafts((d) => ({ ...d, [id]: v }))} aiText={aiText} aiBusy={aiBusy} onAi={askAi} onApply={apply} onReject={reject} />}
+                {tab === 'scan' && scan && <ScanTab t={t} scan={scan} />}
                 {tab === 'match' && <MatchTab t={t} match={match} hasAd={ad.trim().length > 0} />}
                 {tab === 'proof' && <ProofTab t={t} issues={issues} counts={counts} />}
                 {tab === 'letter' && letter && (
@@ -176,7 +219,7 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
 
 /* ── Score ── */
 
-function ScoreTab({ t, overall, categories, hasAd }: { t: Translate; overall: number; categories: CategoryScore[]; hasAd: boolean }) {
+function ScoreTab({ t, overall, categories, priorities, hasAd }: { t: Translate; overall: number; categories: CategoryScore[]; priorities: Priority[]; hasAd: boolean }) {
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center gap-5 rounded-sm border-2 border-ink bg-paper p-5">
@@ -187,12 +230,27 @@ function ScoreTab({ t, overall, categories, hasAd }: { t: Translate; overall: nu
           {!hasAd && <p className="mt-1 text-sm text-muted">{t('Add a job advert to include skills relevance for a specific role.')}</p>}
         </div>
       </div>
+      {priorities.length > 0 && (
+        <section className="rounded-sm border-2 border-ink bg-accent p-5" aria-labelledby="prio-h">
+          <h3 id="prio-h" className="text-xl font-extrabold">{t('Fix these first')}</h3>
+          <p className="mt-1 text-[15px]">{t('The three changes that would lift your overall score the most.')}</p>
+          <ol className="mt-3 grid gap-3">
+            {priorities.map((p, i) => (
+              <li key={i} className="flex gap-3 text-[15px]">
+                <span className="grid size-7 shrink-0 place-items-center rounded-sm bg-ink font-extrabold text-paper">{i + 1}</span>
+                <div><p className="font-bold">{t(p.text)}</p><p className="text-sm">{t(p.category)} · <span className="font-bold">+{p.gain} {t('points')}</span></p></div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
       {categories.map((c) => (
         <article key={c.id} className="rounded-sm border-2 border-ink bg-paper p-5">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-xl font-extrabold">{t(c.label)}</h3>
             <p className={cn('rounded-sm border-2 border-ink px-2 text-lg font-extrabold', bandClass(c.score))}>{c.score}/100</p>
           </div>
+          <p className="text-sm text-muted">{t('Counts for {n}% of the overall score', { n: c.weight })}</p>
           <div className="mt-2 h-2.5 rounded-sm bg-rule" role="img" aria-label={`${c.score} / 100`}><div className="h-full rounded-sm bg-ink" style={{ width: `${c.score}%` }} /></div>
           <p className="mt-2 font-semibold">{t(c.verdict)}</p>
 
@@ -277,6 +335,21 @@ function MatchTab({ t, match, hasAd }: { t: Translate; match: MatchReport | null
         )}
       </div>
 
+      <Block title={t('Recommended changes for this job')} hint={t('Concrete edits, most useful first. Only add what is true.')}>
+        <ol className="grid list-decimal gap-2 pl-5 text-[15px]">{recommend(match).map((r, i) => <li key={i}>{r}</li>)}</ol>
+      </Block>
+
+      <details className="rounded-sm border-2 border-ink bg-paper p-5">
+        <summary className="cursor-pointer text-xl font-extrabold">{t('How this match score is calculated')}</summary>
+        <ol className="mt-3 grid list-decimal gap-1.5 pl-5 text-[15px]">
+          <li>{t('The advert is read for skills, tools and keywords. Terms in its requirements or “must have” lines count as required.')}</li>
+          <li>{t('Each term is checked against your whole resume, including common aliases (for example “JS” for JavaScript).')}</li>
+          <li>{t('Required terms weigh 1 point and preferred terms 0.5. Soft skills such as “teamwork” weigh half of that.')}</li>
+          <li>{t('Match % = points matched ÷ points on offer. The required-only figure uses just the required terms.')}</li>
+          <li>{t('This is keyword evidence, not a hiring decision. It shows what an ATS filter is likely to see.')}</li>
+        </ol>
+      </details>
+
       <Block title={`${t('Missing technical skills')} (${match.missingTechnical.length})`} hint={t('Highlighted ones are listed as required. Add only what you genuinely have.')}>
         {match.missingTechnical.length ? <ul className="flex flex-wrap gap-2">{match.missingTechnical.map((m) => <Chip key={m.term} strong={m.required}>{m.term}{m.required ? ` · ${t('required')}` : ''}</Chip>)}</ul> : none}
       </Block>
@@ -321,6 +394,151 @@ function MatchTab({ t, match, hasAd }: { t: Translate; match: MatchReport | null
           </ul>
         ) : none}
       </Block>
+    </div>
+  );
+}
+
+/** Turns a match report into a short list of concrete edits. */
+function recommend(m: MatchReport): string[] {
+  const out: string[] = [];
+  if (m.title) out.push(`Set your job title or headline to match the role: “${m.title}”.`);
+  const req = m.missingTechnical.filter((x) => x.required).slice(0, 4);
+  if (req.length) out.push(`Add ${req.map((x) => `“${x.term}”`).join(', ')} to Skills, and show each in a bullet under your most relevant role, if you genuinely have them.`);
+  m.unmentioned.slice(0, 2).forEach((u) => out.push(u.fix));
+  if (m.highlight[0]) out.push(`Move “${m.highlight[0].text.slice(0, 90)}${m.highlight[0].text.length > 90 ? '…' : ''}” to the top of its role. It already matches ${m.highlight[0].terms.slice(0, 3).join(', ')}.`);
+  const kw = m.missingKeywords.filter((x) => x.required).slice(0, 4);
+  if (kw.length) out.push(`Work the advert’s own words into your summary: ${kw.map((x) => `“${x.term}”`).join(', ')}.`);
+  m.gaps.filter((g) => g.severity === 'warn').slice(0, 2).forEach((g) => out.push(`${g.title}. ${g.detail.split('. ')[0]}.`));
+  return out.length ? out.slice(0, 7) : ['Your resume already covers the advert’s main terms. Polish the wording in your strongest bullets.'];
+}
+
+/* ── Fix my lines ── */
+
+function Marked({ s }: { s: Suggestion }) {
+  const parts: React.ReactNode[] = [];
+  let at = 0;
+  s.marks.forEach((m, i) => {
+    if (m.start > at) parts.push(s.original.slice(at, m.start));
+    parts.push(<mark key={i} title={m.label} className="rounded-sm bg-accent px-0.5 underline decoration-wavy decoration-ink/60 underline-offset-4">{s.original.slice(m.start, m.end)}</mark>);
+    at = m.end;
+  });
+  parts.push(s.original.slice(at));
+  return <>{parts}</>;
+}
+
+function FixTab({ t, items, drafts, onDraft, aiText, aiBusy, onAi, onApply, onReject }: {
+  t: Translate; items: Suggestion[]; drafts: Record<string, string>; onDraft: (id: string, v: string) => void; aiText: Record<string, string>;
+  aiBusy: boolean; onAi: (list: Suggestion[]) => void; onApply: (from: string, to: string) => void; onReject: (id: string) => void;
+}) {
+  if (!items.length) {
+    return (
+      <div className="rounded-sm border-2 border-dashed border-ink bg-paper p-8">
+        <h2 className="text-2xl font-extrabold">{t('No weak lines found')}</h2>
+        <p className="mt-2 max-w-[58ch] text-muted">{t('Every bullet is specific, varied and measurable, or you have already worked through them. Check the other tabs for the rest.')}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="grid gap-4">
+      <div className="rounded-sm border-2 border-ink bg-paper p-5">
+        <h2 className="text-2xl font-extrabold">{t('{n} lines to improve', { n: items.length })}</h2>
+        <p className="mt-1 text-muted">{t('Weak wording is highlighted in your own text. Each line has an improved version beside it: apply it, edit it first, or reject it. Responsibilities become achievements.')}</p>
+        {aiAvailable ? (
+          <div className="mt-3">
+            <Button variant="primary" size="sm" disabled={aiBusy} onClick={() => onAi(items.slice(0, 12))}><Sparkles />{aiBusy ? t('Thinking…') : t('Improve the top 12 with AI')}</Button>
+            <p className="mt-2 text-sm text-muted">{t('Uses AI (Claude Haiku). Only the lines you improve are sent, with their job title, and nothing is stored. Everything else stays in your browser.')}</p>
+          </div>
+        ) : <p className="mt-2 text-sm text-muted">{t('These rewrites are built in your browser from rules. Words in [brackets] are facts only you know: fill them in.')}</p>}
+      </div>
+      {items.map((s) => {
+        const proposed = drafts[s.id] ?? aiText[s.id] ?? s.rewrite;
+        const open = /\[[^\]]*\]/.test(proposed);
+        const same = proposed.trim() === s.original.trim() || !proposed.trim();
+        return (
+          <article key={s.id} className="rounded-sm border-2 border-ink bg-paper p-5">
+            <ul className="flex flex-wrap gap-1.5">{s.issues.map((i) => <li key={i} className="rounded-sm border border-ink bg-tint px-2 text-xs font-extrabold uppercase">{t(i)}</li>)}</ul>
+            <p className="mt-1 text-sm text-muted">{s.where}</p>
+            <div className="mt-3 grid gap-4 md:grid-cols-2">
+              <div>
+                <p className="text-sm font-extrabold uppercase tracking-wide text-muted">{t('Original')}</p>
+                <p className="mt-1 border-l-4 border-rule pl-3 text-[15px] leading-relaxed"><Marked s={s} /></p>
+              </div>
+              <div>
+                <label htmlFor={`fx-${s.id}`} className="flex items-center gap-1.5 text-sm font-extrabold uppercase tracking-wide text-muted">{aiText[s.id] && drafts[s.id] === undefined ? <Sparkles className="size-4" aria-hidden /> : null}{aiText[s.id] && drafts[s.id] === undefined ? t('Improved by AI') : t('Improved version')}</label>
+                <textarea id={`fx-${s.id}`} rows={3} value={proposed} onChange={(e) => onDraft(s.id, e.target.value)} placeholder={t('No automatic rewrite. Type your own version here.')}
+                  className="mt-1 w-full rounded-sm border-2 border-ink bg-paper p-2 text-[15px] leading-relaxed" />
+                {open && <p className="mt-1 text-sm text-muted">{t('Replace the [brackets] with your real numbers before applying.')}</p>}
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button variant="primary" size="sm" disabled={same || open} onClick={() => onApply(s.original, proposed.trim())}><Check />{t('Apply')}</Button>
+              <Button size="sm" variant="ghost" onClick={() => onReject(s.id)}><X />{t('Reject')}</Button>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Recruiter scan ── */
+
+const LEVEL: Record<string, { label: string; cls: string }> = {
+  strong: { label: 'Strong', cls: 'bg-ink text-paper' }, ok: { label: 'Seen', cls: 'bg-tint border border-rule' },
+  weak: { label: 'Weak', cls: 'bg-accent' }, missed: { label: 'Missing', cls: 'bg-accent' },
+};
+
+function ScanTab({ t, scan }: { t: Translate; scan: ScanReport }) {
+  const list = (title: string, xs: string[], empty: string) => (
+    <section className="rounded-sm border-2 border-ink bg-paper p-5">
+      <h3 className="text-xl font-extrabold">{title}</h3>
+      {xs.length ? <ul className="mt-2 grid list-disc gap-1.5 pl-5 text-[15px]">{xs.map((x, i) => <li key={i}>{t(x)}</li>)}</ul> : <p className="mt-1 text-[15px] text-muted">{empty}</p>}
+    </section>
+  );
+  return (
+    <div className="grid gap-4">
+      <div className="flex flex-wrap items-center gap-5 rounded-sm border-2 border-ink bg-paper p-5">
+        <p className="grid size-24 shrink-0 place-items-center rounded-sm border-2 border-ink bg-ink text-center text-paper"><span className="text-3xl font-extrabold leading-none">{scan.totalSeconds}s<span className="block text-xs font-semibold">{t('first scan')}</span></span></p>
+        <div className="min-w-56 flex-1">
+          <h2 className="flex items-center gap-2 text-2xl font-extrabold"><Eye aria-hidden />{t('Recruiter simulation')}</h2>
+          <p className="mt-1 font-semibold">{t(scan.verdict)}</p>
+          <p className="mt-1 text-sm text-muted">{t('Recruiters spend about 6–10 seconds on a first pass. Here is the path their eyes follow, and what they take in. About {n}% of your words are seen.', { n: scan.seenPercent })}</p>
+        </div>
+      </div>
+
+      <section className="rounded-sm border-2 border-ink bg-paper p-5">
+        <h3 className="text-xl font-extrabold">{t('What a recruiter sees, in order')}</h3>
+        <ol className="mt-3 grid gap-4">
+          {scan.stops.map((s) => (
+            <li key={s.order} className="grid gap-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="grid size-7 place-items-center rounded-sm bg-ink font-extrabold text-paper">{s.order}</span>
+                <span className="font-extrabold">{t(s.area)}</span>
+                <span className={cn('rounded-sm px-1.5 text-xs font-extrabold uppercase', LEVEL[s.level].cls)}>{t(LEVEL[s.level].label)}</span>
+                <span className="ml-auto text-sm text-muted">{s.seconds}s</span>
+              </div>
+              <div className="h-2 rounded-sm bg-rule" aria-hidden><div className="h-full rounded-sm bg-ink" style={{ width: `${Math.min(100, (s.seconds / 2) * 100)}%` }} /></div>
+              <p className="border-l-4 border-accent pl-3 text-[15px] italic">{s.saw}</p>
+              <p className="text-[15px] text-muted">{t(s.note)}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {list(t('Strengths they notice'), scan.strengths, t('Nothing stands out yet. Start with the tips below.'))}
+        {list(t('Weak spots'), scan.weaknesses, t('No weak spots in the first scan.'))}
+      </div>
+
+      <section className="rounded-sm border-2 border-ink bg-paper p-5">
+        <h3 className="text-xl font-extrabold">{t('Easily overlooked')}</h3>
+        <p className="mt-1 text-[15px] text-muted">{t('Good content that sits outside the scan path, so it is likely to be missed.')}</p>
+        {scan.overlooked.length ? (
+          <ul className="mt-3 grid gap-3">{scan.overlooked.map((o, i) => <li key={i} className="border-l-4 border-accent pl-3 text-[15px]"><p className="italic">“{o.text}”</p><p className="text-muted">{t(o.why)}</p></li>)}</ul>
+        ) : <p className="mt-2 text-[15px] text-muted">{t('Nothing important is hidden.')}</p>}
+      </section>
+
+      {list(t('Make it easier to scan'), scan.tips, t('No changes needed.'))}
     </div>
   );
 }
