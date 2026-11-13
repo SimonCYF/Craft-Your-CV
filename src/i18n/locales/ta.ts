@@ -245,5 +245,17 @@ const dict: Record<string, string> = {
   "Classic": "கிளாசிக்",
   "Bold": "போல்ட்",
   "Sidebar": "பக்கப்பட்டி",
+  "Home": "முகப்பு",
+  "Home menu": "முகப்பு பட்டியல்",
+  "Breadcrumb": "பக்கப் பாதை",
+  "Craft a resume": "விண்ணப்பத்தை உருவாக்கு",
+  "Pick a template": "வார்ப்புருவைத் தேர்ந்தெடுக்கவும்",
+  "Start here": "இங்கிருந்து தொடங்குங்கள்",
+  "Nothing saved yet": "இன்னும் எதுவும் சேமிக்கப்படவில்லை",
+  "Review a resume": "விண்ணப்பத்தை மதிப்பாய்வு செய்",
+  "Score, fix, match a job": "மதிப்பெண், திருத்தம், வேலைக்குப் பொருத்தம்",
+  "Upload to edit": "பதிவேற்றித் திருத்து",
+  "Open a file you downloaded": "நீங்கள் பதிவிறக்கிய கோப்பைத் திறக்கவும்",
+  "{n} saved": "{n} சேமிக்கப்பட்டவை",
 };
 export default dict;

@@ -245,5 +245,17 @@ const dict: Record<string, string> = {
   "Classic": "经典",
   "Bold": "醒目",
   "Sidebar": "侧栏",
+  "Home": "首页",
+  "Home menu": "主页菜单",
+  "Breadcrumb": "页面路径",
+  "Craft a resume": "制作简历",
+  "Pick a template": "选择模板",
+  "Start here": "从这里开始",
+  "Nothing saved yet": "尚未保存任何简历",
+  "Review a resume": "审阅简历",
+  "Score, fix, match a job": "评分、修改、匹配职位",
+  "Upload to edit": "上传并编辑",
+  "Open a file you downloaded": "打开您下载的文件",
+  "{n} saved": "已保存 {n} 份",
 };
 export default dict;

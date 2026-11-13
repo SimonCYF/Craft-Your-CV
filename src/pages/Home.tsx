@@ -58,7 +58,7 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
   }
 
   const Row = ({ r, version }: { r: StoredResume; version?: boolean }) => (
-    <li className={`grid items-center gap-3 border-b border-rule py-4 sm:grid-cols-[1fr_auto] ${version ? 'ml-6 border-l-4 border-l-accent pl-4 sm:ml-10' : ''}`}>
+    <li className={`grid items-center gap-3 border-b border-rule py-4 sm:grid-cols-[1fr_auto] ${version ? 'ml-6 rounded-sm bg-tint px-4 sm:ml-10' : ''}`}>
       <div className="min-w-0">
         <p className="truncate text-xl font-bold">{r.name || t('Untitled resume')}</p>
         <p className="text-[15px] text-muted">
@@ -66,13 +66,13 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
           {t('{template} template · edited {when}', { template: t(TEMPLATES.find((x) => x.id === r.resume.style.template)?.name ?? ''), when: when(r.updatedAt, tag) })}
         </p>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button variant="primary" size="sm" onClick={() => onOpen(r.id)}>{t('Edit')}</Button>
         <Button size="sm" onClick={() => onReview(r.id)}><ClipboardCheck />{t('Review')}</Button>
         {!version && <TailorDialog t={t} master={r} onCreate={onCreate} />}
-        <Button size="sm" onClick={() => { downloadResume(r.resume, r.name); say(t(COPY.downloadDone)); }}><Download />{t('Download')}</Button>
-        <Button size="sm" onClick={() => onCreate(structuredClone(r.resume), t('{name} (copy)', { name: r.name || t('Untitled resume') }), false, r.masterId ? { masterId: r.masterId, target: r.target } : undefined)}><Copy />{t('Duplicate')}</Button>
-        <Button size="sm" variant="ghost" onClick={() => { if (window.confirm(t('Delete “{name}” from this browser? This cannot be undone.', { name: r.name || t('Untitled resume') }))) onRemove(r.id); }}>
+        <Button size="sm" variant="ghost" onClick={() => { downloadResume(r.resume, r.name); say(t(COPY.downloadDone)); }}><Download />{t('Download')}</Button>
+        <Button size="sm" variant="ghost" onClick={() => onCreate(structuredClone(r.resume), t('{name} (copy)', { name: r.name || t('Untitled resume') }), false, r.masterId ? { masterId: r.masterId, target: r.target } : undefined)}><Copy />{t('Duplicate')}</Button>
+        <Button size="sm" variant="ghost" className="sm:ml-1 sm:rounded-l-none sm:border-l-rule sm:pl-3" onClick={() => { if (window.confirm(t('Delete “{name}” from this browser? This cannot be undone.', { name: r.name || t('Untitled resume') }))) onRemove(r.id); }}>
           <Trash2 />{t('Delete')}
         </Button>
       </div>
@@ -97,12 +97,12 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
           <p className="text-lg font-extrabold"><span className="text-accent">CV</span> {COPY.appName}</p>
           <LanguageSelect className="min-h-10 rounded-sm border border-paper bg-ink px-2 text-[15px] font-semibold text-paper lg:mt-4 lg:w-full" />
         </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 py-3 lg:mt-4 lg:flex-1 lg:flex-col lg:overflow-visible lg:px-3">
+        <nav className="flex gap-1 overflow-x-auto py-3 pl-3 pr-10 [mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)] lg:mt-4 lg:flex-1 lg:flex-col lg:overflow-visible lg:px-3 lg:[mask-image:none]">
           {NAV.map((n) => {
             const on = n.id === view;
             return (
               <button key={n.id} type="button" aria-current={on ? 'page' : undefined} onClick={() => run(n.id)}
-                className={`flex min-h-12 shrink-0 items-center gap-3 rounded-sm border-2 px-3 text-left ${on ? 'border-accent bg-accent text-ink' : 'border-transparent hover:border-paper'}`}>
+                className={`flex min-h-12 shrink-0 items-center gap-3 rounded-sm border-2 px-3 text-left transition-colors duration-150 ${on ? 'border-accent bg-accent text-ink' : 'border-transparent hover:border-paper'}`}>
                 <n.icon className="size-5 shrink-0" aria-hidden />
                 <span className="min-w-0"><span className="block font-bold">{t(n.label)}</span><span className={`hidden truncate text-sm lg:block ${on ? 'text-ink' : 'text-on-ink-muted'}`}>{n.id === 'mine' && list.length ? t('{n} saved', { n: list.length }) : t(n.hint)}</span></span>
               </button>
@@ -127,21 +127,28 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
         <main className="mx-auto max-w-5xl px-5 py-8 sm:px-10">
           {view === 'overview' && (
             <>
-              <section className="on-ink bg-ink px-6 py-10 text-paper sm:px-10 sm:py-14">
+              <section className="on-ink grid items-center gap-10 bg-ink px-6 py-10 text-paper sm:px-10 sm:py-14 lg:grid-cols-[1fr_auto]">
+                <div>
                 <h1 className="max-w-[20ch] text-4xl font-extrabold uppercase leading-[.98] tracking-tight sm:text-6xl">{t('Craft a resume that gets you')} <span className="text-accent">{t('shortlisted')}</span></h1>
                 <p className="mt-6 max-w-[54ch] text-lg text-on-ink-muted">{t(COPY.tagline)}</p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Button variant="accent" className="border-accent" onClick={() => goto('templates')}>{t('Craft my resume')}</Button>
                   <Button className="border-paper text-paper hover:bg-paper hover:text-ink" onClick={() => onReview()}><ClipboardCheck />{t('Review my resume')}</Button>
                 </div>
+                </div>
+                <div className="rise hidden lg:block" aria-hidden>
+                  <div className="-rotate-2 rounded-sm bg-paper p-2 shadow-[0_18px_40px_-12px_rgba(0,0,0,.55)] transition-transform duration-500 ease-out hover:rotate-0">
+                    <TemplateThumb resume={examples.classic} width={240} eager />
+                  </div>
+                </div>
               </section>
-              <section className="mt-10" aria-labelledby="how-h">
-                <h2 id="how-h" className="border-b-[3px] border-ink pb-3 text-3xl font-extrabold tracking-tight">{t('How it works')}</h2>
-                <ol className="mt-6 grid gap-4 sm:grid-cols-2">
+              <section className="mt-12" aria-labelledby="how-h">
+                <h2 id="how-h" className="border-b-[3px] border-ink pb-3 text-2xl font-bold tracking-tight sm:text-3xl">{t('How it works')}</h2>
+                <ol className="mt-6 grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
                   {STEPS.map((s, i) => (
                     <li key={s.name}>
-                      <button type="button" onClick={() => (s.go === 'templates' ? goto('templates') : onReview())} className="h-full w-full rounded-sm border-2 border-ink p-4 text-left hover:bg-tint">
-                        <p className="text-xl font-extrabold"><span className="mr-2 rounded-sm bg-accent px-2">{i + 1}</span>{t(s.name)}</p>
+                      <button type="button" onClick={() => (s.go === 'templates' ? goto('templates') : onReview())} className="h-full w-full rounded-none border-t-[3px] border-ink px-1 pb-4 pt-4 text-left transition-colors duration-200 hover:bg-tint">
+                        <p className="flex items-center gap-2 text-xl font-semibold"><span className="grid size-8 place-items-center rounded-sm bg-accent font-bold">{i + 1}</span>{t(s.name)}</p>
                         <p className="mt-2 text-[15px] text-muted">{t(s.text)}</p>
                       </button>
                     </li>
@@ -154,17 +161,17 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
           {view === 'templates' && (
             <section aria-labelledby="templates-h">
               <div className="flex flex-wrap items-end justify-between gap-4 border-b-[3px] border-ink pb-3">
-                <h1 id="templates-h" className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('Craft a resume')}</h1>
+                <h1 id="templates-h" className="text-3xl font-bold tracking-tight sm:text-4xl">{t('Craft a resume')}</h1>
                 <p className="max-w-[48ch] text-[15px] text-muted">{t('Recruiters and applicant-tracking systems read plain one-column layouts best. You can switch template and colours at any time.')}</p>
               </div>
-              <ul className="mt-8 grid gap-10 md:grid-cols-3">
+              <ul className="mt-6 grid gap-10 md:grid-cols-3">
                 {TEMPLATES.map((tp) => (
                   <li key={tp.id} className="flex flex-col gap-4">
                     <TemplateThumb resume={examples[tp.id]} />
                     <div className="flex-1">
-                      <h3 className="flex flex-wrap items-center gap-2 text-2xl font-bold">
+                      <h3 className="flex flex-wrap items-center gap-2 text-xl font-semibold">
                         {t(tp.name)}
-                        <span className={tp.ats === 'best' ? 'rounded-sm border-2 border-ink bg-accent px-2 text-sm font-extrabold' : 'rounded-sm border border-rule bg-tint px-2 text-sm font-semibold text-muted'}>
+                        <span className={tp.ats === 'best' ? 'rounded-sm border-2 border-ink bg-accent px-2 text-sm font-bold' : 'rounded-sm border border-rule bg-tint px-2 text-sm font-semibold text-muted'}>
                           {tp.ats === 'best' ? t('ATS-friendly · recommended') : t('Designer layout · less ATS-safe')}
                         </span>
                       </h3>
@@ -183,7 +190,7 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
           {view === 'mine' && (
             <section aria-labelledby="mine-h">
               <div className="border-b-[3px] border-ink pb-3">
-                <h1 id="mine-h" className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('My resumes')}</h1>
+                <h1 id="mine-h" className="text-3xl font-bold tracking-tight sm:text-4xl">{t('My resumes')}</h1>
               </div>
               {list.length === 0 ? (
                 <div className="mt-6 max-w-[60ch]">
@@ -228,7 +235,7 @@ function TailorDialog({ t, master, onCreate }: { t: Translate; master: StoredRes
   };
   return (
     <Dialog>
-      <DialogTrigger asChild><Button size="sm"><Layers />{t('Tailor')}</Button></DialogTrigger>
+      <DialogTrigger asChild><Button size="sm" variant="ghost"><Layers />{t('Tailor')}</Button></DialogTrigger>
       <DialogContent title={t('Tailor for a role')} description={t('This makes a separate copy for one kind of job. Your master stays exactly as it is.')}>
         <div className="grid gap-4">
           <div>

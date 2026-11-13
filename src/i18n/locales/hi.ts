@@ -245,5 +245,17 @@ const dict: Record<string, string> = {
   "Classic": "क्लासिक",
   "Bold": "बोल्ड",
   "Sidebar": "साइडबार",
+  "Home": "होम",
+  "Home menu": "होम मेनू",
+  "Breadcrumb": "पेज पथ",
+  "Craft a resume": "रिज़्यूमे बनाएँ",
+  "Pick a template": "टेम्पलेट चुनें",
+  "Start here": "यहाँ से शुरू करें",
+  "Nothing saved yet": "अभी कुछ सहेजा नहीं गया है",
+  "Review a resume": "रिज़्यूमे की समीक्षा करें",
+  "Score, fix, match a job": "स्कोर, सुधार, नौकरी से मिलान",
+  "Upload to edit": "अपलोड करके संपादित करें",
+  "Open a file you downloaded": "डाउनलोड की हुई फ़ाइल खोलें",
+  "{n} saved": "{n} सहेजे गए",
 };
 export default dict;

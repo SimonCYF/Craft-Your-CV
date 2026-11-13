@@ -94,7 +94,7 @@ function Shell() {
   if (openId && !current) {
     return (
       <div className="mx-auto max-w-xl p-8">
-        <h1 className="text-3xl font-extrabold tracking-tight">
+        <h1 className="text-3xl font-bold tracking-tight">
           {t('This resume is not on this device')}
         </h1>
         <p className="mt-3 text-muted">

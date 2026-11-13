@@ -120,7 +120,7 @@ export function Group({ title, hint, count, children, defaultOpen = false }: { t
       <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className="flex min-h-14 w-full items-center gap-3 px-3 text-left">
         <ChevronDown className={cn('size-5 shrink-0 transition-transform', open && 'rotate-180')} aria-hidden />
         <span className="min-w-0 flex-1">
-          <span className="block text-lg font-extrabold">{title}</span>
+          <span className="block text-lg font-semibold">{title}</span>
           {hint ? <span className="block truncate text-sm text-muted">{hint}</span> : null}
         </span>
         {count !== undefined ? <span className="rounded-sm bg-ink px-2 text-sm font-bold text-paper">{count}</span> : null}

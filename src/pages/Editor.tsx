@@ -273,7 +273,7 @@ function AddSection({ onAdd }: { onAdd: (type: SectionType, title: string) => vo
           ))}
         </ul>
         <form className="mt-5 grid gap-3 border-t-[3px] border-ink pt-4" onSubmit={(e) => e.preventDefault()}>
-          <h3 className="text-lg font-extrabold">{t('Custom section')}</h3>
+          <h3 className="text-lg font-semibold">{t('Custom section')}</h3>
           <Field label={t('Section name')} hint={t('Anything you like: Publications, Hobbies, Military service…')} value={name} onChange={setName} />
           <div className="grid gap-1">
             <Label htmlFor="custom-layout">{t('How it is laid out')}</Label>

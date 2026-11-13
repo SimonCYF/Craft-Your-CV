@@ -245,5 +245,17 @@ const dict: Record<string, string> = {
   "Classic": "Clásica",
   "Bold": "Destacada",
   "Sidebar": "Barra lateral",
+  "Home": "Inicio",
+  "Home menu": "Menú de inicio",
+  "Breadcrumb": "Ruta de navegación",
+  "Craft a resume": "Crear un currículum",
+  "Pick a template": "Elegir una plantilla",
+  "Start here": "Empiece aquí",
+  "Nothing saved yet": "Aún no hay nada guardado",
+  "Review a resume": "Revisar un currículum",
+  "Score, fix, match a job": "Puntuación, correcciones y ajuste a un empleo",
+  "Upload to edit": "Subir para editar",
+  "Open a file you downloaded": "Abra un archivo que descargó",
+  "{n} saved": "{n} guardados",
 };
 export default dict;

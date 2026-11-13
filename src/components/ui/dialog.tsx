@@ -19,7 +19,7 @@ export function DialogContent({ className, children, title, description, drawer,
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <DialogPrimitive.Title className="text-2xl font-extrabold tracking-tight">{title}</DialogPrimitive.Title>
+            <DialogPrimitive.Title className="text-2xl font-bold tracking-tight">{title}</DialogPrimitive.Title>
             {description ? <DialogPrimitive.Description className="mt-1 text-[15px] text-muted">{description}</DialogPrimitive.Description> : null}
           </div>
           <DialogPrimitive.Close className="grid size-10 shrink-0 place-items-center rounded-sm hover:bg-tint" aria-label={t('Close')}>

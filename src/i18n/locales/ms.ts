@@ -245,5 +245,17 @@ const dict: Record<string, string> = {
   "Classic": "Klasik",
   "Bold": "Berani",
   "Sidebar": "Bar sisi",
+  "Home": "Laman Utama",
+  "Home menu": "Menu laman utama",
+  "Breadcrumb": "Jejak halaman",
+  "Craft a resume": "Hasilkan resume",
+  "Pick a template": "Pilih templat",
+  "Start here": "Mula di sini",
+  "Nothing saved yet": "Belum ada yang disimpan",
+  "Review a resume": "Semak resume",
+  "Score, fix, match a job": "Skor, baiki, padankan pekerjaan",
+  "Upload to edit": "Muat naik untuk sunting",
+  "Open a file you downloaded": "Buka fail yang anda muat turun",
+  "{n} saved": "{n} disimpan",
 };
 export default dict;
