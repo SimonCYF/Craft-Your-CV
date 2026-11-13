@@ -50,7 +50,11 @@ export default {
       headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
       body: JSON.stringify({ model: MODEL, max_tokens: 1800, system: SYSTEM, messages: [{ role: 'user', content: prompt }] }),
     });
-    if (!res.ok) return reply({ error: 'upstream' }, res.status === 429 ? 429 : 502);
+    if (!res.ok) {
+      const detail = (await res.text()).slice(0, 300);
+      console.error('anthropic upstream', res.status, detail);   // visible in Workers Logs / wrangler tail
+      return reply({ error: 'upstream', status: res.status, detail }, res.status === 429 ? 429 : 502);
+    }
 
     const data = (await res.json()) as { content?: { type: string; text?: string }[] };
     const raw = data.content?.find((c) => c.type === 'text')?.text ?? '';
@@ -58,6 +62,6 @@ export default {
     try {
       const arr = JSON.parse(json) as unknown[];
       return reply({ rewrites: lines.map((_, i) => (typeof arr[i] === 'string' ? arr[i] : '')) });
-    } catch { return reply({ error: 'parse' }, 502); }
+    } catch { console.error('parse failure', raw.slice(0, 300)); return reply({ error: 'parse' }, 502); }
   },
 };

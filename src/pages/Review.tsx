@@ -119,7 +119,7 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
   return (
     <div className="min-h-screen bg-tint">
       <header className="on-ink flex flex-wrap items-center gap-3 bg-ink px-3 py-2 text-paper sm:px-5">
-        <Button variant="ghost" size="sm" className="text-paper hover:bg-ink-hover" onClick={onBack}><ArrowLeft />{t('Dashboard')}</Button>
+        <Button variant="ghost" size="sm" className="text-paper hover:bg-ink-hover" onClick={onBack}><ArrowLeft />{t('Home')}</Button>
         <h1 className="flex-1 text-lg font-extrabold"><span className="text-accent">CV</span> {t('Review a resume')}</h1>
         <LanguageSelect className="min-h-9 rounded-sm border border-ink-hover bg-ink-hover px-2 text-sm font-semibold text-paper" />
       </header>
@@ -127,7 +127,7 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
         <nav aria-label={t('Breadcrumb')} className="mb-4 text-[15px]">
           <ol className="flex flex-wrap items-center gap-1.5">
-            <li><button type="button" className="font-semibold underline-offset-2 hover:underline" onClick={onBack}>{t('Dashboard')}</button></li>
+            <li><button type="button" className="font-semibold underline-offset-2 hover:underline" onClick={onBack}>{t('Home')}</button></li>
             <li aria-hidden><ChevronRight className="size-4 text-muted" /></li>
             <li className="font-bold" aria-current="page">{t('Review a resume')}</li>
           </ol>

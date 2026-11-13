@@ -80,9 +80,9 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
   );
 
   const goto = (v: View) => { setView(v); window.scrollTo(0, 0); };
-  const crumb = view === 'overview' ? 'Dashboard' : view === 'templates' ? 'Craft a resume' : 'My resumes';
+  const crumb = view === 'overview' ? 'Home' : view === 'templates' ? 'Craft a resume' : 'My resumes';
   const NAV: { id: View | 'review' | 'upload'; icon: typeof LayoutDashboard; label: string; hint: string }[] = [
-    { id: 'overview', icon: LayoutDashboard, label: 'Dashboard', hint: 'Start here' },
+    { id: 'overview', icon: LayoutDashboard, label: 'Home', hint: 'Start here' },
     { id: 'templates', icon: LayoutTemplate, label: 'Craft a resume', hint: 'Pick a template' },
     { id: 'mine', icon: FolderOpen, label: 'My resumes', hint: list.length ? `${list.length} saved` : 'Nothing saved yet' },
     { id: 'review', icon: ClipboardCheck, label: 'Review a resume', hint: 'Score, fix, match a job' },
@@ -92,7 +92,7 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
 
   return (
     <div className="min-h-screen bg-paper lg:grid lg:grid-cols-[272px_minmax(0,1fr)]">
-      <aside className="on-ink bg-ink text-paper lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col" aria-label={t('Dashboard menu')}>
+      <aside className="on-ink bg-ink text-paper lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col" aria-label={t('Home menu')}>
         <div className="flex items-center justify-between gap-3 px-4 pt-4 lg:block lg:px-5 lg:pt-6">
           <p className="text-lg font-extrabold"><span className="text-accent">CV</span> {COPY.appName}</p>
           <LanguageSelect className="min-h-10 rounded-sm border border-paper bg-ink px-2 text-[15px] font-semibold text-paper lg:mt-4 lg:w-full" />
@@ -119,7 +119,7 @@ export default function Home({ list, onCreate, onOpen, onRemove, onReview }: Pro
       <div className="min-w-0">
         <nav aria-label={t('Breadcrumb')} className="border-b border-rule px-5 py-3 text-[15px] sm:px-10">
           <ol className="flex flex-wrap items-center gap-1.5">
-            <li><button type="button" className="font-semibold underline-offset-2 hover:underline" onClick={() => goto('overview')}>{t('Dashboard')}</button></li>
+            <li><button type="button" className="font-semibold underline-offset-2 hover:underline" onClick={() => goto('overview')}>{t('Home')}</button></li>
             {view !== 'overview' && <><li aria-hidden><ChevronRight className="size-4 text-muted" /></li><li aria-current="page" className="font-bold">{t(crumb)}</li></>}
           </ol>
         </nav>
