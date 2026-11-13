@@ -5,10 +5,10 @@ import { renderSidebar } from './sidebar';
 import type { RenderOptions } from './shared';
 
 /* To add a template: write one render function (Resume in, HTML string out) and add it to this list. */
-export const TEMPLATES: { id: TemplateId; name: string; description: string; render: (r: Resume, o?: RenderOptions) => string }[] = [
-  { id: 'bold', name: 'Bold', description: 'Big name on a dark band, timeline, skill tabs. Works best as a website.', render: renderBold },
-  { id: 'classic', name: 'Classic', description: 'One column on a white sheet with serif headings. Best for printing and job portals.', render: renderClassic },
-  { id: 'sidebar', name: 'Sidebar', description: 'Contact and skills in a coloured column, experience beside it.', render: renderSidebar },
+export const TEMPLATES: { id: TemplateId; name: string; description: string; /** how safely applicant-tracking systems read it */ ats: 'best' | 'caution'; render: (r: Resume, o?: RenderOptions) => string }[] = [
+  { id: 'classic', name: 'Classic', description: 'One column on a white sheet with serif headings. Best for printing and job portals.', ats: 'best', render: renderClassic },
+  { id: 'bold', name: 'Bold', description: 'Big name on a dark band, timeline, skill tabs. Works best as a website.', ats: 'caution', render: renderBold },
+  { id: 'sidebar', name: 'Sidebar', description: 'Contact and skills in a coloured column, experience beside it.', ats: 'caution', render: renderSidebar },
 ];
 
 export function renderResume(r: Resume, o: RenderOptions = {}): string {

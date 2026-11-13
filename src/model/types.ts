@@ -55,4 +55,8 @@ export interface Resume {
 }
 
 /** A resume as kept in "My resumes" in this browser. */
-export interface StoredResume { id: string; name: string; updatedAt: number; resume: Resume }
+export interface StoredResume {
+  id: string; name: string; updatedAt: number; resume: Resume;
+  /** Set on a tailored version: the master resume it was made from, and the role it targets. */
+  masterId?: string; target?: string;
+}

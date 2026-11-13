@@ -4,7 +4,7 @@ import { DEFAULT_COLORS, newId, normalize } from './normalize';
 
 /* Starting points. The example people are made up; their text shows what goes where. */
 
-export function blankResume(template: TemplateId = 'bold', lang = 'en'): Resume {
+export function blankResume(template: TemplateId = 'classic', lang = 'en'): Resume {
   return normalize({
     version: 2,
     profile: { fullName: '', title: '', headline: '', summary: '', location: '', email: '', phone: '', photo: '', links: [], footerNote: '' },
@@ -18,7 +18,7 @@ export function blankResume(template: TemplateId = 'bold', lang = 'en'): Resume 
   });
 }
 
-export function exampleResume(template: TemplateId = 'bold', lang = 'en'): Resume {
+export function exampleResume(template: TemplateId = 'classic', lang = 'en'): Resume {
   return normalize({
     version: 2,
     profile: {

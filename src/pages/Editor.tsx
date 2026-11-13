@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ClipboardCheck, Download, Monitor, Plus, Printer, Smartphone } from 'lucide-react';
+import { ArrowLeft, ClipboardCheck, Download, FileText, Monitor, Plus, Printer, Smartphone } from 'lucide-react';
 import type { Colors, LinkItem, Profile, Resume, Scale, Section, SectionType, StoredResume } from '@/model/types';
 import { blankEntry, blankSection } from '@/model/normalize';
 import { LAYOUT_CHOICES, SECTION_CHOICES } from '@/model/presets';
@@ -28,6 +28,8 @@ interface Props {
 }
 
 const SCALE_CHOICES: { id: Scale; name: string }[] = [{ id: 'small', name: 'Small' }, { id: 'normal', name: 'Normal' }, { id: 'large', name: 'Large' }, { id: 'xlarge', name: 'Extra large' }];
+/** Printable height of one A4 page (px at 96 dpi, after the template's print margins). Bold prints as one tall web page, so it has none. */
+const PAGE_HEIGHT: Record<StoredResume['resume']['style']['template'], number | null> = { classic: 1017, sidebar: 1081, bold: null };
 const SAVE_TEXT: Record<SaveState, string> = { saved: 'Saved in this browser', saving: 'Saving…', failed: 'Not saved. Download to keep your work.' };   // English keys; translated where shown
 
 export default function Editor({ item, saveState, onChange, onBack, onReview }: Props) {
@@ -44,6 +46,9 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
   }, [locale]);   // eslint-disable-line react-hooks/exhaustive-deps
   const preview = useRef<PreviewHandle>(null);
   const [phone, setPhone] = useState(false);
+  const [pageView, setPageView] = useState(true);
+  const [pages, setPages] = useState<number | null>(null);
+  const pageHeight = PAGE_HEIGHT[resume.style.template];
   const [pane, setPane] = useState<'edit' | 'preview'>('edit');   // small screens show one at a time
   const html = useMemo(() => renderResume(resume, { preview: true }), [resume]);
 
@@ -202,13 +207,21 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
 
         <div className={cn('flex min-h-0 flex-col', pane === 'edit' && 'hidden lg:flex')}>
           <div className="hidden items-center justify-between gap-3 border-b border-rule bg-paper px-4 py-1.5 lg:flex">
-            <p className="text-sm text-muted">{t('This is exactly what Download gives you.')}</p>
+            <p className="text-sm text-muted">
+              {pageHeight && pages !== null ? (
+                <span className={cn('mr-2 rounded-sm border px-1.5 py-0.5 font-bold', pages > 2 ? 'border-ink bg-accent text-ink' : 'border-rule bg-tint text-ink')}>
+                  {pages > 2 ? t('About {n} pages: too long. Aim for one or two.', { n: pages }) : pages === 1 ? t('About 1 page') : t('About {n} pages', { n: pages })}
+                </span>
+              ) : null}
+              {pageHeight ? t('Estimate. Save as PDF shows the exact pages.') : t('Bold is a web layout; it prints as one tall page.')}
+            </p>
             <div className="flex gap-1" role="group" aria-label={t('Preview size')}>
-              <Button size="sm" variant={phone ? 'ghost' : 'primary'} aria-pressed={!phone} onClick={() => setPhone(false)}><Monitor />{t('Desktop')}</Button>
+              {pageHeight ? <Button size="sm" variant={pageView && !phone ? 'primary' : 'ghost'} aria-pressed={pageView && !phone} onClick={() => { setPageView(true); setPhone(false); }}><FileText />{t('Page view')}</Button> : null}
+              <Button size="sm" variant={!phone && !(pageView && pageHeight) ? 'primary' : 'ghost'} aria-pressed={!phone && !(pageView && !!pageHeight)} onClick={() => { setPageView(false); setPhone(false); }}><Monitor />{t('Desktop')}</Button>
               <Button size="sm" variant={phone ? 'primary' : 'ghost'} aria-pressed={phone} onClick={() => setPhone(true)}><Smartphone />{t('Phone')}</Button>
             </div>
           </div>
-          <div className="flex min-h-0 flex-1 justify-center"><Preview ref={preview} html={html} phone={phone} /></div>
+          <div className={cn('flex min-h-0 flex-1 justify-center', pageView && pageHeight && !phone && 'bg-tint')}><Preview ref={preview} html={html} phone={phone} pageView={pageView} pageHeight={pageHeight} onMeasure={setPages} /></div>
         </div>
       </div>
     </div>

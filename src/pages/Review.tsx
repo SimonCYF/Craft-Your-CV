@@ -1,5 +1,5 @@
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Check, ClipboardPaste, FileUp, FolderOpen, Info, PencilLine, TriangleAlert, X } from 'lucide-react';
+import { ArrowLeft, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, Info, PencilLine, RotateCcw, TriangleAlert, X } from 'lucide-react';
 import type { Resume, StoredResume } from '@/model/types';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/lib/toast';
@@ -9,6 +9,8 @@ import { loadResumeFile, loadResumeText, UnreadableError, type Loaded } from '@/
 import { scoreResume } from '@/review/score';
 import { matchJob } from '@/review/jobmatch';
 import { proofread } from '@/review/proofread';
+import { generateCoverLetter } from '@/review/coverLetter';
+import { slug } from '@/lib/files';
 import { PROOF_CATEGORIES, type CategoryScore, type Issue, type MatchReport, type Severity } from '@/review/types';
 
 interface Props {
@@ -19,7 +21,7 @@ interface Props {
 }
 
 type Source = 'saved' | 'upload' | 'paste';
-type Tab = 'score' | 'match' | 'proof';
+type Tab = 'score' | 'match' | 'proof' | 'letter';
 
 const bandClass = (n: number) => (n >= 80 ? 'bg-ink text-paper' : n >= 60 ? 'bg-accent text-ink' : 'bg-paper text-ink border-ink');
 const SEVERITY: Record<Severity, { label: string; cls: string }> = {
@@ -39,6 +41,9 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
   const [pasted, setPasted] = useState('');
   const [ad, setAd] = useState('');
   const [tab, setTab] = useState<Tab>('score');
+  const [company, setCompany] = useState<string | null>(null);   // null = use the name found in the advert
+  const [manager, setManager] = useState('');
+  const [edited, setEdited] = useState<string | null>(null);      // the person's own edits to the letter
 
   const deferredPaste = useDeferredValue(pasted);
   const deferredAd = useDeferredValue(ad);
@@ -52,6 +57,7 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
   const match = useMemo(() => (subject ? matchJob(subject.resume, deferredAd) : null), [subject, deferredAd]);
   const score = useMemo(() => (subject ? scoreResume(subject.resume, match ?? undefined) : null), [subject, match]);
   const issues = useMemo(() => (subject ? proofread(subject.resume) : []), [subject]);
+  const letter = useMemo(() => (subject ? generateCoverLetter(subject.resume, deferredAd, match, { company: company ?? undefined, manager }) : null), [subject, deferredAd, match, company, manager]);
 
   async function pick(f: File | undefined) {
     if (!f) return;
@@ -136,7 +142,7 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
           ) : (
             <>
               <div role="tablist" aria-label={t('Review results')} className="flex flex-wrap gap-2">
-                {([['score', 'Score', null], ['match', 'Job match', match ? `${match.percent}%` : null], ['proof', 'Proofread', issues.length ? String(issues.length) : '✓']] as const).map(([id, name, badge]) => (
+                {([['score', 'Score', null], ['match', 'Job match', match ? `${match.percent}%` : null], ['proof', 'Proofread', issues.length ? String(issues.length) : '✓'], ['letter', 'Cover letter', null]] as const).map(([id, name, badge]) => (
                   <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
                     className={cn('min-h-11 rounded-sm border-2 px-4 font-bold', tab === id ? 'border-ink bg-ink text-paper' : 'border-ink bg-paper hover:bg-tint')}>
                     {t(name)}{badge && <span className={cn('ml-2 rounded-sm px-1.5 text-sm', tab === id ? 'bg-accent text-ink' : 'bg-ink text-paper')}>{badge}</span>}
@@ -155,6 +161,10 @@ export default function Review({ list, initialId, onBack, onCreate }: Props) {
                 {tab === 'score' && <ScoreTab t={t} overall={score.overall} categories={score.categories} hasAd={!!match} />}
                 {tab === 'match' && <MatchTab t={t} match={match} hasAd={ad.trim().length > 0} />}
                 {tab === 'proof' && <ProofTab t={t} issues={issues} counts={counts} />}
+                {tab === 'letter' && letter && (
+                  <LetterTab t={t} letter={letter} hasAd={ad.trim().length > 0} company={company ?? letter.company} onCompany={setCompany} manager={manager} onManager={setManager}
+                    text={edited ?? letter.text} edited={edited !== null} onEdit={setEdited} fileName={slug(subject.resume.profile.fullName || 'cover') + '-cover-letter.txt'} say={say} />
+                )}
               </div>
             </>
           )}
@@ -347,6 +357,49 @@ function ProofTab({ t, issues, counts }: { t: Translate; issues: Issue[]; counts
           </section>
         );
       })}
+    </div>
+  );
+}
+
+/* ── Cover letter ── */
+
+function LetterTab({ t, letter, hasAd, company, onCompany, manager, onManager, text, edited, onEdit, fileName, say }: {
+  t: Translate; letter: ReturnType<typeof generateCoverLetter>; hasAd: boolean; company: string; onCompany: (v: string) => void; manager: string; onManager: (v: string) => void;
+  text: string; edited: boolean; onEdit: (v: string | null) => void; fileName: string; say: (m: string) => void;
+}) {
+  const copy = async () => { try { await navigator.clipboard.writeText(text); say(t('Copied. Paste it into your email or application.')); } catch { say(t('Could not copy. Select the text and copy it by hand.')); } };
+  const save = () => {
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  };
+  const field = 'mt-1 min-h-11 w-full rounded-sm border-2 border-ink bg-paper px-2';
+  return (
+    <div className="grid gap-4">
+      <div className="rounded-sm border-2 border-ink bg-paper p-5">
+        <h2 className="text-2xl font-extrabold">{t('Cover letter')}</h2>
+        <p className="mt-1 text-muted">{hasAd ? t('A first draft built from your resume and the advert. It only claims what your resume shows. Edit it freely.') : t('Paste a job advert in box 2 to tailor the letter. Until then this is a general draft.')}</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div><label htmlFor="cl-company" className="text-sm font-bold">{t('Company')}</label><input id="cl-company" className={field} value={company} onChange={(e) => onCompany(e.target.value)} placeholder={t('Company name')} /></div>
+          <div><label htmlFor="cl-manager" className="text-sm font-bold">{t('Hiring manager (optional)')}</label><input id="cl-manager" className={field} value={manager} onChange={(e) => onManager(e.target.value)} placeholder={t('For example: Ms Lim')} /></div>
+        </div>
+      </div>
+      <div className="rounded-sm border-2 border-ink bg-paper p-5">
+        <label htmlFor="cl-text" className="sr-only">{t('Cover letter text')}</label>
+        <textarea id="cl-text" value={text} onChange={(e) => onEdit(e.target.value)} rows={18} className="w-full rounded-sm border-2 border-rule bg-paper p-3 text-[15px] leading-relaxed focus:border-ink" />
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Button variant="primary" size="sm" onClick={copy}><Copy />{t('Copy')}</Button>
+          <Button size="sm" onClick={save}><Download />{t('Download .txt')}</Button>
+          {edited && <Button size="sm" variant="ghost" onClick={() => onEdit(null)}><RotateCcw />{t('Rewrite from my resume')}</Button>}
+          <span className="ml-auto text-sm text-muted">{t('{n} words', { n: text.split(/\s+/).filter(Boolean).length })}</span>
+        </div>
+        {edited && <p className="mt-2 text-sm text-muted">{t('Your edits are kept. Changing the company or advert will not overwrite them until you press “Rewrite from my resume”.')}</p>}
+      </div>
+      <div className="rounded-sm border-2 border-ink bg-paper p-5">
+        <h3 className="text-xl font-extrabold">{t('Check before you send')}</h3>
+        <ul className="mt-2 grid list-disc gap-1.5 pl-5 text-[15px]">{letter.notes.map((n, i) => <li key={i}>{t(n)}</li>)}</ul>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 /* Every sentence the app shows more than once, or that you may want to reword, lives here. */
 export const COPY = {
   appName: 'Craft Your CV',
-  tagline: 'Pick a template, fill in the form, download one file. Nothing leaves your browser.',
+  tagline: 'Create your resume, get professional feedback, fix its weaknesses and tailor it to your dream job. Nothing leaves your browser.',
   contactEmail: 'simon@craftyourcv.org',
   savedHere: 'Your resumes are kept in this browser on this device. To move one to another computer, download it and upload the file there.',
   emptyList: 'Nothing saved yet. Pick a template above, or upload a resume file you downloaded before.',

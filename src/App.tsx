@@ -65,8 +65,8 @@ function Shell() {
     window.scrollTo(0, 0);
   };
 
-  const create = useCallback((resume: Resume, name: string, open = true) => {
-    const item: StoredResume = { id: newId(), name, updatedAt: Date.now(), resume };
+  const create = useCallback((resume: Resume, name: string, open = true, extra?: Pick<StoredResume, 'masterId' | 'target'>) => {
+    const item: StoredResume = { id: newId(), name, updatedAt: Date.now(), resume, ...extra };
     setList((l) => [item, ...(l ?? [])]);
     if (open) go(item.id);
     return item.id;

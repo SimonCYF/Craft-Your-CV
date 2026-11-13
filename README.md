@@ -10,6 +10,9 @@ and download one self-contained HTML file. There is no backend, no sign-up and n
 - **My resumes**: saved in the browser (IndexedDB). Duplicate, download or delete from the home page.
 - **Upload to re-edit**: any file this app downloaded can be uploaded again. Files from the earlier single-file editor are upgraded automatically.
 - **Resume review** (`#/review`): score a saved, uploaded (PDF, Word, HTML, text) or pasted resume out of 100 for summary, experience, achievement impact, skills and ATS readability, with the reasons and fixes. Paste a job advert to see missing skills and keywords, experience to highlight, qualifications you have but did not mention, and gaps. A proofreader flags spelling, grammar, date, gap, length, personal-information, contact and formatting problems. All rule-based and local: nothing is uploaded. PDF and Word readers load only when a file is chosen.
+- **Cover letter** (Review → Cover letter): a first draft from the resume and a pasted job advert. Template-based, not AI; it only claims what the resume shows and lists required skills it left out.
+- **Versions**: keep one master resume and press **Tailor** to make a separate copy for a role (Software Engineer, Business Analyst…). Versions are grouped under their master in "My resumes".
+- **Page view**: the editor preview can show an A4 sheet with dashed lines where pages are likely to break, and an estimated page count. It is an estimate; Save as PDF is exact. Classic (one column, ATS-friendly) is the recommended default.
 - **Download**: one view-only `.html` file with the photo inside. It also prints to PDF in the same design.
 
 ## Run it
