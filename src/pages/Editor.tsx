@@ -8,7 +8,7 @@ import { contrast } from '@/render/shared';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { BulletsEditor, DragHandle, Field, ImageField, ListEditor, Panel, RemoveButton, Sortable, SortableRow, moved } from '@/components/form';
+import { BulletsEditor, DragHandle, EditRow, Field, Group, ImageField, ListEditor, Panel, RemoveButton, Sortable, SortableRow, moved } from '@/components/form';
 import { Preview, type PreviewHandle } from '@/components/Preview';
 import { useToast } from '@/lib/toast';
 import { downloadResume, readLogo, readPhoto, readPicture } from '@/lib/files';
@@ -89,8 +89,11 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
       </div>
 
       <div className="grid min-h-0 flex-1 lg:grid-cols-[440px_minmax(0,1fr)]">
-        <div className={cn('min-h-0 overflow-y-auto border-r-2 border-ink bg-paper px-5 pb-16', pane === 'preview' && 'hidden lg:block')}>
-          <Panel title={t('Template, text size and colours')} defaultOpen>
+        <div className={cn('min-h-0 overflow-y-auto border-r-2 border-ink bg-paper px-4 pb-16 pt-4', pane === 'preview' && 'hidden lg:block')}>
+          <p className="text-[15px] text-muted">{t('Open a group, then press Edit to fill it in. The preview updates as you type.')}</p>
+
+          <Group title={t('Design')} hint={t('Template, text size and colours')}>
+            <EditRow title={t('Template, text size and colours')} summary={`${t(TEMPLATES.find((x) => x.id === resume.style.template)?.name ?? '')} · ${t(SCALE_CHOICES.find((x) => x.id === resume.style.scale)?.name ?? '')}`}>
             <fieldset className="grid gap-2">
               <legend className="mb-1 text-[15px] font-bold">{t('Template')}</legend>
               {TEMPLATES.map((tp) => {
@@ -142,9 +145,11 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
               </select>
             </div>
             <p className="text-sm text-muted">{t('Text switches between dark and white by itself so it stays readable.')}</p>
-          </Panel>
+            </EditRow>
+          </Group>
 
-          <Panel title={t('Name and contact')} defaultOpen>
+          <Group title={t('Your details')} hint={t('Name, contact, photo, links')}>
+            <EditRow title={t('Name and contact')} summary={[p.fullName, p.title].filter(Boolean).join(' · ') || t('Not filled in yet')}>
             <Field label={t('Full name')} value={p.fullName} onChange={(fullName) => setProfile({ fullName })} />
             <Field label={t('Job title')} hint={t('Short. For example: Graphic Designer.')} value={p.title} onChange={(title) => setProfile({ title })} />
             <Field label={t('Line under your name')} value={p.headline} onChange={(headline) => setProfile({ headline })} />
@@ -153,24 +158,21 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
             <Field label={t('Email')} type="email" value={p.email} onChange={(email) => setProfile({ email })} />
             <Field label={t('Phone (optional)')} type="tel" value={p.phone} onChange={(phone) => setProfile({ phone })} />
             <Field label={t('Small text at the bottom (optional)')} value={p.footerNote} onChange={(footerNote) => setProfile({ footerNote })} />
-          </Panel>
-
-          <Panel title={t('Photo (optional)')}>
+            </EditRow>
+            <EditRow title={t('Photo (optional)')} summary={p.photo ? t('Added') : t('None')}>
             <ImageField label={t('Your picture')} shape="portrait" value={p.photo}
               hint={t('A head-and-shoulders portrait works best. It is cropped to 4:5 and stored inside the resume file. The resume looks fine without one.')}
               onPick={pick(readPhoto, (photo) => setProfile({ photo }))} onRemove={() => setProfile({ photo: '' })} />
-          </Panel>
-
-          <Panel title={t('Links (GitHub, LinkedIn, portfolio)')}>
+            </EditRow>
+            <EditRow title={t('Links (GitHub, LinkedIn, portfolio)')} summary={p.links.length ? t('{n} links', { n: p.links.length }) : t('None')}>
             <ListEditor<LinkItem> items={p.links} onChange={(links) => setProfile({ links })} noun="link" label={(l) => l.label} blank={() => ({ label: '', url: '' })}>
               {(l, s) => (<>
                 <Field label={t('Name')} value={l.label} onChange={(label) => s({ label })} />
                 <Field label={t('Web address')} type="url" hint={t('Paste the full address, starting with https://')} value={l.url} onChange={(url) => s({ url })} />
               </>)}
             </ListEditor>
-          </Panel>
-
-          <Panel title={t('QR code (optional)')}>
+            </EditRow>
+            <EditRow title={t('QR code (optional)')} summary={p.qrUrl ? p.qrUrl : t('None')}>
             <Field label={t('Web address the code opens')} type="url" hint={t('People scan it with their phone camera. Handy on a printed resume. Leave empty for no code.')} value={p.qrUrl} onChange={(qrUrl) => setProfile({ qrUrl })} />
             {p.links.filter((l) => l.label && l.url).length ? (
               <div className="flex flex-wrap gap-2">
@@ -181,29 +183,29 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
             ) : null}
             <Field label={t('Text beside the code')} hint={t('For example: Scan for my LinkedIn.')} value={p.qrLabel} onChange={(qrLabel) => setProfile({ qrLabel })} />
             {p.qrUrl.length > 300 ? <p role="status" className="rounded-sm border-2 border-ink p-2.5 text-[15px] font-semibold">{t(COPY.qrTooLong)}</p> : null}
-          </Panel>
+            </EditRow>
+          </Group>
 
-          <div className="flex items-end justify-between gap-3 border-b-[3px] border-ink pb-2 pt-8">
-            <h2 className="text-2xl font-extrabold tracking-tight">{t('Sections')}</h2>
-            <p className="text-sm text-muted">{t('Drag the handle to reorder.')}</p>
-          </div>
-          {resume.sections.length === 0 ? <p className="py-4 text-muted">{t('No sections yet. Add the first one below.')}</p> : null}
-          <Sortable ids={resume.sections.map((s) => s.id)} onMove={(from, to) => setSections(moved(resume.sections, from, to))}>
-            {resume.sections.map((s) => (
-              <SortableRow key={s.id} id={s.id}>
-                <Panel title={s.title || t('Untitled section')}
-                  handle={<DragHandle what={t('{title} section', { title: s.title || t('untitled') })} />}
-                  actions={<RemoveButton what={t('{title} section', { title: s.title || t('untitled') })}
-                    onRemove={() => { if (window.confirm(t('Remove the “{title}” section and everything in it?', { title: s.title || t('Untitled') }))) setSections(resume.sections.filter((x) => x.id !== s.id)); }} />}>
-                  <SectionForm section={s} onChange={(patch) => setSection(s.id, patch)} pick={pick} />
-                </Panel>
-              </SortableRow>
-            ))}
-          </Sortable>
-          <div className="pt-5">
-            <AddSection onAdd={(type, title) => setSections([...resume.sections, blankSection(type, title)])} />
-          </div>
+          <Group title={t('Sections')} hint={t('Experience, education, skills and more. Drag the handle to reorder.')} count={resume.sections.length} defaultOpen>
+            {resume.sections.length === 0 ? <p className="py-4 text-muted">{t('No sections yet. Add the first one below.')}</p> : null}
+            <Sortable ids={resume.sections.map((s) => s.id)} onMove={(from, to) => setSections(moved(resume.sections, from, to))}>
+              {resume.sections.map((s) => (
+                <SortableRow key={s.id} id={s.id}>
+                  <EditRow title={s.title || t('Untitled section')} summary={sectionSummary(s, t)}
+                    handle={<DragHandle what={t('{title} section', { title: s.title || t('untitled') })} />}
+                    actions={<RemoveButton what={t('{title} section', { title: s.title || t('untitled') })}
+                      onRemove={() => { if (window.confirm(t('Remove the “{title}” section and everything in it?', { title: s.title || t('Untitled') }))) setSections(resume.sections.filter((x) => x.id !== s.id)); }} />}>
+                    <SectionForm section={s} onChange={(patch) => setSection(s.id, patch)} pick={pick} />
+                  </EditRow>
+                </SortableRow>
+              ))}
+            </Sortable>
+            <div className="pt-3">
+              <AddSection onAdd={(type, title) => setSections([...resume.sections, blankSection(type, title)])} />
+            </div>
+          </Group>
         </div>
+
 
         <div className={cn('flex min-h-0 flex-col', pane === 'edit' && 'hidden lg:flex')}>
           <div className="hidden items-center justify-between gap-3 border-b border-rule bg-paper px-4 py-1.5 lg:flex">
@@ -226,6 +228,17 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
       </div>
     </div>
   );
+}
+
+/** A one-line description of what a section holds, shown under its name while it is closed. */
+function sectionSummary(s: Section, t: ReturnType<typeof useT>): string {
+  const n = (k: number, one: string, many: string) => (k === 1 ? t(one, { n: k }) : t(many, { n: k }));
+  if (s.type === 'timeline') return n(s.items.length, '{n} entry', '{n} entries');
+  if (s.type === 'tags') return n(s.groups.reduce((a, g) => a + g.items.length, 0), '{n} item', '{n} items');
+  if (s.type === 'links') return n(s.items.length, '{n} item', '{n} items');
+  if (s.type === 'levels') return n(s.items.length, '{n} item', '{n} items');
+  if (s.type === 'gallery') return n(s.items.length, '{n} picture', '{n} pictures');
+  return (s.body || s.lead).trim().slice(0, 60) || t('Empty');
 }
 
 function ColourPicker({ label, hint, value, onChange }: { label: string; hint: string; value: string; onChange: (v: string) => void }) {

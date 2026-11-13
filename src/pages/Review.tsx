@@ -1,5 +1,5 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Check, ClipboardPaste, Copy, Download, Eye, FileUp, FolderOpen, Info, PencilLine, RotateCcw, Save, Sparkles, TriangleAlert, Undo2, X } from 'lucide-react';
+import { ArrowLeft, Check, ChevronRight, ClipboardPaste, Copy, Download, Eye, FileUp, FolderOpen, Info, PencilLine, RotateCcw, Save, Sparkles, TriangleAlert, Undo2, X } from 'lucide-react';
 import type { Resume, StoredResume } from '@/model/types';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/lib/toast';
@@ -25,7 +25,14 @@ interface Props {
 }
 
 type Source = 'saved' | 'upload' | 'paste';
-type Tab = 'score' | 'fix' | 'scan' | 'match' | 'proof' | 'letter';
+type Tab = 'score' | 'fix' | 'scan' | 'proof';
+type Step = 1 | 2 | 3 | 4;
+const STEPS_R: { name: string; hint: string }[] = [
+  { name: 'Upload resume', hint: 'Choose, upload or paste' },
+  { name: 'Review', hint: 'Score, fix, recruiter scan' },
+  { name: 'Job match', hint: 'Compare with an advert' },
+  { name: 'Cover letter', hint: 'Draft from your resume' },
+];
 
 const bandClass = (n: number) => (n >= 80 ? 'bg-ink text-paper' : n >= 60 ? 'bg-accent text-ink' : 'bg-paper text-ink border-ink');
 const SEVERITY: Record<Severity, { label: string; cls: string }> = {
@@ -45,6 +52,7 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
   const [pasted, setPasted] = useState('');
   const [ad, setAd] = useState('');
   const [tab, setTab] = useState<Tab>('score');
+  const [step, setStep] = useState<Step>(initialId && list.some((r) => r.id === initialId) ? 2 : 1);
   const [company, setCompany] = useState<string | null>(null);   // null = use the name found in the advert
   const [manager, setManager] = useState('');
   const [edited, setEdited] = useState<string | null>(null);      // the person's own edits to the letter
@@ -111,15 +119,51 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
   return (
     <div className="min-h-screen bg-tint">
       <header className="on-ink flex flex-wrap items-center gap-3 bg-ink px-3 py-2 text-paper sm:px-5">
-        <Button variant="ghost" size="sm" className="text-paper hover:bg-ink-hover" onClick={onBack}><ArrowLeft />{t('My resumes')}</Button>
-        <h1 className="flex-1 text-lg font-extrabold"><span className="text-accent">CV</span> {t('Resume review')}</h1>
+        <Button variant="ghost" size="sm" className="text-paper hover:bg-ink-hover" onClick={onBack}><ArrowLeft />{t('Dashboard')}</Button>
+        <h1 className="flex-1 text-lg font-extrabold"><span className="text-accent">CV</span> {t('Review a resume')}</h1>
         <LanguageSelect className="min-h-9 rounded-sm border border-ink-hover bg-ink-hover px-2 text-sm font-semibold text-paper" />
       </header>
 
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
-        <aside className="grid content-start gap-5">
-          <section className="rounded-sm border-2 border-ink bg-paper p-4" aria-labelledby="src-h">
-            <h2 id="src-h" className="text-xl font-extrabold">{t('1. Your resume')}</h2>
+      <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+        <nav aria-label={t('Breadcrumb')} className="mb-4 text-[15px]">
+          <ol className="flex flex-wrap items-center gap-1.5">
+            <li><button type="button" className="font-semibold underline-offset-2 hover:underline" onClick={onBack}>{t('Dashboard')}</button></li>
+            <li aria-hidden><ChevronRight className="size-4 text-muted" /></li>
+            <li className="font-bold" aria-current="page">{t('Review a resume')}</li>
+          </ol>
+        </nav>
+
+        <ol className="grid gap-2 sm:grid-cols-4" aria-label={t('Steps')}>
+          {STEPS_R.map((st, i) => {
+            const n = (i + 1) as Step;
+            const locked = n > 1 && !subject;
+            const on = step === n;
+            return (
+              <li key={n}>
+                <button type="button" disabled={locked} aria-current={on ? 'step' : undefined} onClick={() => setStep(n)}
+                  className={cn('flex min-h-14 w-full items-center gap-3 rounded-sm border-2 px-3 text-left', on ? 'border-ink bg-ink text-paper' : 'border-ink bg-paper hover:bg-tint', locked && 'cursor-not-allowed border-rule text-muted hover:bg-paper')}>
+                  <span className={cn('grid size-8 shrink-0 place-items-center rounded-sm font-extrabold', on ? 'bg-accent text-ink' : 'bg-tint')}>{n}</span>
+                  <span className="min-w-0"><span className="block font-bold">{t(st.name)}</span><span className={cn('hidden truncate text-sm sm:block', on ? 'text-on-ink-muted' : 'text-muted')}>{t(st.hint)}</span></span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+
+        {applied.length > 0 && subject && score && step > 1 && (
+          <div className="mt-4 flex flex-wrap items-center gap-3 rounded-sm border-2 border-ink bg-accent p-3 text-[15px] font-semibold">
+            <p className="min-w-60 flex-1">{t('{n} correction(s) applied', { n: applied.length })}{before !== null && <> · {t('Score')} {before} → <span className="font-extrabold">{score.overall}</span></>}</p>
+            <Button size="sm" onClick={() => setApplied((a) => a.slice(0, -1))}><Undo2 />{t('Undo last')}</Button>
+            <Button size="sm" variant="primary" onClick={saveChanges}><Save />{subject.from === 'saved' ? t('Save to my resume') : t('Save as a new resume')}</Button>
+          </div>
+        )}
+
+        <main className="mt-5">
+          {step === 1 && (
+            <div className="grid gap-4">
+              <p className="max-w-[70ch] text-muted">{t('Start by choosing the resume you want checked. Next you get the review, then you can match it to a job.')}</p>
+              <section className="rounded-sm border-2 border-ink bg-paper p-5" aria-labelledby="src-h">
+            <h2 id="src-h" className="text-xl font-extrabold">{t('Choose the resume to review')}</h2>
             <div role="tablist" aria-label={t('Where is your resume?')} className="mt-3 grid grid-cols-3 gap-1">
               {([['saved', FolderOpen, 'Saved'], ['upload', FileUp, 'Upload'], ['paste', ClipboardPaste, 'Paste']] as const).map(([id, Icon, name]) => (
                 <button key={id} role="tab" aria-selected={source === id} onClick={() => setSource(id)}
@@ -157,58 +201,69 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
             </div>
             <p className="mt-3 flex gap-2 text-sm text-muted"><Info className="mt-0.5 size-4 shrink-0" />{t('Everything is checked inside your browser. Nothing is uploaded.')}</p>
           </section>
+              <div className="flex justify-end"><Button variant="primary" disabled={!subject} onClick={() => setStep(2)}>{t('Continue to review')}<ChevronRight /></Button></div>
+            </div>
+          )}
 
-          <section className="rounded-sm border-2 border-ink bg-paper p-4" aria-labelledby="ad-h">
-            <h2 id="ad-h" className="text-xl font-extrabold">{t('2. Job advert (optional)')}</h2>
+          {step > 1 && subject && score && work && (
+            <>
+              {subject.how === 'parsed' && (
+                <div className="mb-4 flex flex-wrap items-center gap-3 rounded-sm border-2 border-ink bg-sand p-3 text-[15px]">
+                  <p className="min-w-60 flex-1">{t('This resume was read from plain text, so a few details may have landed in the wrong place. Open it in the editor to check it and fix the issues below.')}</p>
+                  <Button size="sm" variant="primary" onClick={() => { onCreate(work, subject.name || work.profile.fullName || t('Imported resume'), true); say(t('Added to “My resumes”.')); }}><PencilLine />{t('Open in editor')}</Button>
+                </div>
+              )}
+
+              {step === 2 && (
+                <>
+                  <p className="mb-3 max-w-[70ch] text-muted">{t('See how your resume scores, fix the weak lines, and check how a recruiter would scan it.')}</p>
+                  <div role="tablist" aria-label={t('Review results')} className="flex flex-wrap gap-2">
+                    {([['score', 'Score', null], ['fix', 'Fix my lines', suggestions.length ? String(suggestions.length) : '✓'], ['scan', 'Recruiter scan', null], ['proof', 'Proofread', issues.length ? String(issues.length) : '✓']] as const).map(([id, name, badge]) => (
+                      <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
+                        className={cn('min-h-11 rounded-sm border-2 px-4 font-bold', tab === id ? 'border-ink bg-ink text-paper' : 'border-ink bg-paper hover:bg-tint')}>
+                        {t(name)}{badge && <span className={cn('ml-2 rounded-sm px-1.5 text-sm', tab === id ? 'bg-accent text-ink' : 'bg-ink text-paper')}>{badge}</span>}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-5" role="tabpanel">
+                    {tab === 'score' && <ScoreTab t={t} overall={score.overall} categories={score.categories} priorities={score.priorities} hasAd={!!match} />}
+                    {tab === 'fix' && <FixTab t={t} items={suggestions} drafts={drafts} onDraft={(id, v) => setDrafts((d) => ({ ...d, [id]: v }))} aiText={aiText} aiBusy={aiBusy} onAi={askAi} onApply={apply} onReject={reject} />}
+                    {tab === 'scan' && scan && <ScanTab t={t} scan={scan} />}
+                    {tab === 'proof' && <ProofTab t={t} issues={issues} counts={counts} />}
+                  </div>
+                  <div className="mt-6 flex flex-wrap justify-between gap-2">
+                    <Button onClick={() => setStep(1)}><ArrowLeft />{t('Change resume')}</Button>
+                    <Button variant="primary" onClick={() => setStep(3)}>{t('Next: match to a job')}<ChevronRight /></Button>
+                  </div>
+                </>
+              )}
+
+              {step === 3 && (
+                <div className="grid gap-4">
+                  <p className="max-w-[70ch] text-muted">{t('Paste the advert for the job you want. You get a match score, the keywords you are missing, and concrete changes for that role.')}</p>
+                  <section className="rounded-sm border-2 border-ink bg-paper p-5" aria-labelledby="ad-h">
+            <h2 id="ad-h" className="text-xl font-extrabold">{t('Paste the job advert')}</h2>
             <label htmlFor="ad-box" className="mt-1 block text-[15px] text-muted">{t('Paste the whole advert to see how well your resume fits it.')}</label>
-            <textarea id="ad-box" value={ad} onChange={(e) => setAd(e.target.value)} rows={9} placeholder={t('Job title, requirements, responsibilities…')} className="mt-2 w-full rounded-sm border-2 border-ink bg-paper p-2 text-[15px]" />
+            <textarea id="ad-box" value={ad} onChange={(e) => setAd(e.target.value)} rows={8} placeholder={t('Job title, requirements, responsibilities…')} className="mt-2 w-full rounded-sm border-2 border-ink bg-paper p-2 text-[15px]" />
             {ad && <Button size="sm" variant="ghost" className="mt-1" onClick={() => setAd('')}><X />{t('Clear')}</Button>}
           </section>
-        </aside>
-
-        <main>
-          {!subject || !score ? (
-            <div className="rounded-sm border-2 border-dashed border-ink bg-paper p-8">
-              <h2 className="text-2xl font-extrabold">{t('Get a professional assessment')}</h2>
-              <p className="mt-2 max-w-[58ch] text-muted">{t('Choose, upload or paste a resume on the left. You get a score for each part, the exact reasons it is weak, how to fix it, a comparison with any job advert, and a full proofread.')}</p>
-            </div>
-          ) : (
-            <>
-              <div role="tablist" aria-label={t('Review results')} className="flex flex-wrap gap-2">
-                {([['score', 'Score', null], ['fix', 'Fix my lines', suggestions.length ? String(suggestions.length) : '✓'], ['scan', 'Recruiter scan', null], ['match', 'Job match', match ? `${match.percent}%` : null], ['proof', 'Proofread', issues.length ? String(issues.length) : '✓'], ['letter', 'Cover letter', null]] as const).map(([id, name, badge]) => (
-                  <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
-                    className={cn('min-h-11 rounded-sm border-2 px-4 font-bold', tab === id ? 'border-ink bg-ink text-paper' : 'border-ink bg-paper hover:bg-tint')}>
-                    {t(name)}{badge && <span className={cn('ml-2 rounded-sm px-1.5 text-sm', tab === id ? 'bg-accent text-ink' : 'bg-ink text-paper')}>{badge}</span>}
-                  </button>
-                ))}
-              </div>
-
-              {subject.how === 'parsed' && (
-                <div className="mt-4 flex flex-wrap items-center gap-3 rounded-sm border-2 border-ink bg-sand p-3 text-[15px]">
-                  <p className="min-w-60 flex-1">{t('This resume was read from plain text, so a few details may have landed in the wrong place. Open it in the editor to check it and fix the issues below.')}</p>
-                  <Button size="sm" variant="primary" onClick={() => { onCreate(work ?? subject.resume, subject.name || subject.resume.profile.fullName || t('Imported resume'), true); say(t('Added to “My resumes”.')); }}><PencilLine />{t('Open in editor')}</Button>
+                  <MatchTab t={t} match={match} hasAd={ad.trim().length > 0} />
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <Button onClick={() => setStep(2)}><ArrowLeft />{t('Back to review')}</Button>
+                    <Button variant="primary" onClick={() => setStep(4)}>{t('Next: cover letter')}<ChevronRight /></Button>
+                  </div>
                 </div>
               )}
 
-              {applied.length > 0 && (
-                <div className="mt-4 flex flex-wrap items-center gap-3 rounded-sm border-2 border-ink bg-accent p-3 text-[15px] font-semibold">
-                  <p className="min-w-60 flex-1">{t('{n} correction(s) applied', { n: applied.length })}{before !== null && <> · {t('Score')} {before} → <span className="font-extrabold">{score.overall}</span></>}</p>
-                  <Button size="sm" onClick={() => setApplied((a) => a.slice(0, -1))}><Undo2 />{t('Undo last')}</Button>
-                  <Button size="sm" variant="primary" onClick={saveChanges}><Save />{subject.from === 'saved' ? t('Save to my resume') : t('Save as a new resume')}</Button>
-                </div>
-              )}
-
-              <div className="mt-5" role="tabpanel">
-                {tab === 'score' && <ScoreTab t={t} overall={score.overall} categories={score.categories} priorities={score.priorities} hasAd={!!match} />}
-                {tab === 'fix' && <FixTab t={t} items={suggestions} drafts={drafts} onDraft={(id, v) => setDrafts((d) => ({ ...d, [id]: v }))} aiText={aiText} aiBusy={aiBusy} onAi={askAi} onApply={apply} onReject={reject} />}
-                {tab === 'scan' && scan && <ScanTab t={t} scan={scan} />}
-                {tab === 'match' && <MatchTab t={t} match={match} hasAd={ad.trim().length > 0} />}
-                {tab === 'proof' && <ProofTab t={t} issues={issues} counts={counts} />}
-                {tab === 'letter' && letter && (
+              {step === 4 && letter && (
+                <div className="grid gap-4">
                   <LetterTab t={t} letter={letter} hasAd={ad.trim().length > 0} company={company ?? letter.company} onCompany={setCompany} manager={manager} onManager={setManager}
-                    text={edited ?? letter.text} edited={edited !== null} onEdit={setEdited} fileName={slug(subject.resume.profile.fullName || 'cover') + '-cover-letter.txt'} say={say} />
-                )}
-              </div>
+                    text={edited ?? letter.text} edited={edited !== null} onEdit={setEdited} fileName={slug(work.profile.fullName || 'cover') + '-cover-letter.txt'} say={say} />
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <Button onClick={() => setStep(3)}><ArrowLeft />{t('Back to job match')}</Button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </main>

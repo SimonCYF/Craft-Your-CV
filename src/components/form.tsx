@@ -4,10 +4,11 @@ import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, us
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Minus, Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, GripVertical, Minus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input, Label, Textarea } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useT } from '@/i18n';
 
 /* The form pieces the editor is built from: a labelled field, a collapsible panel, lists you can drag into order. */
@@ -106,6 +107,46 @@ export function Panel({ title, children, defaultOpen = false, actions, handle, l
       <div id={id} hidden={!open} className={cn('grid grid-cols-1 gap-3.5', item ? 'px-2 pb-3' : 'pb-5')}>
         {open ? children : null}
       </div>
+    </div>
+  );
+}
+
+/** A wrapper that stays closed until opened, then drops down to show what is inside. Keeps a long editor short. */
+export function Group({ title, hint, count, children, defaultOpen = false }: { title: string; hint?: string; count?: number; children: ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const id = useId();
+  return (
+    <section className="mt-3 rounded-sm border-2 border-ink bg-paper">
+      <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className="flex min-h-14 w-full items-center gap-3 px-3 text-left">
+        <ChevronDown className={cn('size-5 shrink-0 transition-transform', open && 'rotate-180')} aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block text-lg font-extrabold">{title}</span>
+          {hint ? <span className="block truncate text-sm text-muted">{hint}</span> : null}
+        </span>
+        {count !== undefined ? <span className="rounded-sm bg-ink px-2 text-sm font-bold text-paper">{count}</span> : null}
+      </button>
+      <div id={id} hidden={!open} className="border-t border-rule px-3 pb-3">{open ? children : null}</div>
+    </section>
+  );
+}
+
+/** One line in the editor: a name and a short summary. "Edit" opens its form in a panel beside the preview. */
+export function EditRow({ title, summary, children, handle, actions }: { title: string; summary?: string; children: ReactNode; handle?: ReactNode; actions?: ReactNode }) {
+  const t = useT();
+  return (
+    <div className="flex items-center gap-1 border-b border-rule py-1.5 last:border-b-0">
+      {handle}
+      <div className="min-w-0 flex-1 py-1">
+        <p className="truncate font-bold">{title}</p>
+        {summary ? <p className="truncate text-sm text-muted">{summary}</p> : null}
+      </div>
+      <Dialog>
+        <DialogTrigger asChild><Button size="sm"><Pencil />{t('Edit')}</Button></DialogTrigger>
+        <DialogContent drawer title={title} description={t('Changes save by themselves and show in the preview.')}>
+          <div className="grid grid-cols-1 gap-3.5">{children}</div>
+        </DialogContent>
+      </Dialog>
+      {actions}
     </div>
   );
 }
