@@ -193,7 +193,7 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
       const loaded = await loadResumeFile(f);
       setFile({ name: f.name.replace(/\.[a-z0-9]+$/i, ''), loaded });
       if (loaded.how === 'parsed' && aiAvailable && !loaded.ai)
-        say(t('The AI reader could not be reached, so a basic reader was used. Check the result carefully.'));
+        say(t('Check the result carefully.'));
     } catch (err) {
       const why = err instanceof UnreadableError ? err.message : '';
       say(
@@ -443,14 +443,6 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
                     </>
                   )}
                 </div>
-                {aiAvailable && source === 'upload' && (
-                  <p className="mt-3 flex gap-2 text-sm text-muted">
-                    <Info className="mt-0.5 size-4 shrink-0" />
-                    {t(
-                      'Uploaded files are read with AI (Claude), which handles layouts like two columns. The text is sent once to be read and is not stored.',
-                    )}
-                  </p>
-                )}
               </section>
               <div className="flex justify-end">
                 <Button variant="primary" disabled={!subject} onClick={() => setStep(2)}>
