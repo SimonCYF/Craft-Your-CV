@@ -114,7 +114,7 @@ export function page(resume: Resume, o: RenderOptions, parts: { fonts: string; c
   const title = [p.fullName || L.resume, p.title].filter(Boolean).join(' – ');
   const data = JSON.stringify(resume, null, 1).replace(/</g, '\\u003c');
   return `<!doctype html>
-<html lang="${esc(resume.style.lang || 'en')}" style="${colourVars(resume.style.colors)}; --scale: ${SCALE_VALUE[resume.style.scale] ?? 1}"${o.preview ? ' class="is-preview"' : ''}>
+<html lang="${esc(resume.style.lang || 'en')}" style="${colourVars(resume.style.colors)}; --scale: ${((SCALE_VALUE[resume.style.scale] ?? 1) * (resume.style.fit || 1)).toFixed(4)}"${o.preview ? ' class="is-preview"' : ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -1,4 +1,4 @@
-import type { Colors, Fact, GalleryItem, LevelItem, LinkItem, ListItem, Point, Resume, Scale, Section, SectionType, TagGroup, TemplateId, TimelineItem } from './types';
+import type { Colors, Fact, GalleryItem, LevelItem, LinkItem, ListItem, PageLimit, Point, Resume, Scale, Section, SectionType, TagGroup, TemplateId, TimelineItem } from './types';
 
 /* Turns anything we might be handed (an uploaded file, an old save, a preset) into a valid Resume.
    Unknown fields are dropped and missing ones filled in, so the rest of the app never has to check. */
@@ -12,8 +12,11 @@ export const newId = (): string => (crypto.randomUUID ? crypto.randomUUID().slic
 
 export const DEFAULT_COLORS: Colors = { main: '#262626', accent: '#f2d11a', soft: '#f5f5dc' };
 export const TEMPLATE_IDS: TemplateId[] = ['bold', 'classic', 'sidebar'];
+export const MIN_FIT = 0.6;
 export const SCALES: Scale[] = ['small', 'normal', 'large', 'xlarge'];
 const LANGS = ['en', 'ms', 'zh', 'ta', 'hi', 'es'];
+const pageLimit = (v: unknown): PageLimit => (v === 1 || v === 2 ? v : 0);
+const fitFactor = (v: unknown): number => (typeof v === 'number' && v >= MIN_FIT && v <= 1 ? v : 1);
 const scale = (v: unknown): Scale => (SCALES.includes(v as Scale) ? (v as Scale) : 'normal');
 
 function colors(v: unknown): Colors {
@@ -95,7 +98,7 @@ function fromV1(d: Record<string, any>): Resume {
       fullName: str(d.fullName), title: str(d.shortTitle), headline: str(d.role), summary: str(d.tagline), location: str(d.location),
       email: str(d.email), phone: '', photo: photo(d.photo), links: links(d.links), footerNote: str(d.footerNote), qrUrl: '', qrLabel: '',
     },
-    style: { template: 'bold', colors: colors(d.colors ?? old[str(d.theme)]), scale: 'normal', lang: 'en' },
+    style: { template: 'bold', colors: colors(d.colors ?? old[str(d.theme)]), scale: 'normal', lang: 'en', pages: 0, fit: 1 },
     sections,
   };
 }
@@ -113,7 +116,7 @@ export function normalize(raw: unknown): Resume {
         fullName: str(p.fullName), title: str(p.title), headline: str(p.headline), summary: str(p.summary), location: str(p.location),
         email: str(p.email), phone: str(p.phone), photo: photo(p.photo), links: links(p.links), footerNote: str(p.footerNote), qrUrl: str(p.qrUrl), qrLabel: str(p.qrLabel),
       },
-      style: { template: TEMPLATE_IDS.includes(st.template) ? st.template : 'bold', colors: colors(st.colors), scale: scale(st.scale), lang: LANGS.includes(str(st.lang)) ? str(st.lang) : 'en' },
+      style: { template: TEMPLATE_IDS.includes(st.template) ? st.template : 'bold', colors: colors(st.colors), scale: scale(st.scale), lang: LANGS.includes(str(st.lang)) ? str(st.lang) : 'en', pages: pageLimit(st.pages), fit: pageLimit(st.pages) ? fitFactor(st.fit) : 1 },
       sections: arr(d.sections).map(section).filter((s): s is Section => s !== null),
     };
   }

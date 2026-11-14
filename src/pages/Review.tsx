@@ -190,7 +190,10 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
     if (!f) return;
     setBusy(true);
     try {
-      setFile({ name: f.name.replace(/\.[a-z0-9]+$/i, ''), loaded: await loadResumeFile(f) });
+      const loaded = await loadResumeFile(f);
+      setFile({ name: f.name.replace(/\.[a-z0-9]+$/i, ''), loaded });
+      if (loaded.how === 'parsed' && aiAvailable && !loaded.ai)
+        say(t('The AI reader could not be reached, so a basic reader was used. Check the result carefully.'));
     } catch (err) {
       const why = err instanceof UnreadableError ? err.message : '';
       say(
@@ -440,10 +443,14 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
                     </>
                   )}
                 </div>
-                <p className="mt-3 flex gap-2 text-sm text-muted">
-                  <Info className="mt-0.5 size-4 shrink-0" />
-                  {t('Everything is checked inside your browser. Nothing is uploaded.')}
-                </p>
+                {aiAvailable && source === 'upload' && (
+                  <p className="mt-3 flex gap-2 text-sm text-muted">
+                    <Info className="mt-0.5 size-4 shrink-0" />
+                    {t(
+                      'Uploaded files are read with AI (Claude), which handles layouts like two columns. The text is sent once to be read and is not stored.',
+                    )}
+                  </p>
+                )}
               </section>
               <div className="flex justify-end">
                 <Button variant="primary" disabled={!subject} onClick={() => setStep(2)}>
@@ -460,7 +467,9 @@ export default function Review({ list, initialId, onBack, onCreate, onUpdate }: 
                 <div className="mb-4 flex flex-wrap items-center gap-3 rounded-sm border-2 border-ink bg-sand p-3 text-[15px]">
                   <p className="min-w-60 flex-1">
                     {t(
-                      'This resume was read from plain text, so a few details may have landed in the wrong place. Open it in the editor to check it and fix the issues below.',
+                      subject.from === 'upload' && file?.loaded.ai
+                        ? 'This resume was read by AI. Open it in the editor to check that every detail landed in the right place.'
+                        : 'This resume was read from plain text, so a few details may have landed in the wrong place. Open it in the editor to check it and fix the issues below.',
                     )}
                   </p>
                   <Button

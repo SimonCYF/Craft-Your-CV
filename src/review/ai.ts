@@ -16,3 +16,18 @@ export async function aiRewrite(lines: AiLine[], target: string, signal?: AbortS
   if (!out.length) throw new Error('failed');
   return lines.map((_, i) => (typeof out[i] === 'string' ? (out[i] as string).trim() : ''));
 }
+
+/** What the AI reader hands back. Loose on purpose: parseWithAi in extract.ts checks and cleans every field. */
+export interface AiResume { [key: string]: unknown }
+
+/** Sends the text of an uploaded resume to be read into sections. Returns null if the AI cannot be used, so the caller falls back to the local reader. */
+export async function aiParse(text: string, signal?: AbortSignal): Promise<AiResume | null> {
+  if (!aiAvailable) return null;
+  const url = ENDPOINT.replace(/\/[^/]*$/, '/parse');
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: text.slice(0, 24000) }), signal });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { resume?: unknown };
+    return data.resume && typeof data.resume === 'object' ? (data.resume as AiResume) : null;
+  } catch { return null; }
+}

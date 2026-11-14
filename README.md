@@ -25,6 +25,8 @@ npm run build      # production files in dist/
 
 Requires Node 20 or newer.
 
+**AI features locally** (reading uploaded resumes, rewriting bullets): create a file named `.env.local` containing `ANTHROPIC_API_KEY=sk-ant-...` and restart `npm run dev`. The dev server runs the same code as `worker/ai-proxy.ts`. Without the key the app falls back to its built-in rule-based reader.
+
 ## Deploy to Cloudflare Pages
 
 1. Push this folder to a GitHub repository.

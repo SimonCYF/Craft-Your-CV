@@ -9,10 +9,10 @@ type Part = 'summary' | 'experience' | 'education' | 'skills' | 'languages' | 'p
 const HEADINGS: [RegExp, Part, string][] = [
   [/^(?:professional |career |personal )?(?:summary|profile|objective|statement)$|^about(?: me)?$|^career objective$/, 'summary', 'About'],
   [/^(?:work |professional |relevant )?experience$|^(?:employment|work|career) history$|^employment$|^work$|^professional background$/, 'experience', 'Experience'],
-  [/^education(?: (?:and|&) (?:training|qualifications?))?$|^academic (?:background|qualifications?)$|^qualifications?$/, 'education', 'Education'],
-  [/^(?:technical |core |key |professional )?skills(?: (?:and|&) .+)?$|^core competenc(?:ies|y)$|^technologies$|^tools(?: (?:and|&) technologies)?$|^expertise$/, 'skills', 'Skills'],
+  [/^education(?: (?:and|&) (?:training|qualifications?))?$|^academic (?:background|qualifications?|past|history)$|^qualifications?$/, 'education', 'Education'],
+  [/^(?:technical |core |key |professional |personal |soft )?skills(?: (?:and|&) .+)?$|^core competenc(?:ies|y)$|^technologies$|^tools(?: (?:and|&) technologies)?$|^expertise$/, 'skills', 'Skills'],
   [/^languages?$/, 'languages', 'Languages'],
-  [/^(?:personal |key |selected )?projects?$/, 'projects', 'Projects'],
+  [/^(?:personal |key |selected |relevant |notable )?projects?$/, 'projects', 'Projects'],
   [/^certifications?(?: (?:and|&) licen[cs]es)?$|^licen[cs]es$|^courses$|^training$/, 'certs', 'Certifications'],
   [/^(?:awards?|achievements?|honou?rs|accomplishments)(?: (?:and|&) .+)?$/, 'awards', 'Achievements'],
   [/^references?$|^referees$/, 'references', 'References'],
@@ -28,7 +28,7 @@ const DEGREE = /\b(bachelor|master|ph\.?d|diploma|b\.?sc|m\.?sc|b\.?eng|mba|b\.?
 const clean = (s: string) => s.replace(/\s+/g, ' ').trim();
 const wc = (s: string) => s.split(/\s+/).filter(Boolean).length;
 
-function headingOf(line: string): { part: Part; title: string } | null {
+export function headingOf(line: string): { part: Part; title: string } | null {
   const raw = line.trim().replace(/[:：]+$/, '');
   if (!raw || raw.length > 40 || /[.,;]$/.test(raw) || BULLET.test(line)) return null;
   const key = raw.toLowerCase().replace(/\s+/g, ' ');
@@ -51,8 +51,9 @@ function timeline(lines: string[]): TimelineItem[] {
       cur = fresh();
       const rest = clean(m ? line.replace(m[0], ' ').replace(/^[\s|,·–—()-]+|[\s|,·–—()-]+$/g, '') : line);
       cur.when = m ? clean(m[0]) : '';
-      let head = rest ? [rest] : [];
-      if (!rest) {
+      const placeOnly = !!rest && wc(rest) <= 3 && !/[|•·@]/.test(rest) && ((prev && prev.loose.length && isShort(prev.loose[prev.loose.length - 1])) || pending.length > 0);
+      let head = rest && !placeOnly ? [rest] : [];
+      if (!rest || placeOnly) {
         const back: string[] = [];
         if (prev) { while (back.length < 2 && prev.loose.length && isShort(prev.loose[prev.loose.length - 1])) { back.unshift(prev.loose.pop()!); prev.bullets.pop(); } }
         if (!back.length) while (back.length < 2 && pending.length) back.unshift(pending.pop()!);
@@ -61,7 +62,7 @@ function timeline(lines: string[]): TimelineItem[] {
       const parts = head.flatMap((h) => h.split(/\s*[|•·]\s*|\s+[–—]\s+|\s+-\s+|\s+@\s+|\s+at\s+/i)).map(clean).filter(Boolean);
       cur.title = parts[0] ?? '';
       cur.org = parts[1] ?? '';
-      cur.where = parts[2] ?? '';
+      cur.where = placeOnly ? rest : (parts[2] ?? '');
       if (!cur.org && /,/.test(cur.title)) { const [a, ...b] = cur.title.split(/,\s*/); if (wc(a) <= 5 && b.length === 1 && wc(b[0]) <= 6) { cur.title = a; cur.org = b[0]; } }
       if (prev) { prev.body = prev.loose.join(' '); items.push(prev); }
       pending = [];
@@ -141,7 +142,16 @@ export function parseResumeText(text: string): Resume {
   }
 
   const sections: Section[] = [];
-  const extra = rest.filter((l) => l !== location && l !== title && !isContact(l));
+  let extra = rest.filter((l) => l !== location && l !== title && !isContact(l));
+  /* A paragraph under the name (a run of long or wrapped lines) is the summary, not a list of personal details */
+  let summary = '';
+  const first = extra.findIndex((l) => wc(l) >= 8);
+  if (first >= 0) {
+    let end = first + 1;
+    while (end < extra.length && (!/[.!?]$/.test(extra[end - 1]) || wc(extra[end]) >= 8) && wc(extra[end]) >= 3) end++;
+    summary = clean(extra.slice(first, end).join(' '));
+    extra = [...extra.slice(0, first), ...extra.slice(end)];
+  }
   if (extra.length) {
     const facts = extra.map((l) => { const m = l.match(/^([^:]{2,30}):\s*(.+)$/); return m ? { label: clean(m[1]), value: clean(m[2]) } : { label: '', value: clean(l) }; });
     sections.push({ id: newId(), type: 'text', title: 'Personal details', note: '', lead: '', body: '', facts });
@@ -158,8 +168,8 @@ export function parseResumeText(text: string): Resume {
 
   return normalize({
     version: 2,
-    profile: { fullName, title, headline: title, summary: '', location, email, phone, photo: '', links, footerNote: '', qrUrl: '', qrLabel: '' },
-    style: { template: 'classic', colors: undefined, scale: 'normal', lang: 'en' },
+    profile: { fullName, title, headline: title, summary, location, email, phone, photo: '', links, footerNote: '', qrUrl: '', qrLabel: '' },
+    style: { template: 'classic', colors: undefined, scale: 'normal', lang: 'en', pages: 0, fit: 1 },
     sections,
   });
 }

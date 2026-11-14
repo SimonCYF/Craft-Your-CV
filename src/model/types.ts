@@ -10,6 +10,7 @@ export interface Point { title: string; desc: string; stack: string; bullets: st
 export interface TimelineItem { title: string; org: string; when: string; where: string; body: string; logo: string; bullets: string[]; points: Point[] }
 export interface LevelItem { name: string; label: string; level: number }   // level 0 (no dots) to 5
 export interface GalleryItem { image: string; caption: string }
+export type PageLimit = 0 | 1 | 2;
 export type Scale = 'small' | 'normal' | 'large' | 'xlarge';
 export interface TagGroup { name: string; items: string[] }
 export interface ListItem { name: string; url: string; meta: string; desc: string }
@@ -50,7 +51,12 @@ export interface Profile {
 export interface Resume {
   version: 2;
   profile: Profile;
-  style: { template: TemplateId; colors: Colors; scale: Scale; /** language of the fixed words in the downloaded file */ lang: string };
+  style: {
+    template: TemplateId; colors: Colors; scale: Scale;
+    /** language of the fixed words in the downloaded file */ lang: string;
+    /** page limit for the printed PDF: 0 = no limit, 1 or 2 = shrink the text until it fits */ pages: PageLimit;
+    /** shrink factor (0.6 to 1) the editor worked out to meet `pages`; 1 when there is no limit */ fit: number;
+  };
   sections: Section[];
 }
 

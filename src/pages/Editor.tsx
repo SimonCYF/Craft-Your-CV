@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ClipboardCheck, Download, FileText, Monitor, Plus, Printer, Smartphone } from 'lucide-react';
-import type { Colors, LinkItem, Profile, Resume, Scale, Section, SectionType, StoredResume } from '@/model/types';
+import type { Colors, LinkItem, PageLimit, Profile, Resume, Scale, Section, SectionType, StoredResume } from '@/model/types';
 import { blankEntry, blankSection } from '@/model/normalize';
 import { LAYOUT_CHOICES, SECTION_CHOICES } from '@/model/presets';
 import { COLOUR_PRESETS, TEMPLATES, renderResume } from '@/render';
@@ -11,6 +11,7 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/
 import { BulletsEditor, DragHandle, EditRow, Field, Group, ImageField, ListEditor, Panel, RemoveButton, Sortable, SortableRow, moved } from '@/components/form';
 import { Preview, type PreviewHandle } from '@/components/Preview';
 import { useToast } from '@/lib/toast';
+import { fitToPages } from '@/lib/fit';
 import { downloadResume, readLogo, readPhoto, readPicture } from '@/lib/files';
 import { cn } from '@/lib/utils';
 import { COPY } from '@/copy';
@@ -27,6 +28,7 @@ interface Props {
   onReview: () => void;
 }
 
+const PAGE_CHOICES: { id: PageLimit; name: string }[] = [{ id: 0, name: 'Auto' }, { id: 1, name: '1 page' }, { id: 2, name: '2 pages' }];
 const SCALE_CHOICES: { id: Scale; name: string }[] = [{ id: 'small', name: 'Small' }, { id: 'normal', name: 'Normal' }, { id: 'large', name: 'Large' }, { id: 'xlarge', name: 'Extra large' }];
 /** Printable height of one A4 page (px at 96 dpi, after the template's print margins). Bold prints as one tall web page, so it has none. */
 const PAGE_HEIGHT: Record<StoredResume['resume']['style']['template'], number | null> = { classic: 1017, sidebar: 1081, bold: null };
@@ -50,6 +52,25 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
   const [pages, setPages] = useState<number | null>(null);
   const pageHeight = PAGE_HEIGHT[resume.style.template];
   const [pane, setPane] = useState<'edit' | 'preview'>('edit');   // small screens show one at a time
+  const [fitFailed, setFitFailed] = useState(false);
+  const { pages: limit } = resume.style;
+
+  /* With a page limit, find the largest text size that still fits (measured at A4 width, independent of the stored size) and keep it in the resume.
+     The key is the resume drawn at full size, so storing the result does not set this off again. */
+  const fitKey = useMemo(() => JSON.stringify({ ...resume, style: { ...resume.style, fit: 1 } }), [resume]);
+  useEffect(() => {
+    if (!limit || !pageHeight) { setFitFailed(false); if (resume.style.fit !== 1) set({ style: { ...resume.style, fit: 1 } }); return; }
+    let live = true;
+    const timer = window.setTimeout(() => {
+      fitToPages(resume, limit, pageHeight).then((r) => {
+        if (!live) return;
+        setFitFailed(!r.ok);
+        if (Math.abs(r.fit - resume.style.fit) > 0.002) set({ style: { ...resume.style, fit: r.fit } });
+      });
+    }, 400);
+    return () => { live = false; window.clearTimeout(timer); };
+  }, [fitKey, limit, pageHeight]);   // eslint-disable-line react-hooks/exhaustive-deps
+
   const html = useMemo(() => renderResume(resume, { preview: true }), [resume]);
 
   const set = (patch: Partial<Resume>) => onChange({ resume: { ...resume, ...patch } });
@@ -119,6 +140,27 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
                   );
                 })}
               </div>
+            </fieldset>
+            <fieldset>
+              <legend className="mb-1 mt-2 text-[15px] font-bold">{t('Page length')}</legend>
+              <div className="grid grid-cols-3 gap-1.5">
+                {PAGE_CHOICES.map((pc) => {
+                  const on = limit === pc.id;
+                  return (
+                    <label key={pc.id} className={cn('flex min-h-11 items-center justify-center rounded-sm border px-1 text-center text-sm font-semibold has-[:focus-visible]:outline has-[:focus-visible]:outline-3', !pageHeight ? 'cursor-not-allowed opacity-50' : 'cursor-pointer', on ? 'border-2 border-ink bg-ink text-paper' : 'border-muted hover:bg-tint')}>
+                      <input type="radio" name="pages" className="sr-only" disabled={!pageHeight} checked={on} onChange={() => set({ style: { ...resume.style, pages: pc.id } })} />
+                      {t(pc.name)}
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="mt-1 text-sm text-muted">
+                {!pageHeight ? t('Bold is a web layout, so it has no pages to fit.')
+                  : !limit ? t('Auto keeps your text size. Choose 1 or 2 pages to shrink the text until the PDF fits.')
+                  : fitFailed ? t('Still too long at the smallest size. Shorten some text, or choose 2 pages.')
+                  : resume.style.fit < 1 ? t('Text shrunk to {n}% so it fits.', { n: Math.round(resume.style.fit * 100) })
+                  : t('Fits without shrinking the text.')}
+              </p>
             </fieldset>
             <p className="mt-2 text-[15px] font-bold">{t('Colours: start from a combination')}</p>
             <div className="grid grid-cols-2 gap-2">
@@ -213,6 +255,12 @@ export default function Editor({ item, saveState, onChange, onBack, onReview }: 
               {pageHeight && pages !== null ? (
                 <span className={cn('mr-2 rounded-sm border px-1.5 py-0.5 font-bold', pages > 2 ? 'border-ink bg-accent text-ink' : 'border-rule bg-tint text-ink')}>
                   {pages > 2 ? t('About {n} pages: too long. Aim for one or two.', { n: pages }) : pages === 1 ? t('About 1 page') : t('About {n} pages', { n: pages })}
+                </span>
+              ) : null}
+              {pageHeight && !limit && pages !== null && pages > 1 ? (
+                <span className="mr-2 inline-flex gap-1">
+                  {pages > 2 ? <Button size="sm" onClick={() => set({ style: { ...resume.style, pages: 2 } })}>{t('Fit to 2 pages')}</Button> : null}
+                  <Button size="sm" onClick={() => set({ style: { ...resume.style, pages: 1 } })}>{t('Fit to 1 page')}</Button>
                 </span>
               ) : null}
               {pageHeight ? t('Estimate. Save as PDF shows the exact pages.') : t('Bold is a web layout; it prints as one tall page.')}
